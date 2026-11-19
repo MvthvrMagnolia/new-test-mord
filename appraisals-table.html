@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Appraisals by Pillar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #edf4f1;
+    --surface: #ffffff;
+    --inset: #f7f9f8;
+    --ink: #111816;
+    --muted: #66706c;
+    --faint: #b4bbb8;
+    --line: #e6ebe9;
+    --brand: #00907a;
+    --brand-soft: #e3f4ef;
+    --brand-ink: #0b5e50;
+    --warn-soft: #fdf0dc;
+    --warn-ink: #8a5300;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    font-family: Roboto, system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+  .tab {
+    appearance: none; border: 0; background: none; cursor: pointer;
+    font: 500 14.5px Roboto, sans-serif; color: var(--muted);
+    padding: 10px 14px; margin-bottom: -1px; border-bottom: 2px solid transparent;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--brand); }
+  .tab .n { font-size: 12px; color: var(--muted); background: var(--inset); border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px; }
+
+  /* Table card */
+  .card { margin-top: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+  th, td { white-space: nowrap; }
+
+  thead th { font-weight: 500; font-size: 12px; color: var(--muted); background: var(--inset); }
+  thead tr.groups th {
+    font-size: 11px; letter-spacing: .6px; text-transform: uppercase; color: var(--faint);
+    padding: 12px 8px 4px; text-align: center;
+  }
+  thead tr.groups th.g { border-left: 1px solid var(--line); }
+  thead tr.cols th { padding: 4px 8px 12px; text-align: center; border-bottom: 1px solid var(--line); }
+  thead tr.cols th.first, thead tr.groups th.first { text-align: left; padding-left: 20px; }
+  .g-start { border-left: 1px solid var(--line); }
+
+  tbody td { padding: 14px 8px; text-align: center; font-size: 14px; border-bottom: 1px solid var(--line); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: #fafcfb; }
+  td.first, th.first {
+    position: sticky; left: 0; z-index: 1; text-align: left; padding-left: 20px; padding-right: 16px;
+  }
+  tbody td.first { background: var(--surface); font-weight: 500; white-space: normal; min-width: 200px; }
+  td.total { font-weight: 700; }
+  @media (max-width: 600px) { tbody td.first { min-width: 150px; } td.first, th.first { padding-left: 14px; padding-right: 10px; } }
+
+  .zero { color: var(--faint); }
+  .num {
+    display: inline-block; min-width: 26px; padding: 3px 8px; border-radius: 999px;
+    font-weight: 600; font-size: 13px; color: var(--brand-ink); background: var(--brand-soft);
+  }
+  .num.warn { color: var(--warn-ink); background: var(--warn-soft); }
+  .num.quiet { color: var(--muted); background: var(--inset); border: 1px solid var(--line); }
+
+  tfoot td {
+    padding: 14px 8px; text-align: center; font-size: 14px; font-weight: 700;
+    background: var(--inset); border-top: 1px solid var(--line);
+  }
+  tfoot td.first { background: var(--inset); }
+  tfoot .zero { font-weight: 400; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true">All appraisals</button>
+      <button class="tab" role="tab" aria-selected="false">Final review <span class="n">0</span></button>
+    </div>
+
+    <div class="card">
+      <div class="scroll">
+        <table id="tbl"></table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Stages grouped by where an appraisal is in the cycle. `tone` sets how a non-zero count is highlighted.
+  const GROUPS = [
+    { label: 'Waiting to start', cols: [
+      { key: 'notStarted', label: 'Not started' },
+      { key: 'blocked',    label: 'Blocked', tone: 'warn' },
+    ]},
+    { label: 'In review', cols: [
+      { key: 'self',        label: 'Self-rating' },
+      { key: 'lineManager', label: 'Line manager' },
+      { key: 'pillarLead',  label: 'Pillar Lead' },
+      { key: 'returned',    label: 'Returned', title: 'Back with Pillar Lead' },
+      { key: 'exco',        label: 'EXCO' },
+    ]},
+    { label: 'Done', cols: [
+      { key: 'locked',   label: 'Locked', title: 'Locked, ready to send' },
+      { key: 'complete', label: 'Complete' },
+    ]},
+    { label: 'Out of cycle', cols: [
+      { key: 'withdrawn',       label: 'Withdrawn', tone: 'quiet' },
+      { key: 'notParticipating', label: 'Not participating', tone: 'quiet' },
+    ]},
+  ];
+
+  const ROWS = [
+    { pillar: "Chairman's Office",              notParticipating: 1 },
+    { pillar: 'Client Market Engine',           blocked: 1, notParticipating: 1 },
+    { pillar: 'Data, Digital & Platforms Engine', notStarted: 1, blocked: 3, pillarLead: 1, notParticipating: 1 },
+    { pillar: 'Strategy & Transformation',      blocked: 1, notParticipating: 1 },
+  ];
+
+  const COLS = GROUPS.flatMap((g, gi) => g.cols.map((c, ci) => ({ ...c, groupStart: ci === 0 })));
+  const total = r => COLS.reduce((s, c) => s + (r[c.key] || 0), 0);
+  const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+  function cell(v, col, plain) {
+    const cls = col.groupStart ? ' class="g-start"' : '';
+    if (!v) return `<td${cls}><span class="zero">–</span></td>`;
+    if (plain) return `<td${cls}>${v}</td>`;
+    return `<td${cls}><span class="num ${col.tone || ''}">${v}</span></td>`;
+  }
+
+  const firmwide = { pillar: 'Firmwide' };
+  COLS.forEach(c => { firmwide[c.key] = ROWS.reduce((s, r) => s + (r[c.key] || 0), 0); });
+
+  document.getElementById('tbl').innerHTML = `
+    <thead>
+      <tr class="groups">
+        <th class="first"></th><th></th>
+        ${GROUPS.map(g => `<th class="g" colspan="${g.cols.length}">${g.label}</th>`).join('')}
+      </tr>
+      <tr class="cols">
+        <th class="first" scope="col">Pillar</th>
+        <th scope="col">Total</th>
+        ${COLS.map(c => `<th scope="col"${c.groupStart ? ' class="g-start"' : ''}${c.title ? ` title="${esc(c.title)}"` : ''}>${c.label}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>
+      ${ROWS.map(r => `<tr>
+        <td class="first">${esc(r.pillar)}</td>
+        <td class="total">${total(r)}</td>
+        ${COLS.map(c => cell(r[c.key], c)).join('')}
+      </tr>`).join('')}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td class="first">Firmwide</td>
+        <td>${total(firmwide)}</td>
+        ${COLS.map(c => cell(firmwide[c.key], c, true)).join('')}
+      </tr>
+    </tfoot>`;
+</script>
+</body>
+</html>
