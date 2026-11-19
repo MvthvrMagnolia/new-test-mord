@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pcl. One — Splash (Falling)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14352d;
+    --teal: #00907a;
+    --dark: #1e4f40;
+    --mid: #2e8268;
+    --light: #3ba584;
+    --accent: #3dbb8f;
+    --ink: #ffffff;
+    --muted: #a9c2b8;
+    --rule: #4b6b61;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    font-family: Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .stage {
+    position: relative; width: 747px; height: 810px; flex: none;
+    transform-origin: center center; touch-action: none; user-select: none;
+  }
+  .brand { position: absolute; left: 39px; top: 32px; display: flex; align-items: center; gap: 18px; z-index: 2; }
+  .pcl { font-family: Poppins, sans-serif; font-weight: 600; font-size: 29px; color: var(--ink); letter-spacing: -0.5px; }
+  .divider { width: 1px; height: 34px; background: var(--rule); }
+  .one { font-family: Poppins, sans-serif; font-weight: 500; font-size: 26px; color: var(--accent); line-height: 1; }
+  .ent { font-size: 12.5px; font-weight: 600; letter-spacing: 2.6px; color: var(--muted); opacity: .85; margin-top: 8px; }
+
+  .well {
+    position: absolute; left: 0; top: 0; width: 747px; height: 560px; overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 90px, #000 220px);
+    mask-image: linear-gradient(to bottom, transparent 90px, #000 220px);
+  }
+  .tile {
+    position: absolute; left: 0; top: 0; width: 96px; height: 96px; border-radius: 9px;
+    will-change: transform;
+  }
+  .tile.settled { transition: transform 260ms cubic-bezier(.5,0,.75,0); }
+  .lane {
+    position: absolute; top: 120px; width: 96px; height: 432px; border-radius: 9px;
+    background: linear-gradient(to bottom, rgba(61,187,143,0), rgba(61,187,143,.07));
+    opacity: 0; transition: opacity 250ms;
+  }
+  .lane.on { opacity: 1; }
+
+  h1 {
+    position: absolute; left: 39px; top: 612px;
+    font-family: Poppins, sans-serif; font-weight: 600;
+    font-size: 36px; line-height: 50px; color: var(--ink); letter-spacing: -0.4px;
+  }
+  .sub { position: absolute; left: 39px; top: 734px; font-size: 18px; color: var(--muted); }
+  .hint {
+    position: absolute; right: 39px; top: 46px; z-index: 2;
+    font-size: 12px; letter-spacing: .4px; color: var(--muted);
+    border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px;
+  }
+  .hint b { color: var(--accent); font-weight: 600; }
+  .nav { position: fixed; right: 16px; bottom: 14px; font: 12px Inter, sans-serif; color: var(--muted); }
+  .nav a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="well" id="well"></div>
+    <div class="brand">
+      <span class="pcl">pcl.</span>
+      <span class="divider"></span>
+      <div><div class="one">One</div><div class="ent">ENTERPRISE</div></div>
+    </div>
+    <div class="hint" id="hint">Move cursor to steer · click to drop</div>
+    <h1>One place for how we<br>plan, perform and grow.</h1>
+    <p class="sub">Phillips Consulting, in one enterprise workspace.</p>
+  </div>
+  <div class="nav"><a href="splash-puzzle.html">← prev</a> · Splash 2 of 2</div>
+
+<script>
+(() => {
+  const W = 747, H = 810, S = 96;
+  const COLX = [39, 278, 517];
+  const ROWY = [456, 348, 240];         // bottom-up
+  const SPAWN_Y = -110;
+  const PALETTE = ['var(--teal)', 'var(--dark)', 'var(--mid)', 'var(--light)'];
+  // Logo colours, bottom-up rows, left-to-right columns.
+  const LOGO = [
+    ['var(--mid)',  'var(--dark)',  'var(--teal)'],
+    ['var(--dark)', 'var(--light)', 'var(--dark)'],
+    ['var(--teal)', 'var(--dark)',  'var(--mid)'],
+  ];
+
+  const stage = document.getElementById('stage');
+  const well = document.getElementById('well');
+  const hint = document.getElementById('hint');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let scale = 1;
+  function fit() { scale = Math.min(innerWidth / W, innerHeight / H); stage.style.transform = `scale(${scale})`; }
+  addEventListener('resize', fit); fit();
+
+  const lanes = COLX.map(x => { const l = document.createElement('div'); l.className = 'lane'; l.style.left = x + 'px'; well.appendChild(l); return l; });
+
+  const cols = [[], [], []];            // settled tiles per column, bottom-up
+  let piece = null;
+  let phase = 'play';                    // play | hold | clearing
+  let waitUntil = 0;
+  let userCol = 1, lastUser = -Infinity, lines = 0;
+  const t = () => performance.now();
+  const userActive = () => t() - lastUser < 3000;
+
+  function makeTile(color, x, y) {
+    const el = document.createElement('div');
+    el.className = 'tile';
+    el.style.background = color;
+    el.style.transform = `translate(${x}px, ${y}px)`;
+    well.appendChild(el);
+    return { el, color, x, y };
+  }
+  const setPos = (tile, x, y) => { tile.x = x; tile.y = y; tile.el.style.transform = `translate(${x}px, ${y}px)`; };
+
+  if (reduce) {
+    LOGO.forEach((row, r) => row.forEach((color, c) => makeTile(color, COLX[c], ROWY[r])));
+    hint.style.display = 'none';
+    return;
+  }
+
+  function autoColumn() {
+    const h = cols.map(c => c.length);
+    const min = Math.min(...h);
+    if (min >= 3) return -1;
+    const cands = [0, 1, 2].filter(c => h[c] === min);
+    return cands[Math.floor(Math.random() * cands.length)];
+  }
+
+  function spawn() {
+    const auto = !userActive();
+    const target = auto ? autoColumn() : userCol;
+    if (target < 0) { phase = 'hold'; waitUntil = t() + 2600; return; }
+    const h = cols[target].length;
+    const color = auto && h < 3 ? LOGO[h][target] : PALETTE[Math.floor(Math.random() * PALETTE.length)];
+    piece = makeTile(color, COLX[target], SPAWN_Y);
+    piece.vy = 120; piece.target = target;
+  }
+
+  const nearestCol = x => COLX.reduce((b, cx, i) => Math.abs(cx - x) < Math.abs(COLX[b] - x) ? i : b, 0);
+  const topOf = c => cols[c].length ? ROWY[cols[c].length - 1] : ROWY[0] + S + 12;
+
+  function step(dt) {
+    if (phase === 'hold' && t() > waitUntil) { clearAll(); return; }
+    if (phase !== 'play') return;
+    if (!piece) { if (t() > waitUntil) spawn(); return; }
+
+    // Steering: follow the cursor's column, unless that column's stack is already in the way.
+    if (userActive()) {
+      const want = userCol;
+      if (piece.y + S <= topOf(want) - 4) piece.target = want;
+    }
+    lanes.forEach((l, i) => l.classList.toggle('on', userActive() && i === piece.target));
+
+    const tx = COLX[piece.target];
+    const x = piece.x + (tx - piece.x) * Math.min(1, dt * 16);
+    piece.vy = Math.min(piece.vy + 2400 * dt, piece.fast ? 2600 : 1150);
+    let y = piece.y + piece.vy * dt;
+
+    const c = nearestCol(x);
+    const h = cols[c].length;
+    const landY = h < 3 ? ROWY[h] : ROWY[2] - 108;
+    if (y >= landY) { setPos(piece, COLX[c], landY); land(c); return; }
+    setPos(piece, x, y);
+  }
+
+  function land(c) {
+    const tile = piece; piece = null;
+    lanes.forEach(l => l.classList.remove('on'));
+    if (cols[c].length >= 3) { cols[c].push(tile); gameOver(); return; }
+    cols[c].push(tile);
+    tile.el.classList.add('settled');
+    tile.el.animate([
+      { transform: `translate(${tile.x}px, ${tile.y}px) scale(1.06, .9)`, transformOrigin: '50% 100%' },
+      { transform: `translate(${tile.x}px, ${tile.y}px) scale(.98, 1.03)`, transformOrigin: '50% 100%' },
+      { transform: `translate(${tile.x}px, ${tile.y}px)`, transformOrigin: '50% 100%' },
+    ], { duration: 260, easing: 'ease-out' });
+    // Under the player's control, full rows clear like the classic game.
+    const row = cols[c].length - 1;
+    if (userActive() && cols.every(col => col.length > row)) { clearRow(row); return; }
+    waitUntil = t() + (userActive() ? 120 : 260);
+    if (cols.every(col => col.length >= 3)) { phase = 'hold'; waitUntil = t() + 2600; }
+  }
+
+  function flash(el, delay) {
+    return el.animate([
+      { filter: 'brightness(1)' },
+      { filter: 'brightness(1.8) saturate(1.2)', boxShadow: '0 0 30px rgba(61,187,143,.55)' },
+      { filter: 'brightness(1)' },
+    ], { duration: 360, delay, easing: 'ease-out' }).finished;
+  }
+
+  async function clearRow(row) {
+    phase = 'clearing';
+    const victims = cols.map(col => col[row]);
+    await Promise.all(victims.map((v, i) => flash(v.el, i * 40)));
+    await Promise.all(victims.map(v => v.el.animate(
+      [{ transform: `translate(${v.x}px, ${v.y}px) scale(1)`, opacity: 1 }, { transform: `translate(${v.x}px, ${v.y}px) scale(.2)`, opacity: 0 }],
+      { duration: 200, easing: 'ease-in', fill: 'forwards' }).finished));
+    victims.forEach(v => v.el.remove());
+    cols.forEach(col => {
+      col.splice(row, 1);
+      col.forEach((tile, r) => setPos(tile, tile.x, ROWY[r]));
+    });
+    lines++;
+    hint.innerHTML = `Lines cleared <b>${lines}</b>`;
+    waitUntil = t() + 320;
+    phase = 'play';
+  }
+
+  async function clearAll(over) {
+    phase = 'clearing';
+    const all = cols.flatMap((col, c) => col.map((tile, r) => ({ tile, r, c })));
+    if (!over) await Promise.all(all.map(({ tile, r, c }) => flash(tile.el, r * 140 + c * 40)));
+    await Promise.all(all.map(({ tile, r, c }) => tile.el.animate(
+      [{ transform: `translate(${tile.x}px, ${tile.y}px)`, opacity: 1 },
+       { transform: `translate(${tile.x}px, ${tile.y + 420}px) rotate(${(c - 1) * 8}deg)`, opacity: 0 }],
+      { duration: 520, delay: (2 - r) * 60 + c * 30, easing: 'cubic-bezier(.5,0,.9,.4)', fill: 'forwards' }).finished));
+    all.forEach(({ tile }) => tile.el.remove());
+    cols.forEach(col => col.length = 0);
+    if (over) { lines = 0; hint.innerHTML = 'Stack overflow — try again'; }
+    waitUntil = t() + 500;
+    phase = 'play';
+  }
+  function gameOver() { clearAll(true); }
+
+  // Input: cursor column steers, click / tap / ↓ / space drops fast, ← → also steer.
+  function colFromEvent(e) {
+    const rect = stage.getBoundingClientRect();
+    return nearestCol((e.clientX - rect.left) / scale - S / 2);
+  }
+  stage.addEventListener('pointermove', e => {
+    lastUser = t(); userCol = colFromEvent(e);
+    if (!lines && phase === 'play') hint.innerHTML = 'Fill a row to clear it';
+  });
+  stage.addEventListener('pointerdown', e => { lastUser = t(); userCol = colFromEvent(e); if (piece) piece.fast = true; });
+  addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') { lastUser = t(); userCol = Math.max(0, (piece ? piece.target : userCol) - 1); }
+    else if (e.key === 'ArrowRight') { lastUser = t(); userCol = Math.min(2, (piece ? piece.target : userCol) + 1); }
+    else if (e.key === 'ArrowDown' || e.key === ' ') { lastUser = t(); if (piece) piece.fast = true; e.preventDefault(); }
+  });
+
+  let prev = t();
+  function frame(now) {
+    const dt = Math.min(0.033, (now - prev) / 1000); prev = now;
+    step(dt);
+    requestAnimationFrame(frame);
+  }
+  waitUntil = t() + 400;
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

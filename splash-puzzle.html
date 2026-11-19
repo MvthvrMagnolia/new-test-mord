@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pcl. One — Splash (Puzzle)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14352d;
+    --teal: #00907a;
+    --dark: #1e4f40;
+    --mid: #2e8268;
+    --light: #3ba584;
+    --accent: #3dbb8f;
+    --ink: #ffffff;
+    --muted: #a9c2b8;
+    --rule: #4b6b61;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    font-family: Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .stage {
+    position: relative;
+    width: 747px;
+    height: 810px;
+    transform-origin: center center;
+    flex: none;
+    cursor: default;
+    touch-action: none;
+    user-select: none;
+  }
+  .brand { position: absolute; left: 39px; top: 32px; display: flex; align-items: center; gap: 18px; }
+  .pcl { font-family: Poppins, sans-serif; font-weight: 600; font-size: 29px; color: var(--ink); letter-spacing: -0.5px; }
+  .divider { width: 1px; height: 34px; background: var(--rule); }
+  .one { font-family: Poppins, sans-serif; font-weight: 500; font-size: 26px; color: var(--accent); line-height: 1; }
+  .ent { font-size: 12.5px; font-weight: 600; letter-spacing: 2.6px; color: var(--muted); opacity: .85; margin-top: 8px; }
+
+  .tile {
+    position: absolute; left: 0; top: 0;
+    width: 96px; height: 96px; border-radius: 9px;
+    transition: transform 280ms cubic-bezier(.2,.9,.25,1.15), filter 300ms;
+    will-change: transform;
+  }
+  .tile.no-anim { transition: none; }
+  .tile.glow { animation: glow 900ms ease-out both; }
+  @keyframes glow {
+    0% { filter: brightness(1); }
+    35% { filter: brightness(1.45) saturate(1.15); box-shadow: 0 0 28px rgba(61,187,143,.45); }
+    100% { filter: brightness(1); }
+  }
+  .slot {
+    position: absolute; width: 96px; height: 96px; border-radius: 9px;
+    border: 1px dashed rgba(169,194,184,.10);
+    opacity: 0; transition: opacity 400ms;
+  }
+  .stage.scrambled .slot { opacity: 1; }
+
+  h1 {
+    position: absolute; left: 39px; top: 612px;
+    font-family: Poppins, sans-serif; font-weight: 600;
+    font-size: 36px; line-height: 50px; color: var(--ink); letter-spacing: -0.4px;
+  }
+  .sub { position: absolute; left: 39px; top: 734px; font-size: 18px; color: var(--muted); }
+
+  .hint {
+    position: absolute; right: 39px; top: 46px;
+    font-size: 12px; letter-spacing: .4px; color: var(--muted);
+    border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px;
+    transition: opacity 600ms;
+  }
+  .hint.hide { opacity: 0; }
+  .nav { position: fixed; right: 16px; bottom: 14px; font: 12px Inter, sans-serif; color: var(--muted); }
+  .nav a { color: var(--accent); text-decoration: none; }
+
+  @media (prefers-reduced-motion: reduce) { .tile { transition: none; } .tile.glow { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="stage scrambled" id="stage">
+    <div class="brand">
+      <span class="pcl">pcl.</span>
+      <span class="divider"></span>
+      <div><div class="one">One</div><div class="ent">ENTERPRISE</div></div>
+    </div>
+    <div class="hint" id="hint">Move your cursor through the tiles</div>
+    <h1>One place for how we<br>plan, perform and grow.</h1>
+    <p class="sub">Phillips Consulting, in one enterprise workspace.</p>
+  </div>
+  <div class="nav">Splash 1 of 2 · <a href="splash-tetris.html">next →</a></div>
+
+<script>
+(() => {
+  const W = 747, H = 810;
+  const COLS = 5, ROWS = 3;            // 5x3 slot board; the logo uses columns 0, 2, 4
+  const X0 = 39, PX = 119.5, Y0 = 240, PY = 108, S = 96;
+  const COLORS = { teal: 'var(--teal)', dark: 'var(--dark)', mid: 'var(--mid)', light: 'var(--light)' };
+  const HOME = [
+    [0,0,'teal'], [0,2,'dark'],  [0,4,'mid'],
+    [1,0,'dark'], [1,2,'light'], [1,4,'dark'],
+    [2,0,'mid'],  [2,2,'dark'],  [2,4,'teal'],
+  ];
+  const stage = document.getElementById('stage');
+  const hint = document.getElementById('hint');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Fit the fixed-size stage into the viewport.
+  let scale = 1;
+  function fit() {
+    scale = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = `scale(${scale})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(-1));
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const s = document.createElement('div');
+    s.className = 'slot';
+    s.style.transform = `translate(${X0 + c * PX}px, ${Y0 + r * PY}px)`;
+    stage.appendChild(s);
+  }
+
+  const tiles = HOME.map(([r, c, color], i) => {
+    const el = document.createElement('div');
+    el.className = 'tile no-anim';
+    el.style.background = COLORS[color];
+    stage.appendChild(el);
+    return { i, hr: r, hc: c, color, r: -1, c: -1, el, busyUntil: 0 };
+  });
+
+  const place = t => { t.el.style.transform = `translate(${X0 + t.c * PX}px, ${Y0 + t.r * PY}px)`; };
+  const now = () => performance.now();
+  const inBounds = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS;
+  const isEmpty = (r, c) => inBounds(r, c) && grid[r][c] === -1;
+  // Tiles of the same colour are interchangeable, so a slot counts as "home" for any tile of that colour.
+  const homeColorAt = (r, c) => { const h = HOME.find(h => h[0] === r && h[1] === c); return h ? h[2] : null; };
+  const isHome = t => homeColorAt(t.r, t.c) === t.color;
+  const solved = () => tiles.every(isHome);
+
+  function moveTo(t, r, c) {
+    grid[t.r][t.c] = -1;
+    grid[r][c] = t.i;
+    t.prev = [t.r, t.c];
+    t.r = r; t.c = c;
+    t.busyUntil = now() + 240;
+    place(t);
+  }
+  function nudge(t, dr, dc) {
+    if (reduce) return;
+    const x = X0 + t.c * PX, y = Y0 + t.r * PY;
+    t.el.animate([
+      { transform: `translate(${x}px, ${y}px)` },
+      { transform: `translate(${x + dc * 7}px, ${y + dr * 7}px)` },
+      { transform: `translate(${x}px, ${y}px)` },
+    ], { duration: 220, easing: 'ease-out' });
+    t.busyUntil = now() + 220;
+  }
+
+  // Start scrambled: tiles placed in random slots, then the idle solver assembles the logo.
+  const slots = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) slots.push([r, c]);
+  slots.sort(() => Math.random() - 0.5);
+  tiles.forEach((t, k) => { const [r, c] = slots[k]; t.r = r; t.c = c; grid[r][c] = t.i; place(t); });
+  if (reduce) {
+    tiles.forEach(t => { grid[t.r][t.c] = -1; });
+    tiles.forEach(t => { t.r = t.hr; t.c = t.hc; grid[t.r][t.c] = t.i; place(t); });
+  }
+  requestAnimationFrame(() => requestAnimationFrame(() => tiles.forEach(t => t.el.classList.remove('no-anim'))));
+
+  // Pointer pushes tiles away, one slot at a time, like sliding-block pieces.
+  let lastUser = now() - 500, interacted = false;
+  function toStage(e) {
+    const rect = stage.getBoundingClientRect();
+    return [(e.clientX - rect.left) / scale, (e.clientY - rect.top) / scale];
+  }
+  function push(px, py, force) {
+    const t0 = now();
+    let best = null, bestD = Infinity;
+    for (const t of tiles) {
+      const cx = X0 + t.c * PX + S / 2, cy = Y0 + t.r * PY + S / 2;
+      const dx = cx - px, dy = cy - py;
+      if (Math.abs(dx) > S / 2 + 12 || Math.abs(dy) > S / 2 + 12) continue;
+      const d = Math.hypot(dx, dy);
+      if (d < bestD) { bestD = d; best = { t, dx, dy }; }
+    }
+    if (!best || best.t.busyUntil > t0) return;
+    const { t, dx, dy } = best;
+    const sx = Math.sign(dx) || (Math.random() < .5 ? -1 : 1);
+    const sy = Math.sign(dy) || (Math.random() < .5 ? -1 : 1);
+    const horizFirst = Math.abs(dx) / PX >= Math.abs(dy) / PY;
+    const options = horizFirst ? [[0, sx], [sy, 0], [-sy, 0], [0, -sx]] : [[sy, 0], [0, sx], [0, -sx], [-sy, 0]];
+    // Moving straight away is preferred; sideways only on click/tap; never back toward the cursor on hover.
+    const allowed = force ? options : options.slice(0, 2);
+    for (const [dr, dc] of allowed) {
+      if (isEmpty(t.r + dr, t.c + dc)) { moveTo(t, t.r + dr, t.c + dc); afterUserMove(); return; }
+    }
+    const [dr, dc] = options[0];
+    nudge(t, dr, dc);
+  }
+  function afterUserMove() {
+    stage.classList.add('scrambled');
+    if (!interacted) { interacted = true; hint.textContent = 'Let go — it rebuilds itself'; }
+  }
+  stage.addEventListener('pointermove', e => { lastUser = now(); const [x, y] = toStage(e); push(x, y, false); });
+  stage.addEventListener('pointerdown', e => { lastUser = now(); const [x, y] = toStage(e); push(x, y, true); });
+
+  // Idle solver: when the cursor rests, an A* planner finds the shortest sequence of
+  // slides back to the logo and the tiles play it out one step at a time.
+  const N = ROWS * COLS;
+  const GOAL = Array(N).fill('.');
+  HOME.forEach(([r, c, color]) => { GOAL[r * COLS + c] = color[0]; });
+  const HOMES = {};
+  GOAL.forEach((ch, k) => { if (ch !== '.') (HOMES[ch] = HOMES[ch] || []).push(k); });
+  const NEIGH = Array.from({ length: N }, (_, k) => {
+    const r = Math.floor(k / COLS), c = k % COLS, out = [];
+    if (r > 0) out.push(k - COLS); if (r < ROWS - 1) out.push(k + COLS);
+    if (c > 0) out.push(k - 1); if (c < COLS - 1) out.push(k + 1);
+    return out;
+  });
+  const perms = n => n <= 1 ? [[0]].slice(0, n || 1) : perms(n - 1).flatMap(p => Array.from({ length: n }, (_, i) => [...p.slice(0, i), n - 1, ...p.slice(i)]));
+  const PERMS = { 1: perms(1), 2: perms(2), 4: perms(4) };
+  const md = (a, b) => Math.abs(Math.floor(a / COLS) - Math.floor(b / COLS)) + Math.abs(a % COLS - b % COLS);
+  function heuristic(st) {
+    let h = 0;
+    for (const ch in HOMES) {
+      const pos = [];
+      for (let k = 0; k < N; k++) if (st[k] === ch) pos.push(k);
+      const homes = HOMES[ch];
+      let best = Infinity;
+      for (const p of PERMS[homes.length]) {
+        let s = 0;
+        for (let i = 0; i < p.length; i++) s += md(pos[i], homes[p[i]]);
+        if (s < best) best = s;
+      }
+      h += best;
+    }
+    return h;
+  }
+  function plan() {
+    const start = Array(N).fill('.');
+    tiles.forEach(t => { start[t.r * COLS + t.c] = t.color[0]; });
+    const goalKey = GOAL.join(''), startKey = start.join('');
+    const heap = [], push = (f, key) => {
+      heap.push([f, key]); let i = heap.length - 1;
+      while (i > 0) { const p = (i - 1) >> 1; if (heap[p][0] <= heap[i][0]) break; [heap[p], heap[i]] = [heap[i], heap[p]]; i = p; }
+    }, pop = () => {
+      const top = heap[0], last = heap.pop();
+      if (heap.length) { heap[0] = last; let i = 0;
+        for (;;) { const l = 2 * i + 1, r = l + 1; let m = i;
+          if (l < heap.length && heap[l][0] < heap[m][0]) m = l;
+          if (r < heap.length && heap[r][0] < heap[m][0]) m = r;
+          if (m === i) break; [heap[m], heap[i]] = [heap[i], heap[m]]; i = m; } }
+      return top;
+    };
+    const g = new Map([[startKey, 0]]), parent = new Map([[startKey, null]]);
+    push(heuristic(start), startKey);
+    let expanded = 0;
+    while (heap.length && expanded++ < 60000) {
+      const [, key] = pop();
+      if (key === goalKey) {
+        const moves = [];
+        for (let k = key; parent.get(k); k = parent.get(k)[0]) moves.unshift(parent.get(k)[1]);
+        return moves;
+      }
+      const st = key.split(''), gk = g.get(key);
+      for (let from = 0; from < N; from++) {
+        if (st[from] === '.') continue;
+        for (const to of NEIGH[from]) {
+          if (st[to] !== '.') continue;
+          st[to] = st[from]; st[from] = '.';
+          const nk = st.join('');
+          if (!g.has(nk) || g.get(nk) > gk + 1) {
+            g.set(nk, gk + 1); parent.set(nk, [key, [from, to]]);
+            push(gk + 1 + 1.4 * heuristic(st), nk);
+          }
+          st[from] = st[to]; st[to] = '.';
+        }
+      }
+    }
+    return null;
+  }
+
+  let queue = null;
+  function solverStep() {
+    if (now() - lastUser < 1400) { queue = null; return; }
+    if (solved()) { queue = null; return; }
+    if (!queue || !queue.length) queue = plan();
+    if (!queue) { randomStep(); return; }
+    const [from, to] = queue[0];
+    const fr = Math.floor(from / COLS), fc = from % COLS, tr = Math.floor(to / COLS), tc = to % COLS;
+    if (grid[fr][fc] === -1 || grid[tr][tc] !== -1) { queue = null; return; }
+    const t = tiles[grid[fr][fc]];
+    if (t.busyUntil > now()) return;
+    queue.shift();
+    moveTo(t, tr, tc);
+    if (solved()) setTimeout(celebrate, 300);
+  }
+  function randomStep() {
+    const opts = [];
+    for (const t of tiles) for (const k of NEIGH[t.r * COLS + t.c]) {
+      const r = Math.floor(k / COLS), c = k % COLS;
+      if (isEmpty(r, c)) opts.push([t, r, c]);
+    }
+    if (opts.length) { const [t, r, c] = opts[Math.floor(Math.random() * opts.length)]; moveTo(t, r, c); }
+  }
+  function celebrate() {
+    stage.classList.remove('scrambled');
+    if (interacted) hint.classList.add('hide');
+    tiles.forEach(t => {
+      t.el.classList.remove('glow');
+      void t.el.offsetWidth;
+      t.el.style.animationDelay = `${(t.r + t.c / 2) * 110}ms`;
+      t.el.classList.add('glow');
+    });
+    setTimeout(() => { if (interacted) { hint.textContent = 'Move your cursor through the tiles'; hint.classList.remove('hide'); interacted = false; } }, 5000);
+  }
+  setInterval(solverStep, 130);
+})();
+</script>
+</body>
+</html>
