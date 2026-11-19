@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPI Rating Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #f4f5f4;
+    --surface: #ffffff;
+    --inset: #f7f9f8;
+    --ink: #111816;
+    --muted: #66706c;
+    --line: #e6e9e8;
+    --brand: #00907a;
+    --brand-soft: #e3f4ef;
+    --brand-ink: #0b5e50;
+    --track: #e4e8e6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    font-family: Roboto, system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 16px;
+  }
+
+  .card {
+    max-width: 880px; margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  /* Header: title + one-line description, progress chip on the right */
+  .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  h2 { font-size: 20px; font-weight: 700; letter-spacing: -.2px; }
+  .desc { margin-top: 6px; font-size: 14.5px; color: var(--muted); line-height: 1.5; }
+  .desc a { color: var(--brand-ink); text-decoration: none; font-weight: 500; white-space: nowrap; }
+  .desc a:hover { text-decoration: underline; }
+  .chip {
+    flex: none; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    padding: 6px 10px; border-radius: 999px; background: var(--inset); border: 1px solid var(--line);
+  }
+  .chip svg { color: var(--brand); }
+
+  /* Rating panel */
+  .rating {
+    margin-top: 22px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    padding: 20px 22px;
+    background: var(--inset);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .score-block { flex: 1; min-width: 0; max-width: 360px; }
+  .label { font-size: 12px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .score { margin-top: 4px; display: flex; align-items: baseline; gap: 6px; }
+  .score strong { font-size: 34px; font-weight: 700; letter-spacing: -.8px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .score span { font-size: 15px; color: var(--muted); }
+  .bar { margin-top: 12px; height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: inherit; background: var(--brand); }
+
+  .band {
+    flex: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 500; color: var(--brand-ink);
+    background: var(--brand-soft);
+    padding: 9px 14px; border-radius: 999px;
+  }
+  .band::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+
+  .saved {
+    margin-top: 12px; display: flex; justify-content: flex-end; align-items: center; gap: 6px;
+    font-size: 12.5px; color: var(--muted);
+  }
+  .saved svg { color: var(--brand); }
+
+  @media (max-width: 560px) {
+    .card { padding: 20px; }
+    .head { flex-direction: column; gap: 12px; }
+    .rating { flex-direction: column; align-items: flex-start; }
+    .score-block { max-width: none; width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <section class="card" aria-labelledby="kpi-title">
+    <header class="head">
+      <div>
+        <h2 id="kpi-title">KPIs</h2>
+        <p class="desc">Rate each locked KPI from 1 to 5. <a href="#help">How scoring works</a></p>
+      </div>
+      <span class="chip">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M5 8.2l2 2 4-4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        3 of 3 rated
+      </span>
+    </header>
+
+    <div class="rating">
+      <div class="score-block">
+        <div class="label">Preview score</div>
+        <div class="score"><strong>2.95</strong><span>/ 5.00</span></div>
+        <div class="bar" role="meter" aria-valuemin="0" aria-valuemax="5" aria-valuenow="2.95" aria-label="Preview score"><i style="width: 59%"></i></div>
+      </div>
+      <span class="band">Meets Expectations</span>
+    </div>
+
+    <div class="saved">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Ratings saved
+    </div>
+  </section>
+</body>
+</html>
