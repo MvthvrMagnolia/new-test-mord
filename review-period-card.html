@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review Period Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #edf4f1;
+    --surface: #ffffff;
+    --ink: #111816;
+    --muted: #66706c;
+    --line: #e3e9e6;
+    --brand: #00907a;
+    --brand-soft: #e3f4ef;
+    --brand-ink: #0b5e50;
+    --track: #e4e8e6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    font-family: Roboto, system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 16px;
+  }
+
+  .card {
+    max-width: 1100px; margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 32px;
+  }
+
+  .title-row { display: flex; align-items: center; gap: 10px; }
+  .eyebrow { font-size: 12px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  h2 { margin-top: 4px; font-family: Poppins, sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -.3px; }
+  .status {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 500; color: var(--brand-ink);
+    background: var(--brand-soft); padding: 4px 10px; border-radius: 999px;
+  }
+  .status::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand);
+    box-shadow: 0 0 0 3px rgba(0,144,122,.18);
+  }
+  .dates { margin-top: 6px; font-size: 14.5px; color: var(--muted); }
+
+  .time { flex: none; width: 260px; }
+  .time-top { display: flex; align-items: baseline; justify-content: space-between; }
+  .days strong { font-size: 28px; font-weight: 700; letter-spacing: -.6px; font-variant-numeric: tabular-nums; }
+  .days span { margin-left: 4px; font-size: 14px; color: var(--muted); }
+  .pct { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { margin-top: 10px; height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: inherit; background: var(--brand); }
+
+  @media (max-width: 640px) {
+    .card { flex-direction: column; align-items: stretch; gap: 20px; padding: 20px; }
+    .time { width: auto; }
+  }
+</style>
+</head>
+<body>
+  <section class="card" aria-labelledby="period-title">
+    <div>
+      <div class="eyebrow">Current review period</div>
+      <div class="title-row">
+        <h2 id="period-title">H2 2026</h2>
+        <span class="status">Active</span>
+      </div>
+      <p class="dates">1 July – 31 December 2026</p>
+    </div>
+
+    <div class="time">
+      <div class="time-top">
+        <div class="days"><strong>40</strong><span>days left</span></div>
+        <div class="pct">78% elapsed</div>
+      </div>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="78" aria-label="Review period elapsed"><i style="width: 78%"></i></div>
+    </div>
+  </section>
+</body>
+</html>
