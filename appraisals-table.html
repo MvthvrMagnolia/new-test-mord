@@ -67,6 +67,8 @@
   }
   tbody td.first { background: var(--surface); font-weight: 500; white-space: normal; min-width: 200px; }
   td.total { font-weight: 700; }
+  thead th.total-h { color: var(--ink); }
+  td.total, th.total-h, tfoot td:last-child { padding-left: 16px; padding-right: 20px; }
   @media (max-width: 600px) { tbody td.first { min-width: 150px; } td.first, th.first { padding-left: 14px; padding-right: 10px; } }
 
   .zero { color: var(--faint); }
@@ -147,27 +149,28 @@
   document.getElementById('tbl').innerHTML = `
     <thead>
       <tr class="groups">
-        <th class="first"></th><th></th>
+        <th class="first"></th>
         ${GROUPS.map(g => `<th class="g" colspan="${g.cols.length}">${g.label}</th>`).join('')}
+        <th class="g"></th>
       </tr>
       <tr class="cols">
         <th class="first" scope="col">Pillar</th>
-        <th scope="col">Total</th>
         ${COLS.map(c => `<th scope="col"${c.groupStart ? ' class="g-start"' : ''}${c.title ? ` title="${esc(c.title)}"` : ''}>${c.label}</th>`).join('')}
+        <th scope="col" class="g-start total-h">Total</th>
       </tr>
     </thead>
     <tbody>
       ${ROWS.map(r => `<tr>
         <td class="first">${esc(r.pillar)}</td>
-        <td class="total">${total(r)}</td>
         ${COLS.map(c => cell(r[c.key], c)).join('')}
+        <td class="g-start total">${total(r)}</td>
       </tr>`).join('')}
     </tbody>
     <tfoot>
       <tr>
         <td class="first">Firmwide</td>
-        <td>${total(firmwide)}</td>
         ${COLS.map(c => cell(firmwide[c.key], c, true)).join('')}
+        <td class="g-start">${total(firmwide)}</td>
       </tr>
     </tfoot>`;
 </script>
