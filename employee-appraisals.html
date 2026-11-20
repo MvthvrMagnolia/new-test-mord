@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employee Appraisals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #edf4f1;
+    --surface: #ffffff;
+    --inset: #f7f9f8;
+    --ink: #111816;
+    --muted: #66706c;
+    --faint: #b4bbb8;
+    --line: #e6ebe9;
+    --brand: #00907a;
+    --brand-soft: #e3f4ef;
+    --brand-ink: #0b5e50;
+    --warn: #d98a12;
+    --warn-soft: #fdf0dc;
+    --warn-ink: #8a5300;
+    --info: #3b6fd4;
+    --info-soft: #e8effc;
+    --info-ink: #24499a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    font-family: Roboto, system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    padding: 32px 16px;
+  }
+  .card { max-width: 1200px; margin: 0 auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .scroll { overflow-x: auto; border-radius: 14px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; }
+
+  thead th {
+    position: sticky; top: 0; z-index: 2;
+    text-align: left; font-size: 12px; font-weight: 500; letter-spacing: .3px; color: var(--muted);
+    background: var(--inset); padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  thead th:first-child { padding-left: 20px; }
+  tbody td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 14px; }
+  tbody td:first-child { padding-left: 20px; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: #fafcfb; }
+
+  /* Employee */
+  .who { display: flex; align-items: center; gap: 12px; min-width: 260px; max-width: 380px; }
+  .avatar {
+    flex: none; width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 12.5px; font-weight: 600;
+    color: var(--brand-ink); background: var(--brand-soft);
+  }
+  .name { font-weight: 500; font-size: 14.5px; }
+  .unit { margin-top: 2px; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .who > div { min-width: 0; }
+
+  /* Status */
+  .status-cell { position: relative; white-space: nowrap; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 500; padding: 4px 10px; border-radius: 999px;
+    color: var(--muted); background: var(--inset); border: 1px solid var(--line);
+  }
+  .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--faint); }
+  .pill.warn { color: var(--warn-ink); background: var(--warn-soft); border-color: transparent; }
+  .pill.warn::before { background: var(--warn); }
+  .pill.info { color: var(--info-ink); background: var(--info-soft); border-color: transparent; }
+  .pill.info::before { background: var(--info); }
+  .pill.ok { color: var(--brand-ink); background: var(--brand-soft); border-color: transparent; }
+  .pill.ok::before { background: var(--brand); }
+  .pill.quiet { background: transparent; border-style: dashed; }
+
+  .why {
+    appearance: none; border: 0; background: none; cursor: pointer;
+    margin-left: 6px; width: 22px; height: 22px; border-radius: 50%;
+    display: inline-grid; place-items: center; vertical-align: middle; color: var(--warn-ink);
+  }
+  .why:hover, .why[aria-expanded="true"] { background: var(--warn-soft); }
+  .pop {
+    position: fixed; z-index: 10; width: 260px;   /* fixed so the table's scroll box never clips it */
+    padding: 12px 14px; border-radius: 10px; background: var(--surface);
+    border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(17,24,22,.12);
+    font-size: 13px; line-height: 1.5; color: var(--ink); white-space: normal;
+  }
+  .pop b { display: block; font-size: 11.5px; font-weight: 500; letter-spacing: .5px; text-transform: uppercase; color: var(--warn-ink); margin-bottom: 4px; }
+
+  /* Score + recommendations */
+  .dash { color: var(--faint); }
+  .score { white-space: nowrap; }
+  .score strong { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .score span { font-size: 12.5px; color: var(--muted); }
+  .band { margin-top: 3px; font-size: 12px; font-weight: 500; color: var(--brand-ink); }
+  .rec { font-size: 13.5px; }
+
+  @media (max-width: 600px) {
+    .who { min-width: 190px; max-width: 210px; }
+    .avatar { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>Employee</th><th>Status</th><th>Score</th><th>Line manager</th><th>Pillar Lead</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+  // Status → pill tone. Anything not listed shows as a neutral pill.
+  const TONE = {
+    'Not participating': 'quiet',
+    'Not started': '',
+    'Blocked': 'warn',
+    'Self-rating': 'info', 'Line manager review': 'info', 'Pillar Lead review': 'info',
+    'Back with Pillar Lead': 'warn', 'EXCO review': 'info',
+    'Locked, ready to send': 'ok', 'Complete': 'ok',
+  };
+
+  // Sample rows from the screenshot. `blockedReason` is placeholder text: wire it to the real reason.
+  const ROWS = [
+    { name: 'Ifeoma Nwachukwu', unit: "Chairman's Office", status: 'Not participating' },
+    { name: 'Funke Ajayi', unit: 'Client Market Engine / Public Sector', status: 'Blocked',
+      blockedReason: 'KPIs have not been locked for this review period.' },
+    { name: 'Tari Benson', unit: 'Client Market Engine', status: 'Not participating' },
+    { name: 'Amina Bello', unit: 'Data, Digital & Platforms Engine / Platforms, Products & IP Development', status: 'Blocked',
+      blockedReason: 'No line manager is assigned yet.' },
+    { name: 'Bolaji Adenuga', unit: 'Data, Digital & Platforms Engine / Data, Analytics & Intelligence Systems', status: 'Not started' },
+    { name: 'Chinonso Nwabuisi', unit: 'Data, Digital & Platforms Engine / Data, Analytics & Intelligence Systems', status: 'EXCO review',
+      score: 4.00, band: 'Exceeds Expectations', lineManager: 'Performance improvement plan', pillarLead: 'Promotion' },
+  ];
+
+  const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+  const initials = n => n.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  const unitText = u => u.replace(/\s\/\s/g, ' · ');
+  const dash = '<span class="dash" aria-label="Pending">—</span>';
+  const infoIcon = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="5" r=".9" fill="currentColor"/></svg>';
+
+  document.getElementById('rows').innerHTML = ROWS.map((r, i) => `
+    <tr>
+      <td>
+        <div class="who">
+          <span class="avatar" aria-hidden="true">${initials(r.name)}</span>
+          <div>
+            <div class="name">${esc(r.name)}</div>
+            <div class="unit" title="${esc(r.unit)}">${esc(unitText(r.unit))}</div>
+          </div>
+        </div>
+      </td>
+      <td class="status-cell">
+        <span class="pill ${TONE[r.status] ?? ''}">${esc(r.status)}</span>${r.blockedReason ? `<button class="why" aria-expanded="false" aria-controls="why-${i}" aria-label="Why is ${esc(r.name)} blocked?">${infoIcon}</button>
+        <div class="pop" id="why-${i}" hidden><b>Why it's blocked</b>${esc(r.blockedReason)}</div>` : ''}
+      </td>
+      <td>${r.score != null
+        ? `<div class="score"><strong>${r.score.toFixed(2)}</strong> <span>/ 5.00</span></div>${r.band ? `<div class="band">${esc(r.band)}</div>` : ''}`
+        : dash}</td>
+      <td class="rec">${r.lineManager ? esc(r.lineManager) : dash}</td>
+      <td class="rec">${r.pillarLead ? esc(r.pillarLead) : dash}</td>
+    </tr>`).join('');
+
+  // One reason open at a time; Escape or a click elsewhere closes it.
+  const closeAll = except => document.querySelectorAll('.why[aria-expanded="true"]').forEach(b => {
+    if (b === except) return;
+    b.setAttribute('aria-expanded', 'false');
+    document.getElementById(b.getAttribute('aria-controls')).hidden = true;
+  });
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.why');
+    if (!btn) { if (!e.target.closest('.pop')) closeAll(); return; }
+    closeAll(btn);
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    btn.setAttribute('aria-expanded', String(open));
+    const pop = document.getElementById(btn.getAttribute('aria-controls'));
+    pop.hidden = !open;
+    if (open) {
+      const r = btn.getBoundingClientRect(), h = pop.offsetHeight;
+      const below = r.bottom + 6 + h < innerHeight;
+      pop.style.top = (below ? r.bottom + 6 : r.top - 6 - h) + 'px';
+      pop.style.left = Math.max(8, Math.min(r.left - 100, innerWidth - 268)) + 'px';
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+  addEventListener('scroll', () => closeAll(), true);
+  addEventListener('resize', () => closeAll());
+</script>
+</body>
+</html>
