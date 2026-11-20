@@ -34,34 +34,56 @@
     -webkit-font-smoothing: antialiased;
     padding: 32px 16px;
   }
-  .card { max-width: 1200px; margin: 0 auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+
+  /* Selects */
+  .select {
+    appearance: none; -webkit-appearance: none;
+    font: 500 14px Roboto, sans-serif; color: var(--ink);
+    background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%2366706c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 9px 36px 9px 12px; cursor: pointer;
+  }
+  .select:hover { border-color: #cfd8d4; }
+  .select:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .select:disabled { cursor: default; color: var(--faint); }
+
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .toolbar .select { min-width: 200px; }
+  .count { margin-left: auto; font-size: 13px; color: var(--muted); }
+
+  /* Table */
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
   .scroll { overflow-x: auto; border-radius: 14px; }
   table { width: 100%; border-collapse: separate; border-spacing: 0; }
-
   thead th {
-    position: sticky; top: 0; z-index: 2;
     text-align: left; font-size: 12px; font-weight: 500; letter-spacing: .3px; color: var(--muted);
-    background: var(--inset); padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap;
+    background: var(--inset); padding: 10px 16px; border-bottom: 1px solid var(--line); white-space: nowrap;
+    vertical-align: middle;
   }
   thead th:first-child { padding-left: 20px; }
+  .as { margin-left: 4px; color: var(--faint); font-weight: 400; }
+  th.role-h { padding-top: 6px; padding-bottom: 6px; }
+  .role-select {
+    font-size: 12.5px; padding: 6px 30px 6px 10px; border-radius: 8px;
+    background-position: right 9px center; color: var(--brand-ink);
+    border-color: rgba(0,144,122,.35); background-color: var(--brand-soft);
+  }
+  th.act, td.act { width: 56px; text-align: center; padding-left: 8px; padding-right: 12px; }
+
   tbody td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 14px; }
   tbody td:first-child { padding-left: 20px; }
   tbody tr:last-child td { border-bottom: 0; }
   tbody tr:hover td { background: #fafcfb; }
+  tbody tr.off .name { color: var(--muted); }
 
-  /* Employee */
-  .who { display: flex; align-items: center; gap: 12px; min-width: 260px; max-width: 380px; }
-  .avatar {
-    flex: none; width: 34px; height: 34px; border-radius: 50%;
-    display: grid; place-items: center; font-size: 12.5px; font-weight: 600;
-    color: var(--brand-ink); background: var(--brand-soft);
-  }
+  .who { display: flex; align-items: center; gap: 12px; min-width: 240px; max-width: 360px; }
+  .who > div { min-width: 0; }
+  .avatar { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 12.5px; font-weight: 600; color: var(--brand-ink); background: var(--brand-soft); }
   .name { font-weight: 500; font-size: 14.5px; }
   .unit { margin-top: 2px; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .who > div { min-width: 0; }
 
-  /* Status */
-  .status-cell { position: relative; white-space: nowrap; }
+  .status-cell { white-space: nowrap; }
   .pill {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 12.5px; font-weight: 500; padding: 4px 10px; border-radius: 999px;
@@ -76,21 +98,30 @@
   .pill.ok::before { background: var(--brand); }
   .pill.quiet { background: transparent; border-style: dashed; }
 
-  .why {
+  .icon-btn {
     appearance: none; border: 0; background: none; cursor: pointer;
-    margin-left: 6px; width: 22px; height: 22px; border-radius: 50%;
-    display: inline-grid; place-items: center; vertical-align: middle; color: var(--warn-ink);
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-grid; place-items: center; vertical-align: middle; color: var(--muted);
   }
-  .why:hover, .why[aria-expanded="true"] { background: var(--warn-soft); }
-  .pop {
-    position: fixed; z-index: 10; width: 260px;   /* fixed so the table's scroll box never clips it */
-    padding: 12px 14px; border-radius: 10px; background: var(--surface);
-    border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(17,24,22,.12);
-    font-size: 13px; line-height: 1.5; color: var(--ink); white-space: normal;
-  }
-  .pop b { display: block; font-size: 11.5px; font-weight: 500; letter-spacing: .5px; text-transform: uppercase; color: var(--warn-ink); margin-bottom: 4px; }
+  .icon-btn:hover, .icon-btn[aria-expanded="true"] { background: var(--inset); color: var(--ink); }
+  .why { margin-left: 4px; width: 22px; height: 22px; color: var(--warn-ink); }
+  .why:hover, .why[aria-expanded="true"] { background: var(--warn-soft); color: var(--warn-ink); }
 
-  /* Score + recommendations */
+  .pop {
+    position: fixed; z-index: 10;          /* fixed so the table's scroll box never clips it */
+    border-radius: 10px; background: var(--surface);
+    border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(17,24,22,.12);
+    font-size: 13px; line-height: 1.5; color: var(--ink); white-space: normal; text-align: left;
+  }
+  .pop.reason { width: 260px; padding: 12px 14px; }
+  .pop.reason b { display: block; font-size: 11.5px; font-weight: 500; letter-spacing: .5px; text-transform: uppercase; color: var(--warn-ink); margin-bottom: 4px; }
+  .pop.menu { min-width: 180px; padding: 6px; }
+  .pop.menu button {
+    appearance: none; border: 0; background: none; cursor: pointer; width: 100%; text-align: left;
+    font: 14px Roboto, sans-serif; color: var(--ink); padding: 8px 10px; border-radius: 6px;
+  }
+  .pop.menu button:hover { background: var(--inset); }
+
   .dash { color: var(--faint); }
   .score { white-space: nowrap; }
   .score strong { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -98,100 +129,170 @@
   .band { margin-top: 3px; font-size: 12px; font-weight: 500; color: var(--brand-ink); }
   .rec { font-size: 13.5px; }
 
+  .empty td { text-align: center; padding: 40px 16px; color: var(--muted); }
+
   @media (max-width: 600px) {
+    .toolbar .select { min-width: 0; flex: 1; }
+    .count { width: 100%; margin-left: 0; }
     .who { min-width: 190px; max-width: 210px; }
     .avatar { display: none; }
   }
 </style>
 </head>
 <body>
-  <div class="card">
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr><th>Employee</th><th>Status</th><th>Score</th><th>Line manager</th><th>Pillar Lead</th></tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
+  <div class="wrap">
+    <div class="toolbar">
+      <select class="select" id="pillar" aria-label="Pillar"></select>
+      <select class="select" id="sub" aria-label="Sub-pillar"></select>
+      <span class="count" id="count"></span>
+    </div>
+
+    <div class="card">
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th style="width: 210px">Status <span class="as" id="as-status"></span></th>
+              <th style="width: 190px">Score <span class="as" id="as-score"></span></th>
+              <th class="role-h" style="width: 260px">
+                <select class="select role-select" id="role" aria-label="Show status, score and recommendation from">
+                  <option value="lineManager">Line manager</option>
+                  <option value="pillarLead">Pillar Lead</option>
+                  <option value="final">Final</option>
+                </select>
+              </th>
+              <th class="act">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
 <script>
-  // Status → pill tone. Anything not listed shows as a neutral pill.
-  const TONE = {
-    'Not participating': 'quiet',
-    'Not started': '',
-    'Blocked': 'warn',
-    'Self-rating': 'info', 'Line manager review': 'info', 'Pillar Lead review': 'info',
-    'Back with Pillar Lead': 'warn', 'EXCO review': 'info',
-    'Locked, ready to send': 'ok', 'Complete': 'ok',
+  const ROLE_LABEL = { lineManager: 'Line manager', pillarLead: 'Pillar Lead', final: 'Final' };
+
+  // Workflow stages in order, and the stage at which each role's review is open.
+  const STAGES = ['Self-rating', 'Line manager review', 'Pillar Lead review', 'Back with Pillar Lead', 'EXCO review', 'Locked, ready to send', 'Complete'];
+  const ROLE_STAGES = {
+    lineManager: ['Line manager review'],
+    pillarLead: ['Pillar Lead review', 'Back with Pillar Lead'],
+    final: ['EXCO review'],
   };
 
-  // Sample rows from the screenshot. `blockedReason` is placeholder text: wire it to the real reason.
+  // Sample rows. `reviews` holds each role's score, rating level and recommendation once given.
+  // Placeholders to wire to real data: `blockedReason` text, Chinonso's rating level and Pillar Lead score.
   const ROWS = [
-    { name: 'Ifeoma Nwachukwu', unit: "Chairman's Office", status: 'Not participating' },
-    { name: 'Funke Ajayi', unit: 'Client Market Engine / Public Sector', status: 'Blocked',
+    { name: 'Ifeoma Nwachukwu', pillar: "Chairman's Office", status: 'Not participating' },
+    { name: 'Funke Ajayi', pillar: 'Client Market Engine', sub: 'Public Sector', status: 'Blocked',
       blockedReason: 'KPIs have not been locked for this review period.' },
-    { name: 'Tari Benson', unit: 'Client Market Engine', status: 'Not participating' },
-    { name: 'Amina Bello', unit: 'Data, Digital & Platforms Engine / Platforms, Products & IP Development', status: 'Blocked',
+    { name: 'Tari Benson', pillar: 'Client Market Engine', status: 'Not participating' },
+    { name: 'Amina Bello', pillar: 'Data, Digital & Platforms Engine', sub: 'Platforms, Products & IP Development', status: 'Blocked',
       blockedReason: 'No line manager is assigned yet.' },
-    { name: 'Bolaji Adenuga', unit: 'Data, Digital & Platforms Engine / Data, Analytics & Intelligence Systems', status: 'Not started' },
-    { name: 'Chinonso Nwabuisi', unit: 'Data, Digital & Platforms Engine / Data, Analytics & Intelligence Systems', status: 'EXCO review',
-      score: 4.00, band: 'Exceeds Expectations', lineManager: 'Performance improvement plan', pillarLead: 'Promotion' },
+    { name: 'Bolaji Adenuga', pillar: 'Data, Digital & Platforms Engine', sub: 'Data, Analytics & Intelligence Systems', status: 'Not started' },
+    { name: 'Chinonso Nwabuisi', pillar: 'Data, Digital & Platforms Engine', sub: 'Data, Analytics & Intelligence Systems', status: 'EXCO review',
+      reviews: {
+        lineManager: { score: 4.00, band: 'Exceeds Expectations', rec: 'Performance improvement plan' },
+        pillarLead:  { score: 4.00, band: 'Exceeds Expectations', rec: 'Promotion' },
+      } },
   ];
 
+  const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
   const initials = n => n.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
-  const unitText = u => u.replace(/\s\/\s/g, ' · ');
-  const dash = '<span class="dash" aria-label="Pending">—</span>';
-  const infoIcon = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="5" r=".9" fill="currentColor"/></svg>';
+  const dash = '<span class="dash" aria-label="None yet">—</span>';
+  const ICON_INFO = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="5" r=".9" fill="currentColor"/></svg>';
+  const ICON_MORE = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="3.5" r="1.4" fill="currentColor"/><circle cx="8" cy="8" r="1.4" fill="currentColor"/><circle cx="8" cy="12.5" r="1.4" fill="currentColor"/></svg>';
 
-  document.getElementById('rows').innerHTML = ROWS.map((r, i) => `
-    <tr>
-      <td>
-        <div class="who">
-          <span class="avatar" aria-hidden="true">${initials(r.name)}</span>
-          <div>
-            <div class="name">${esc(r.name)}</div>
-            <div class="unit" title="${esc(r.unit)}">${esc(unitText(r.unit))}</div>
+  // What the selected role shows for one employee: [status label, pill tone, review or null].
+  function roleView(r, role) {
+    if (r.status === 'Not participating') return ['Not participating', 'quiet', null];
+    if (r.status === 'Blocked') return ['Blocked', 'warn', null];
+    if (r.status === 'Not started') return ['Not started', '', null];
+    const review = r.reviews && r.reviews[role];
+    if (review) return ['Submitted', 'ok', review];
+    if (ROLE_STAGES[role].includes(r.status)) return ['Awaiting review', 'info', null];
+    const past = STAGES.indexOf(r.status) > STAGES.indexOf(ROLE_STAGES[role][ROLE_STAGES[role].length - 1]);
+    return past ? ['Submitted', 'ok', null] : ['Not yet', '', null];
+  }
+
+  // Filters: the sub-pillar list follows the chosen pillar.
+  const pillars = [...new Set(ROWS.map(r => r.pillar))];
+  $('pillar').innerHTML = '<option value="">All Pillars</option>' + pillars.map(p => `<option>${esc(p)}</option>`).join('');
+  function fillSubs() {
+    const p = $('pillar').value;
+    const subs = [...new Set(ROWS.filter(r => (!p || r.pillar === p) && r.sub).map(r => r.sub))];
+    $('sub').innerHTML = '<option value="">All Sub-Pillars</option>' + subs.map(s => `<option>${esc(s)}</option>`).join('');
+    $('sub').disabled = !subs.length;
+  }
+
+  function render() {
+    closeAll();
+    const role = $('role').value, p = $('pillar').value, s = $('sub').value;
+    try { localStorage.setItem('appraisals-role', role); } catch (e) {}
+    $('as-status').textContent = $('as-score').textContent = '· ' + ROLE_LABEL[role];
+    const rows = ROWS.filter(r => (!p || r.pillar === p) && (!s || r.sub === s));
+    $('count').textContent = `${rows.length} ${rows.length === 1 ? 'employee' : 'employees'}`;
+
+    $('rows').innerHTML = rows.length ? rows.map((r, i) => {
+      const [label, tone, review] = roleView(r, role);
+      const unit = r.sub ? `${r.pillar} · ${r.sub}` : r.pillar;
+      const off = r.status === 'Not participating';
+      return `<tr class="${off ? 'off' : ''}">
+        <td>
+          <div class="who">
+            <span class="avatar" aria-hidden="true">${initials(r.name)}</span>
+            <div><div class="name">${esc(r.name)}</div><div class="unit" title="${esc(unit)}">${esc(unit)}</div></div>
           </div>
-        </div>
-      </td>
-      <td class="status-cell">
-        <span class="pill ${TONE[r.status] ?? ''}">${esc(r.status)}</span>${r.blockedReason ? `<button class="why" aria-expanded="false" aria-controls="why-${i}" aria-label="Why is ${esc(r.name)} blocked?">${infoIcon}</button>
-        <div class="pop" id="why-${i}" hidden><b>Why it's blocked</b>${esc(r.blockedReason)}</div>` : ''}
-      </td>
-      <td>${r.score != null
-        ? `<div class="score"><strong>${r.score.toFixed(2)}</strong> <span>/ 5.00</span></div>${r.band ? `<div class="band">${esc(r.band)}</div>` : ''}`
-        : dash}</td>
-      <td class="rec">${r.lineManager ? esc(r.lineManager) : dash}</td>
-      <td class="rec">${r.pillarLead ? esc(r.pillarLead) : dash}</td>
-    </tr>`).join('');
+        </td>
+        <td class="status-cell">
+          <span class="pill ${tone}">${esc(label)}</span>${r.blockedReason ? `<button class="icon-btn why" data-pop="reason-${i}" aria-expanded="false" aria-label="Why is ${esc(r.name)} blocked?">${ICON_INFO}</button>
+          <div class="pop reason" id="reason-${i}" hidden><b>Why it's blocked</b>${esc(r.blockedReason)}</div>` : ''}
+        </td>
+        <td>${review && review.score != null
+          ? `<div class="score"><strong>${review.score.toFixed(2)}</strong> <span>/ 5.00</span></div>${review.band ? `<div class="band">${esc(review.band)}</div>` : ''}`
+          : dash}</td>
+        <td class="rec">${review && review.rec ? esc(review.rec) : dash}</td>
+        <td class="act">${off ? '' : `<button class="icon-btn" data-pop="menu-${i}" aria-expanded="false" aria-haspopup="menu" aria-label="Actions for ${esc(r.name)}">${ICON_MORE}</button>
+          <div class="pop menu" id="menu-${i}" role="menu" hidden><button role="menuitem">View appraisal</button></div>`}</td>
+      </tr>`;
+    }).join('') : '<tr class="empty"><td colspan="5">No employees match these filters.</td></tr>';
+  }
 
-  // One reason open at a time; Escape or a click elsewhere closes it.
-  const closeAll = except => document.querySelectorAll('.why[aria-expanded="true"]').forEach(b => {
-    if (b === except) return;
-    b.setAttribute('aria-expanded', 'false');
-    document.getElementById(b.getAttribute('aria-controls')).hidden = true;
-  });
+  // Popovers (blocked reason, actions menu): one open at a time; Escape, scroll or a click elsewhere closes them.
+  function closeAll(except) {
+    document.querySelectorAll('[data-pop][aria-expanded="true"]').forEach(b => {
+      if (b === except) return;
+      b.setAttribute('aria-expanded', 'false');
+      $(b.dataset.pop).hidden = true;
+    });
+  }
   document.addEventListener('click', e => {
-    const btn = e.target.closest('.why');
-    if (!btn) { if (!e.target.closest('.pop')) closeAll(); return; }
+    const btn = e.target.closest('[data-pop]');
+    if (!btn) { if (!e.target.closest('.pop.reason')) closeAll(); return; }
     closeAll(btn);
     const open = btn.getAttribute('aria-expanded') !== 'true';
     btn.setAttribute('aria-expanded', String(open));
-    const pop = document.getElementById(btn.getAttribute('aria-controls'));
+    const pop = $(btn.dataset.pop);
     pop.hidden = !open;
-    if (open) {
-      const r = btn.getBoundingClientRect(), h = pop.offsetHeight;
-      const below = r.bottom + 6 + h < innerHeight;
-      pop.style.top = (below ? r.bottom + 6 : r.top - 6 - h) + 'px';
-      pop.style.left = Math.max(8, Math.min(r.left - 100, innerWidth - 268)) + 'px';
-    }
+    if (!open) return;
+    const r = btn.getBoundingClientRect(), h = pop.offsetHeight, w = pop.offsetWidth;
+    pop.style.top = (r.bottom + 6 + h < innerHeight ? r.bottom + 6 : r.top - 6 - h) + 'px';
+    const left = pop.classList.contains('menu') ? r.right - w : r.left - 100;
+    pop.style.left = Math.max(8, Math.min(left, innerWidth - w - 8)) + 'px';
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
   addEventListener('scroll', () => closeAll(), true);
   addEventListener('resize', () => closeAll());
+
+  try { const saved = localStorage.getItem('appraisals-role'); if (saved && ROLE_LABEL[saved]) $('role').value = saved; } catch (e) {}
+  $('pillar').addEventListener('change', () => { fillSubs(); render(); });
+  $('sub').addEventListener('change', render);
+  $('role').addEventListener('change', render);
+  fillSubs();
+  render();
 </script>
 </body>
 </html>
