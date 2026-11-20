@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Appraisal Filters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #edf4f1;
+    --surface: #ffffff;
+    --inset: #f7f9f8;
+    --ink: #111816;
+    --muted: #66706c;
+    --faint: #b4bbb8;
+    --line: #e3e9e6;
+    --brand: #00907a;
+    --brand-soft: #e3f4ef;
+    --brand-ink: #0b5e50;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    font-family: Roboto, system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  .chev { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%2366706c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center; }
+
+  /* Cycle: replaces "Appraisal cycle: H2 2026" + the separate Cycle dropdown */
+  .cycle { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .cycle-label { font-size: 12px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .cycle-select {
+    appearance: none; -webkit-appearance: none; cursor: pointer;
+    font: 600 20px Poppins, sans-serif; letter-spacing: -.3px; color: var(--ink);
+    border: 0; border-radius: 8px; padding: 2px 28px 2px 6px; margin-left: -6px;
+    background-color: transparent; background-position: right 6px center;
+  }
+  .cycle-select:hover { background-color: rgba(255,255,255,.7); }
+  .cycle-select:focus-visible { outline: 2px solid var(--brand); }
+  .live {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 500; color: var(--brand-ink);
+    background: var(--brand-soft); padding: 3px 10px; border-radius: 999px;
+  }
+  .live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); }
+  .live[hidden] { display: none; }
+
+  /* Filter bar */
+  .bar { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .more-row { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .more-row[hidden] { display: none; }
+
+  /* One pill = label + value; the native select sits on top so it stays accessible */
+  .f {
+    position: relative; display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 30px 0 12px; border-radius: 999px;
+    border: 1px solid var(--line); background-color: var(--surface);
+    font-size: 13.5px; white-space: nowrap; cursor: pointer;
+  }
+  .f:hover { border-color: #cdd7d3; }
+  .f .k { color: var(--muted); flex: none; }
+  .f .v { font-weight: 500; min-width: 0; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+  .f select { position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 16px; }
+  .f:focus-within { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .f.on { background-color: var(--brand-soft); border-color: rgba(0,144,122,.4); }
+  .f.on .k, .f.on .v { color: var(--brand-ink); }
+  .f.off { opacity: .5; cursor: not-allowed; }
+  .f.off select { cursor: not-allowed; }
+
+  .btn {
+    appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 12px; border-radius: 999px;
+    font: 500 13.5px Roboto, sans-serif; color: var(--ink);
+    background: var(--inset); border: 1px solid var(--line);
+  }
+  .btn:hover { border-color: #cdd7d3; }
+  .btn .n { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; font-size: 11.5px; line-height: 18px; text-align: center; color: #fff; background: var(--brand); }
+  .btn .n[hidden] { display: none; }
+  .btn svg { flex: none; transition: transform 200ms; }
+  .btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .clear {
+    margin-left: auto; appearance: none; border: 0; background: none; cursor: pointer;
+    font: 500 13.5px Roboto, sans-serif; color: var(--brand-ink); padding: 8px 6px; border-radius: 6px;
+  }
+  .clear:hover { text-decoration: underline; }
+  .clear[hidden] { display: none; }
+
+  @media (max-width: 600px) {
+    .f { flex: 1 1 calc(50% - 4px); min-width: 0; }
+    .f .v { max-width: none; }
+    .btn { flex: 1 1 100%; justify-content: center; }
+    .clear { margin-left: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="cycle">
+      <span class="cycle-label">Appraisal cycle</span>
+      <select class="cycle-select chev" id="cycle" aria-label="Appraisal cycle">
+        <option value="h2-2026" data-active>H2 2026</option>
+        <option value="h1-2026">H1 2026</option>
+        <option value="h2-2025">H2 2025</option>
+      </select>
+      <span class="live" id="live">Active</span>
+    </div>
+
+    <div class="bar" role="search" aria-label="Filter appraisals">
+      <div class="row">
+        <label class="f chev" data-key="pillar"><span class="k">Pillar</span><span class="v"></span><select></select></label>
+        <label class="f chev" data-key="sub"><span class="k">Sub-pillar</span><span class="v"></span><select></select></label>
+        <label class="f chev" data-key="status"><span class="k">Status</span><span class="v"></span><select></select></label>
+        <button class="btn" id="more" aria-expanded="false" aria-controls="more-row">
+          More filters <span class="n" id="more-n" hidden></span>
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="clear" id="clear" hidden>Clear all</button>
+      </div>
+      <div class="row more-row" id="more-row" hidden>
+        <label class="f chev" data-key="grade"><span class="k">Grade</span><span class="v"></span><select></select></label>
+        <label class="f chev" data-key="gender"><span class="k">Gender</span><span class="v"></span><select></select></label>
+        <label class="f chev" data-key="band"><span class="k">Band</span><span class="v"></span><select></select></label>
+        <label class="f chev" data-key="rec"><span class="k">Recommendation</span><span class="v"></span><select></select></label>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Options. Pillars, sub-pillars and statuses come from the other screens; the rest are placeholders to swap for real lists.
+  const SUBS = {
+    "Chairman's Office": [],
+    'Client Market Engine': ['Public Sector'],
+    'Data, Digital & Platforms Engine': ['Platforms, Products & IP Development', 'Data, Analytics & Intelligence Systems'],
+    'Strategy & Transformation': [],
+  };
+  const OPTIONS = {
+    pillar: Object.keys(SUBS),
+    status: ['Not started', 'Blocked', 'Self-rating', 'Line manager review', 'Pillar Lead review', 'Back with Pillar Lead',
+             'EXCO review', 'Locked, ready to send', 'Complete', 'Withdrawn', 'Not participating'],
+    grade: ['Analyst', 'Associate', 'Manager', 'Senior Manager', 'Director'],
+    gender: ['Female', 'Male'],
+    band: ['Exceeds Expectations', 'Meets Expectations', 'Below Expectations'],
+    rec: ['Promotion', 'Performance improvement plan', 'No change'],
+  };
+  const MORE = ['grade', 'gender', 'band', 'rec'];
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+  const pills = {};
+  document.querySelectorAll('.f').forEach(el => { pills[el.dataset.key] = el; });
+
+  function fill(key, list, placeholder) {
+    const sel = pills[key].querySelector('select');
+    sel.innerHTML = `<option value="">${placeholder}</option>` + list.map(o => `<option>${esc(o)}</option>`).join('');
+    sel.setAttribute('aria-label', pills[key].querySelector('.k').textContent);
+  }
+  function sync() {
+    let moreActive = 0, anyActive = false;
+    for (const [key, el] of Object.entries(pills)) {
+      const sel = el.querySelector('select');
+      el.querySelector('.v').textContent = sel.options[sel.selectedIndex].text;
+      el.classList.toggle('on', !!sel.value);
+      el.classList.toggle('off', sel.disabled);
+      if (sel.value) { anyActive = true; if (MORE.includes(key)) moreActive++; }
+    }
+    $('more-n').textContent = moreActive;
+    $('more-n').hidden = !moreActive;
+    $('clear').hidden = !anyActive;
+    $('live').hidden = !$('cycle').selectedOptions[0].hasAttribute('data-active');
+    // Hook point: read the current filters with currentFilters() and refresh the table here.
+  }
+  function currentFilters() {
+    const out = { cycle: $('cycle').value };
+    for (const [key, el] of Object.entries(pills)) out[key] = el.querySelector('select').value;
+    return out;
+  }
+  function fillSubs() {
+    const p = pills.pillar.querySelector('select').value;
+    const subs = p ? SUBS[p] : [];
+    fill('sub', subs, p ? (subs.length ? 'All' : 'None') : 'Pick a pillar');
+    pills.sub.querySelector('select').disabled = !subs.length;
+  }
+
+  fill('pillar', OPTIONS.pillar, 'All');
+  fill('status', OPTIONS.status, 'All');
+  MORE.forEach(k => fill(k, OPTIONS[k], 'All'));
+  fillSubs();
+
+  document.querySelectorAll('.f select').forEach(sel => sel.addEventListener('change', () => {
+    if (sel.closest('.f') === pills.pillar) fillSubs();
+    sync();
+  }));
+  $('cycle').addEventListener('change', sync);
+  $('more').addEventListener('click', () => {
+    const open = $('more').getAttribute('aria-expanded') !== 'true';
+    $('more').setAttribute('aria-expanded', String(open));
+    $('more-row').hidden = !open;
+  });
+  $('clear').addEventListener('click', () => {
+    document.querySelectorAll('.f select').forEach(sel => { sel.value = ''; });
+    fillSubs();
+    sync();
+  });
+  sync();
+</script>
+</body>
+</html>
