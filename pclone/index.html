@@ -255,14 +255,33 @@ section.band { padding-block: 72px; }
 .tabs button[aria-selected="true"] { color: #ffffff; background: var(--forest); }
 .slip { margin-top: 20px; }
 .slip.swap { animation: swap 380ms var(--ease); }
-.slip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.slip-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 16px 18px; background: var(--forest); color: #ffffff; border-radius: var(--r-md) var(--r-md) 0 0; }
 .slip-head b { font: 600 22px/30px var(--display); }
-.slip table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
-.slip td { padding: 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-.slip td:first-child { font: 500 14px/20px var(--display); }
-.slip td + td { text-align: right; padding-left: 16px; color: var(--ink-muted); }
-.slip .who { display: block; font: 400 12px/16px var(--text); color: var(--ink-muted); }
-.slip .note { margin-top: 16px; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+.slip-head .cur { font: 500 12px/16px var(--display); letter-spacing: .08em; background: rgba(255,255,255,.14); color: #ffffff; padding: 4px 10px; border-radius: 9999px; }
+.slip-head .count { display: block; font: 400 13px/18px var(--text); color: var(--on-forest-muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 18px; background: var(--surface-subtle); border-left: 1px solid var(--line); border-right: 1px solid var(--line); font: 500 12px/16px var(--display); color: var(--ink-muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.k-emp { background: var(--accent); }
+.k-er { background: var(--forest); }
+.lines { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 var(--r-md) var(--r-md); overflow: hidden; }
+.line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; padding: 14px 18px; border-top: 1px solid var(--line); transition: background 150ms; }
+.line:first-child { border-top: 0; }
+.line:hover { background: var(--surface-subtle); }
+.line .nm { font: 600 15px/22px var(--display); }
+.line .auth { display: block; font: 400 12px/16px var(--text); color: var(--ink-muted); }
+.line .desc { grid-column: 1 / -1; font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+.pay { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: flex-start; }
+.chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 10px; border-radius: 9999px; font: 500 12px/16px var(--display); white-space: nowrap; }
+.chip b { font: 600 14px/16px var(--display); font-variant-numeric: tabular-nums; }
+.chip.emp { background: var(--accent-soft); color: var(--accent-text); }
+.chip.er { background: var(--forest); color: #ffffff; }
+.chip.flat { background: var(--surface-subtle); color: var(--ink-muted); border: 1px solid var(--line); }
+.split { grid-column: 1 / -1; display: flex; gap: 3px; height: 8px; background: var(--track); border-radius: 9999px; overflow: hidden; }
+.split i { display: block; height: 100%; width: 0; transition: width 700ms var(--ease); }
+.split i.e { background: var(--accent); }
+.split i.r { background: var(--forest); }
+.slip .note { margin-top: 14px; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
 
 /* COMPARE */
 .cmp-wrap { overflow-x: auto; padding: 0; }
@@ -359,7 +378,7 @@ footer .lockup .one { font-size: 17px; }
     <a class="lockup" href="#top" aria-label="pclOne home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="811.977 359.691 107.195 65.258" aria-hidden="true" focusable="false" class="idf"><g fill="currentColor" fill-rule="evenodd"><path d="M 821.144531 371.792969 L 811.976562 371.792969 L 811.976562 424.949219 L 821.144531 424.949219 L 821.164062 400.320312 L 846.964844 400.320312 L 847.042969 400.179688 L 829.855469 400.179688 L 828.875 400.070312 L 825.183594 398.539062 L 822.945312 396.320312 L 821.34375 392.691406 L 821.066406 390.652344 L 821.074219 389.070312 L 821.695312 385.609375 L 823.125 382.949219 L 825.464844 380.761719 L 829.222656 379.449219 L 831.59375 379.339844 L 847.054688 379.339844 L 847.003906 379.25 L 821.144531 379.25 Z M 821.144531 371.792969 "></path><path d="M 846.964844 400.320312 L 821.164062 400.320312 L 821.535156 401.191406 L 823.746094 404.351562 L 826.335938 406.441406 L 829.882812 407.839844 L 833.015625 408.242188 L 834.15625 408.242188 L 835.15625 408.179688 L 839.035156 407.289062 L 841.824219 405.949219 L 844.753906 403.480469 L 846.574219 401.011719 Z M 846.964844 400.320312 "></path><path d="M 847.054688 379.339844 L 831.59375 379.339844 L 832.554688 379.460938 L 833.496094 379.691406 L 836.195312 381.050781 L 838.414062 383.339844 L 839.894531 386.992188 L 840.144531 389.070312 L 840.132812 390.28125 L 839.484375 394.050781 L 838.023438 396.742188 L 835.0625 399.210938 L 832.15625 400.070312 L 829.855469 400.179688 L 847.042969 400.179688 L 848.285156 397.25 L 849.144531 393.429688 L 849.363281 390.28125 L 849.363281 389.070312 L 849.023438 385.339844 L 848.285156 382.429688 L 847.105469 379.429688 Z M 847.054688 379.339844 "></path><path d="M 833.035156 371.332031 L 829.175781 371.910156 L 826.335938 373.132812 L 823.84375 375 L 822.003906 377.410156 L 821.144531 379.25 L 847.003906 379.25 L 844.792969 376.121094 L 842.523438 374.109375 L 839.105469 372.3125 L 835.195312 371.421875 Z M 833.035156 371.332031 "></path><path d="M 872.523438 371.269531 L 868.625 371.492188 L 864.785156 372.5 L 861.785156 373.859375 L 858.804688 376.230469 L 856.863281 378.660156 L 855.332031 381.480469 L 854.222656 385.179688 L 853.832031 388.261719 L 853.792969 390.480469 L 853.824219 391.429688 L 854.453125 395.242188 L 855.453125 398.160156 L 856.914062 400.949219 L 859.503906 403.851562 L 862.09375 405.71875 L 864.933594 407.070312 L 867.832031 407.871094 L 870.851562 408.199219 L 872.832031 408.210938 L 873.792969 408.171875 L 877.582031 407.421875 L 880.382812 406.269531 L 883.132812 404.582031 L 885.464844 402.421875 L 886.953125 400.359375 L 871.234375 400.359375 L 870.304688 400.28125 L 866.714844 398.679688 L 864.582031 396.351562 L 863.375 392.761719 L 863.105469 389.039062 L 863.183594 387.902344 L 863.832031 384.871094 L 865.792969 381.589844 L 869.042969 379.609375 L 872.394531 379.179688 L 886.972656 379.179688 L 886.804688 378.890625 L 884.914062 376.492188 L 882.09375 374.132812 L 878.554688 372.371094 L 875.632812 371.582031 L 873.582031 371.320312 Z M 872.523438 371.269531 "></path><path d="M 889.234375 394.160156 L 879.535156 394.21875 L 879.324219 395.082031 L 878.984375 395.921875 L 877.101562 398.371094 L 874.375 399.96875 L 871.234375 400.359375 L 886.953125 400.359375 L 888.492188 397.152344 L 889.054688 395.179688 Z M 889.234375 394.160156 "></path><path d="M 886.972656 379.179688 L 872.394531 379.179688 L 873.363281 379.289062 L 874.324219 379.53125 L 877.074219 381 L 878.921875 383.410156 L 879.542969 385.351562 L 889.09375 384.539062 L 888.203125 381.589844 L 887.324219 379.769531 Z M 886.972656 379.179688 "></path><path d="M 894.414062 407.75 L 903.5625 407.75 L 903.5625 359.691406 L 894.414062 359.691406 Z M 894.414062 407.75 "></path><path d="M 909.292969 407.769531 L 919.171875 407.769531 L 919.171875 398.210938 L 909.292969 398.210938 Z M 909.292969 407.769531 "></path></g></svg><span class="hair"></span><span class="one">One</span></a>
     <ul>
       <li><a href="#modules">Modules</a></li>
-      <li><a href="#here">Built for here</a></li>
+      <li><a href="#here">Made for Africa</a></li>
       <li><a href="#compare">Compare</a></li>
       <li><a href="#security">Security</a></li>
     </ul>
@@ -499,7 +518,7 @@ footer .lockup .one { font-size: 17px; }
   <section class="band" id="here" aria-labelledby="here-h">
     <div class="wrap">
       <div class="head">
-        <div class="overline">Built for here</div>
+        <div class="overline">Built in Africa, for Africa</div>
         <div>
           <h2 class="title" id="here-h">Built for the conditions you actually work in.</h2>
           <p class="lead">The global platforms are excellent at what they were designed for. Then you spend a year and a local partner bolting on statutory payroll, chasing currency differences, and training staff to approve things on a laptop they don't carry. You've been paying for that gap.</p>
@@ -791,23 +810,34 @@ footer .lockup .one { font-size: 17px; }
   if (reduce) { tick(); pause(); } else play();
 
   // ---------- Country slip ----------
+  // rows: [line, what it is, collected by, employee %, employer %, label when not a flat rate]
   var SLIPS = {
-    ng: { name: "Nigeria", cur: "NGN", rows: [["PAYE", "Personal income tax, progressive bands", "State IRS"], ["Pension", "Employee 8%, employer 10%", "To the PFA"], ["NHF", "2.5% of basic salary", "Employee"], ["NSITF", "1% of payroll", "Employer"], ["ITF", "1% of payroll, qualifying employers", "Employer"]] },
-    gh: { name: "Ghana", cur: "GHS", rows: [["PAYE", "Progressive bands", "GRA"], ["SSNIT", "Employee 5.5%, employer 13%", "Tiers 1 and 2"], ["Tier 3", "Voluntary provident fund", "Optional"]] },
-    ke: { name: "Kenya", cur: "KES", rows: [["PAYE", "Progressive bands, less personal relief", "KRA"], ["NSSF", "Tiers I and II", "Matched"], ["SHIF", "2.75% of gross pay", "Employee"], ["Housing levy", "Employee 1.5%, employer 1.5%", "Matched"], ["NITA", "Fixed monthly levy", "Employer"]] },
-    za: { name: "South Africa", cur: "ZAR", rows: [["PAYE", "Progressive bands, less rebates", "SARS"], ["UIF", "Employee 1%, employer 1%", "Capped"], ["SDL", "1% of payroll, qualifying employers", "Employer"]] }
+    ng: { name: "Nigeria", cur: "NGN", rows: [["PAYE", "Personal income tax on progressive bands, deducted at source", "State IRS", 0, 0, "Bands"], ["Pension", "Contributory pension on monthly emoluments", "Paid to the PFA", 8, 10], ["NHF", "National Housing Fund, on basic salary", "FMBN", 2.5, 0], ["NSITF", "Employee compensation scheme", "NSITF", 0, 1], ["ITF", "Industrial Training Fund, qualifying employers", "ITF", 0, 1]] },
+    gh: { name: "Ghana", cur: "GHS", rows: [["PAYE", "Income tax on progressive bands", "GRA", 0, 0, "Bands"], ["SSNIT", "Tiers 1 and 2 of the pension scheme", "SSNIT and trustee", 5.5, 13], ["Tier 3", "Voluntary provident fund", "Optional", 0, 0, "Voluntary"]] },
+    ke: { name: "Kenya", cur: "KES", rows: [["PAYE", "Progressive bands, less personal relief", "KRA", 0, 0, "Bands"], ["NSSF", "Tiers I and II, up to the earnings limits", "NSSF", 6, 6], ["SHIF", "Social Health Insurance Fund, on gross pay", "SHA", 2.75, 0], ["Housing levy", "Affordable Housing Levy, on gross pay", "KRA", 1.5, 1.5], ["NITA", "Training levy per employee", "NITA", 0, 0, "Fixed monthly"]] },
+    za: { name: "South Africa", cur: "ZAR", rows: [["PAYE", "Progressive bands, less rebates", "SARS", 0, 0, "Bands"], ["UIF", "Unemployment Insurance Fund, capped", "SARS", 1, 1], ["SDL", "Skills Development Levy, qualifying employers", "SARS", 0, 1]] }
   };
-  var tabs = $("cty-tabs"), slip = $("slip");
+  var tabs = $("cty-tabs"), slip = $("slip"), SCALE = 20;
   tabs.innerHTML = Object.keys(SLIPS).map(function (k, i) { return '<button role="tab" id="cty-' + k + '" aria-controls="slip" aria-selected="' + (i === 0) + '" data-k="' + k + '">' + SLIPS[k].name + '</button>'; }).join("");
+  function pct(n) { return String(n).replace(".", ".") + "%"; }
   function showSlip(k) {
     var s = SLIPS[k];
     tabs.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.k === k); });
     slip.setAttribute("aria-labelledby", "cty-" + k);
+    slip.innerHTML = '<div class="slip-head"><div><b>' + s.name + '.</b><span class="count">' + s.rows.length + ' statutory lines on every payroll run</span></div><span class="cur">' + s.cur + '</span></div>' +
+      '<div class="legend"><span><i class="k-emp"></i>Deducted from the employee</span><span><i class="k-er"></i>Paid by the employer</span></div><ul class="lines">' +
+      s.rows.map(function (r) {
+        var chips = r[5] ? '<span class="chip flat">' + esc(r[5]) + '</span>'
+          : (r[3] ? '<span class="chip emp">Employee <b>' + pct(r[3]) + '</b></span>' : '') + (r[4] ? '<span class="chip er">Employer <b>' + pct(r[4]) + '</b></span>' : '');
+        var bar = r[5] ? '' : '<span class="split" aria-hidden="true"><i class="e" data-w="' + (r[3] / SCALE * 100) + '"></i><i class="r" data-w="' + (r[4] / SCALE * 100) + '"></i></span>';
+        return '<li class="line"><span><span class="nm">' + esc(r[0]) + '</span><span class="auth">' + esc(r[2]) + '</span></span><span class="pay">' + chips + '</span><span class="desc">' + esc(r[1]) + '</span>' + bar + '</li>';
+      }).join("") +
+      '</ul><p class="note">Bars are drawn to one scale, 0 to 20% of pay. pclHRM holds these as rules on the entity, not formulas in a payslip. Rates shown for reference as of 24 Nov 2026. Confirm current rates with your tax adviser.</p>';
     tidy(slip);
     slip.classList.remove("swap"); void slip.offsetWidth; slip.classList.add("swap");
-    slip.innerHTML = '<div class="slip-head"><b>' + s.name + '.</b><span class="overline">Statutory lines, ' + s.cur + '</span></div><table><tbody>' +
-      s.rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '<span class="who">' + esc(r[2]) + '</span></td><td>' + esc(r[1]) + '</td></tr>'; }).join("") +
-      '</tbody></table><p class="note">pclHRM holds these as rules on the entity, not formulas in a payslip. Rates shown for reference as of 24 Nov 2026. Confirm current rates with your tax adviser.</p>';
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      slip.querySelectorAll(".split i").forEach(function (el) { el.style.width = el.dataset.w + "%"; });
+    }); });
   }
   tabs.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) showSlip(b.dataset.k); });
   showSlip("ng");
