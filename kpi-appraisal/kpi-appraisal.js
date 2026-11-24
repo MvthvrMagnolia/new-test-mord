@@ -176,6 +176,7 @@ const STYLE = `
     padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.14);
   }
   .t-desc-label svg { width: 12px; height: 12px; }
+  @media (max-width: 560px) { .t-desc { flex-direction: column; align-items: flex-start; gap: 6px; } }
 
   /* How the KPI is measured, reviewed and delivered */
   .specs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); background: var(--inset); }
