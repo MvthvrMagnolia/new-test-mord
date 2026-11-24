@@ -6,19 +6,20 @@
 <title>KPI Appraisal Flow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-  body { margin: 0; background: #edf4f1; font-family: Roboto, system-ui, sans-serif; color: #111816; padding: 24px 16px 48px; }
+  body { margin: 0; background: #f5f5f5; font-family: Roboto, system-ui, sans-serif; color: #111816; padding: 24px 16px 48px; }
   .wrap { max-width: 1200px; margin: 0 auto; }
   .demo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 18px; }
-  .demo-bar span { font-size: 12px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: #66706c; margin-right: 6px; }
+  .demo-bar span { font: 500 12px/16px Poppins, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #5f6062; margin-right: 8px; }
   .demo-bar button {
-    appearance: none; cursor: pointer; font: 500 13.5px Roboto, sans-serif; color: #111816;
-    background: #fff; border: 1px solid #e3e9e6; border-radius: 999px; padding: 8px 14px;
+    appearance: none; cursor: pointer; font: 500 12px/16px Poppins, sans-serif; color: #231f20;
+    background: transparent; border: 1px solid #797a7d; border-radius: 0; height: 32px; padding: 0 12px;
   }
-  .demo-bar button[aria-pressed="true"] { color: #fff; background: #14352d; border-color: #14352d; }
-  .demo-bar .reset { margin-left: auto; color: #0b5e50; background: none; border: 0; }
-  .log { margin-top: 16px; font: 12px ui-monospace, monospace; color: #66706c; min-height: 1em; }
+  .demo-bar button:hover { border-color: #231f20; background: #231f200d; }
+  .demo-bar button[aria-pressed="true"] { color: #fff; background: #231f20; border-color: #231f20; }
+  .demo-bar .reset { margin-left: auto; border: 0; }
+  .log { margin-top: 16px; font: 13px/20px "Roboto Mono", ui-monospace, monospace; color: #5f6062; min-height: 1em; }
 </style>
 </head>
 <body>
@@ -41,7 +42,7 @@
 
   // Sample data shaped like the KPI Form template. KPI 1 comes from the real screen; everything else is an example.
   const EMPLOYEE = { name: 'Funke Ajayi', grade: 'Senior Associate', pillar: 'Client Market Engine', practiceArea: 'Public Sector',
-                     reviewPeriod: 'H2 2026 · 1 July – 31 December 2026' };
+                     reviewPeriod: 'H2 2026 · 1 Jul – 31 Dec 2026' };
   const KPIS = [
     { id: 'k1', target: 'Achieve monthly sales of 50,000,000', description: 'Meet monthly targets', weight: 25,
       measurement: 'Monthly sales report from the CRM', keyActions: ['Weekly pipeline review', 'Two new public sector leads a month'], timeline: 'Monthly' },
