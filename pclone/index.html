@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -8,272 +8,305 @@
 <meta name="description" content="pclOne is the operations platform from Phillips Consulting. Finance, HR, CRM, projects, compliance, analytics and support in one system, built around how African businesses actually run.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Roboto:wght@400;500&family=Roboto+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: an operations ledger. Wide left-aligned type, a margin column that carries real metadata, one forest-green band that opens the page. */
+/* pclOne design system (Phillips Consulting brand, 2021). Black and white first, square blocks, one teal line. Layout: a ledger of hairline rows; dark panel blocks set off the opener and the proof. */
 :root {
-  --paper: #eef1ec;
-  --paper-2: #e3e8e2;
-  --ink: #0f1f1a;
-  --ink-2: #44554e;
-  --rule: #c5cfc8;
-  --forest: #13352b;
-  --forest-2: #1c4a3c;
-  --on-forest: #eaf2ec;
-  --on-forest-2: #a9c3b6;
-  --gold: #f2a900;
-  --gold-ink: #6b4a00;
-  --ok: #2e7d4f;
-  --warn: #b5541c;
-  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-  --wrap: 1180px;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-subtle: #f5f5f5;
+  --surface-sunken: #e6e6e6;
+  --panel: #262324;
+  --ink: #231f20;
+  --ink-muted: #5f6062;
+  --ink-on-panel: #ffffff;
+  --ink-on-panel-muted: #c9cacc;
+  --line: #e6e6e6;
+  --line-strong: #797a7d;
+  --line-on-panel: #3d3839;
+  --line-focus: #1f5747;
+  --primary: #231f20;
+  --primary-hover: #13352b;
+  --on-primary: #ffffff;
+  --accent: #00a48d;
+  --accent-text: #1f5747;
+  --accent-on-panel: #42bb98;
+  --selected: #e4f1ec;
+  --success: #1f5747;
+  --success-soft: #e4f1ec;
+  --warning: #8a5300;
+  --warning-soft: #fbf0dc;
+  --info: #0b6e60;
+  --info-soft: #dff2ee;
+  --danger: #b3261e;
+  --display: Poppins, "Segoe UI", system-ui, sans-serif;
+  --text: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Roboto Mono", ui-monospace, Menlo, monospace;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0b1713; --paper-2: #12221c; --ink: #e4ece7; --ink-2: #9db0a6; --rule: #24382f;
-    --forest: #0f2b22; --forest-2: #18402f; --on-forest: #eaf2ec; --on-forest-2: #9fbbad;
-    --gold: #f5b82e; --gold-ink: #f5b82e; --ok: #5fc48a; --warn: #f08a4b; color-scheme: dark;
+    --bg: #231f20; --surface: #2b2728; --surface-subtle: #1c191a; --surface-sunken: #171415; --panel: #171415;
+    --ink: #ffffff; --ink-muted: #a3a5a7; --ink-on-panel: #ffffff; --ink-on-panel-muted: #a3a5a7;
+    --line: #3d3839; --line-strong: #8b8e90; --line-on-panel: #3d3839; --line-focus: #42bb98;
+    --primary: #ffffff; --primary-hover: #42bb98; --on-primary: #231f20;
+    --accent-text: #42bb98; --accent-on-panel: #42bb98; --selected: #17322a;
+    --success: #42bb98; --success-soft: #17322a; --warning: #f2b544; --warning-soft: #3a2c12;
+    --info: #00a48d; --info-soft: #0b2925; --danger: #ff8a80; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #0b1713; --paper-2: #12221c; --ink: #e4ece7; --ink-2: #9db0a6; --rule: #24382f;
-  --forest: #0f2b22; --forest-2: #18402f; --on-forest: #eaf2ec; --on-forest-2: #9fbbad;
-  --gold: #f5b82e; --gold-ink: #f5b82e; --ok: #5fc48a; --warn: #f08a4b; color-scheme: dark;
+  --bg: #231f20; --surface: #2b2728; --surface-subtle: #1c191a; --surface-sunken: #171415; --panel: #171415;
+  --ink: #ffffff; --ink-muted: #a3a5a7; --ink-on-panel: #ffffff; --ink-on-panel-muted: #a3a5a7;
+  --line: #3d3839; --line-strong: #8b8e90; --line-on-panel: #3d3839; --line-focus: #42bb98;
+  --primary: #ffffff; --primary-hover: #42bb98; --on-primary: #231f20;
+  --accent-text: #42bb98; --accent-on-panel: #42bb98; --selected: #17322a;
+  --success: #42bb98; --success-soft: #17322a; --warning: #f2b544; --warning-soft: #3a2c12;
+  --info: #00a48d; --info-soft: #0b2925; --danger: #ff8a80; color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
-body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--forest); }
-a { color: inherit; }
-:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
-.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-@media (min-width: 720px) { .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); } }
-h1, h2, h3 { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; line-height: 1.02; text-wrap: balance; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 101; background: var(--bg); }
+a { color: var(--accent-text); }
+:focus-visible { outline: 2px solid var(--line-focus); outline-offset: 2px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 1024px) { .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); } }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; margin: 0; text-wrap: balance; hyphens: none; }
 p { margin: 0; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
-.btn { display: inline-flex; align-items: center; gap: 10px; font: 600 16px/1 var(--body); padding: 16px 22px; border-radius: 4px; text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: transform .15s ease, background .15s ease; }
-.btn:hover { transform: translateY(-2px); }
-.btn-gold { background: var(--gold); color: #1d1500; }
-.btn-line { border-color: currentColor; background: transparent; color: inherit; }
-.arrow { font-family: var(--mono); }
+.overline { font-family: var(--display); font-weight: 500; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.title { font-size: 28px; line-height: 36px; max-width: 22ch; }
+.title::after { content: ""; display: block; width: 24px; height: 2px; background: var(--accent); margin-top: 16px; }
+.lead { font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 62ch; }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px; font: 500 14px/20px var(--display); text-decoration: none; border: 1px solid transparent; border-radius: 0; cursor: pointer; transition: background 200ms var(--ease), color 200ms var(--ease), border-color 200ms var(--ease); }
+.btn-primary { background: var(--primary); color: var(--on-primary); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-white { background: #ffffff; color: #231f20; }
+.btn-white:hover { background: #42bb98; color: #231f20; }
+.textlink { font: 500 14px/20px var(--display); color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.textlink .chev { color: var(--accent); letter-spacing: -0.1em; }
+.textlink:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
 
 /* NAV */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--forest); color: var(--on-forest); border-bottom: 1px solid var(--forest-2); }
-.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
-.mark { font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -0.03em; text-decoration: none; }
-.mark b { color: var(--gold); }
-.nav ul { display: none; list-style: none; margin: 0; padding: 0; gap: 28px; font-size: 15px; }
-.nav ul a { text-decoration: none; color: var(--on-forest-2); }
-.nav ul a:hover { color: var(--on-forest); }
-.nav-cta { display: flex; gap: 10px; align-items: center; }
-.nav-cta .signin { font-size: 15px; color: var(--on-forest-2); text-decoration: none; display: none; }
-.nav .btn { padding: 11px 16px; font-size: 14px; }
-@media (min-width: 900px) { .nav ul { display: flex; } .nav-cta .signin { display: inline; } }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 100; background: var(--bg); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 72px; }
+.lockup { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+.lockup .idf { height: 26px; width: auto; display: block; }
+.lockup .hair { width: 1px; height: 26px; background: currentColor; }
+.lockup .one { font: 600 22px/1 var(--display); letter-spacing: -0.01em; }
+.nav ul { display: none; list-style: none; margin: 0; padding: 0; gap: 32px; height: 100%; }
+.nav ul a { font: 500 14px/20px var(--display); color: var(--ink-muted); text-decoration: none; height: 100%; display: flex; align-items: center; border-bottom: 2px solid transparent; }
+.nav ul a:hover, .nav ul a.on { color: var(--ink); border-bottom-color: var(--accent); }
+.nav-cta { display: flex; gap: 24px; align-items: center; }
+.nav-cta .signin { display: none; }
+.nav .btn { height: 40px; padding: 0 16px; }
+@media (min-width: 1024px) { .nav ul { display: flex; } .nav-cta .signin { display: inline-flex; } }
 
 /* OPENER */
-.opener { background: var(--forest); color: var(--on-forest); padding-block: 56px 72px; position: relative; overflow: hidden; }
-.opener::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
-  background-image: repeating-linear-gradient(90deg, transparent 0 79px, rgba(255,255,255,.035) 79px 80px); }
-.opener .wrap { position: relative; z-index: 1; display: grid; gap: 40px; }
-.kicker { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--on-forest-2); display: flex; gap: 12px; flex-wrap: wrap; }
-.kicker span + span::before { content: "/"; margin-right: 12px; color: var(--gold); }
-.opener h1 { font-size: clamp(44px, 8.4vw, 112px); max-width: 13ch; }
-.opener h1 em { font-style: normal; color: var(--gold); }
-.opener .lede { font-size: clamp(18px, 2vw, 21px); color: var(--on-forest-2); max-width: 58ch; }
-
-.madlib { border-top: 1px solid var(--forest-2); padding-top: 32px; display: grid; gap: 28px; }
-@media (min-width: 980px) { .madlib { grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: start; } }
-.sentence { font-family: var(--display); font-weight: 400; font-size: clamp(24px, 3.1vw, 38px); line-height: 1.45; letter-spacing: -0.01em; }
-.sentence select, .sentence input { font: inherit; color: var(--gold); background: transparent; border: 0; border-bottom: 2px dashed var(--gold); padding: 0 2px; cursor: pointer; border-radius: 0; max-width: 100%; }
-.sentence select { appearance: none; -webkit-appearance: none; padding-right: 2px; }
-.sentence select option { color: #0f1f1a; background: #fff; }
-.sentence input { width: 3.6ch; text-align: center; cursor: text; -moz-appearance: textfield; }
+.opener { background: var(--panel); color: var(--ink-on-panel); padding-block: 64px 80px; }
+.opener .wrap { display: grid; gap: 48px; }
+.opener .overline { color: var(--ink-on-panel-muted); }
+.opener h1 { font-size: 40px; line-height: 48px; letter-spacing: -0.01em; max-width: 16ch; margin-top: 16px; }
+.opener h1::after { content: ""; display: block; width: 24px; height: 2px; background: var(--accent); margin-top: 24px; }
+.opener .lead { color: var(--ink-on-panel-muted); margin-top: 24px; }
+.madlib { border-top: 1px solid var(--line-on-panel); padding-top: 40px; display: grid; gap: 40px; }
+@media (min-width: 1024px) { .madlib { grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: start; } }
+.madlib > * { min-width: 0; }
+.sentence { font-family: var(--display); font-weight: 500; font-size: clamp(20px, 2.4vw, 26px); line-height: 1.75; }
+.sentence select, .sentence input { font: inherit; color: var(--accent-on-panel); background: transparent; border: 0; border-bottom: 2px solid var(--accent); padding: 0 2px; cursor: pointer; border-radius: 0; max-width: 100%; }
+.sentence select { appearance: none; -webkit-appearance: none; }
+.sentence select option { color: #231f20; background: #ffffff; }
+.sentence input { text-align: center; cursor: text; -moz-appearance: textfield; }
 .sentence input::-webkit-outer-spin-button, .sentence input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.sentence .hint { display: block; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--on-forest-2); margin-bottom: 10px; }
-.answer { border-left: 3px solid var(--gold); padding-left: 22px; }
-.answer h2 { font-size: 15px; font-family: var(--mono); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--on-forest-2); margin-bottom: 16px; }
-.answer ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; counter-reset: a; }
-.answer li { display: grid; grid-template-columns: 28px 1fr; gap: 8px; font-size: 16.5px; line-height: 1.5; counter-increment: a; }
-.answer li::before { content: counter(a); font-family: var(--mono); font-size: 13px; color: var(--gold); padding-top: 3px; }
-.answer strong { color: #fff; font-weight: 600; }
-.answer .flash { animation: flash .6s ease; }
-@keyframes flash { from { background: rgba(242,169,0,.22); } to { background: transparent; } }
-.opener-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
+.sentence .hint { display: block; margin-bottom: 12px; }
+.opener-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; margin-top: 32px; }
+.answer h2 { margin-bottom: 16px; }
+.answer ol { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line-on-panel); counter-reset: a; }
+.answer li { display: grid; grid-template-columns: 32px 1fr; gap: 8px; padding: 16px 0; border-bottom: 1px solid var(--line-on-panel); color: var(--ink-on-panel-muted); counter-increment: a; transition: background 320ms var(--ease); }
+.answer li::before { content: counter(a); font: 500 12px/24px var(--mono); color: var(--accent-on-panel); }
+.answer strong { color: var(--ink-on-panel); font-weight: 500; }
+.answer ol.flash li { animation: flash 320ms var(--ease); }
+@keyframes flash { from { background: rgba(66,187,152,.12); } to { background: transparent; } }
 
 /* SECTIONS */
-section.band { padding-block: 88px; border-bottom: 1px solid var(--rule); }
-.head { display: grid; gap: 18px; margin-bottom: 48px; }
-@media (min-width: 900px) { .head { grid-template-columns: 220px 1fr; gap: 40px; } }
-.head h2 { font-size: clamp(34px, 5vw, 64px); max-width: 18ch; }
-.head p { color: var(--ink-2); font-size: 19px; max-width: 60ch; margin-top: 18px; }
-.margin { padding-top: 10px; border-top: 2px solid var(--ink); align-self: start; }
+section.band { padding-block: 80px; border-bottom: 1px solid var(--line); }
+section.subtle { background: var(--surface-subtle); }
+.head { display: grid; gap: 16px; margin-bottom: 48px; }
+@media (min-width: 1024px) { .head { grid-template-columns: 256px 1fr; gap: 40px; } }
+.head > * { min-width: 0; }
+.head .lead { margin-top: 24px; }
 
-/* TABS PROBLEM */
+/* SPRAWL */
 .sprawl { display: grid; gap: 32px; }
-@media (min-width: 900px) { .sprawl { grid-template-columns: 220px 1fr 300px; gap: 40px; } }
-.sprawl-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
-.sprawl-list li { border-bottom: 1px solid var(--rule); }
-.sprawl-list button { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: baseline; padding: 16px 0; }
-.sprawl-list button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-.sprawl-list .what { font-family: var(--display); font-size: clamp(20px, 2.4vw, 28px); font-weight: 600; letter-spacing: -0.01em; transition: color .2s; }
-.sprawl-list .why { display: block; font-family: var(--body); font-size: 15px; font-weight: 400; color: var(--ink-2); margin-top: 2px; letter-spacing: 0; }
-.sprawl-list .to { font-family: var(--mono); font-size: 13px; color: var(--ink-2); white-space: nowrap; }
-.sprawl-list .to i { font-style: normal; color: var(--forest); font-weight: 500; }
-:root[data-theme="dark"] .sprawl-list .to i { color: var(--gold); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sprawl-list .to i { color: var(--gold); } }
-.sprawl-list li.done .what { text-decoration: line-through; text-decoration-color: var(--gold); text-decoration-thickness: 3px; color: var(--ink-2); }
-.sprawl-list li .to i { display: none; }
+@media (min-width: 1024px) { .sprawl { grid-template-columns: 256px 1fr 280px; gap: 40px; } }
+.sprawl > * { min-width: 0; }
+.sprawl-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.sprawl-list li { border-bottom: 1px solid var(--line); }
+.sprawl-list button { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; padding: 16px 0; transition: background 120ms var(--ease); }
+.sprawl-list button:hover { background: var(--surface-subtle); }
+.sprawl-list button:focus-visible { outline: 2px solid var(--line-focus); outline-offset: 2px; }
+.sprawl-list .what { font: 600 18px/26px var(--display); }
+.sprawl-list .why { display: block; font: 400 14px/20px var(--text); color: var(--ink-muted); }
+.sprawl-list .to { font: 500 12px/16px var(--display); color: var(--ink-muted); white-space: nowrap; }
+.sprawl-list .to i { font-style: normal; color: var(--accent-text); display: none; }
+.sprawl-list li.done .what { text-decoration: line-through; text-decoration-color: var(--accent); text-decoration-thickness: 2px; color: var(--ink-muted); }
 .sprawl-list li.done .to i { display: inline; }
 .sprawl-list li.done .to b { display: none; }
 .sprawl-list .to b { font-weight: 500; }
-.tally { position: sticky; top: 100px; align-self: start; display: grid; gap: 14px; }
-.tally .big { font-family: var(--display); font-weight: 800; font-size: 96px; line-height: .9; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
-.tally .big small { font-size: 32px; color: var(--ink-2); }
-.tally p { color: var(--ink-2); font-size: 16px; }
-.tally .btn { justify-self: start; background: var(--ink); color: var(--paper); }
+.tally { align-self: start; display: grid; gap: 16px; padding-top: 16px; border-top: 1px solid var(--ink); }
+@media (min-width: 1024px) { .tally { position: sticky; top: 104px; } }
+.tally .big { font: 600 32px/40px var(--display); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.tally .big small { font-size: 18px; color: var(--ink-muted); font-weight: 500; }
+.tally p { color: var(--ink-muted); }
+.bar { height: 4px; background: var(--line); }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 320ms var(--ease); }
 
-/* MODULES SWITCHBOARD */
+/* MODULES */
 .board { display: grid; gap: 32px; }
-@media (min-width: 980px) { .board { grid-template-columns: 340px 1fr; gap: 56px; } }
-.board > *, .sprawl > *, .here > *, .madlib > *, .close > *, .head > * { min-width: 0; }
-.mod-index { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); display: flex; overflow-x: auto; gap: 0; scrollbar-width: thin; }
-@media (min-width: 980px) { .mod-index { display: block; overflow: visible; } }
-.mod-index button { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: baseline; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); width: 100%; white-space: nowrap; }
-.mod-index button:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
-.mod-index .k { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
-.mod-index .n { font-family: var(--display); font-size: clamp(22px, 2.4vw, 30px); font-weight: 600; letter-spacing: -0.02em; color: var(--ink-2); transition: color .15s; }
-.mod-index .n b { font-weight: 600; color: var(--ink-2); opacity: .55; }
-.mod-index button[aria-selected="true"] .n, .mod-index button:hover .n { color: var(--ink); }
-.mod-index button[aria-selected="true"] .n::after { content: " \2192"; color: var(--gold); font-family: var(--mono); font-size: .7em; }
-.mod-panel { min-width: 0; }
-.mod-panel h3 { font-size: clamp(30px, 4vw, 48px); margin-bottom: 14px; }
-.mod-panel .pitch { font-size: 19px; color: var(--ink-2); max-width: 56ch; }
-.mod-grid { display: grid; gap: 28px; margin-top: 32px; }
-@media (min-width: 760px) { .mod-grid { grid-template-columns: 1.3fr 1fr; } }
-.screen { background: var(--forest); color: var(--on-forest); border-radius: 6px; padding: 20px; font-family: var(--mono); font-size: 13px; min-width: 0; box-shadow: 0 30px 60px -30px rgba(10,30,24,.55); }
-.screen-top { display: flex; justify-content: space-between; gap: 12px; color: var(--on-forest-2); border-bottom: 1px solid var(--forest-2); padding-bottom: 10px; margin-bottom: 6px; font-size: 12px; flex-wrap: wrap; }
+@media (min-width: 1024px) { .board { grid-template-columns: 256px 1fr; gap: 40px; } }
+.board > * { min-width: 0; }
+.mod-index { list-style: none; margin: 0; padding: 0; display: flex; overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: thin; }
+@media (min-width: 1024px) { .mod-index { display: block; overflow: visible; border-bottom: 0; border-top: 1px solid var(--ink); } }
+.mod-index button { all: unset; box-sizing: border-box; cursor: pointer; display: flex; gap: 12px; align-items: baseline; padding: 12px 16px; white-space: nowrap; border-bottom: 2px solid transparent; font: 500 14px/20px var(--display); color: var(--ink-muted); }
+@media (min-width: 1024px) { .mod-index button { width: 100%; padding: 14px 0 14px 16px; border-bottom: 1px solid var(--line); border-left: 2px solid transparent; font-size: 16px; } }
+.mod-index button:hover { color: var(--ink); background: var(--surface-subtle); }
+.mod-index button:focus-visible { outline: 2px solid var(--line-focus); outline-offset: -2px; }
+.mod-index button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+@media (min-width: 1024px) { .mod-index button[aria-selected="true"] { border-bottom-color: var(--line); border-left-color: var(--accent); background: var(--surface-subtle); } }
+.mod-index .k { font: 400 12px/16px var(--mono); color: var(--ink-muted); }
+.mod-panel h3 { font-size: 22px; line-height: 30px; }
+.mod-panel .pitch { font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 60ch; margin-top: 8px; }
+.mod-grid { display: grid; gap: 32px; margin-top: 32px; }
+@media (min-width: 768px) { .mod-grid { grid-template-columns: 1.35fr 1fr; } }
+.mod-grid > * { min-width: 0; }
+.screen { background: var(--surface); border: 1px solid var(--line); font-size: 14px; line-height: 20px; }
+.screen-top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface-subtle); }
+.screen-top span:first-child { font: 500 14px/20px var(--display); }
 .screen table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-.screen td { padding: 9px 6px 9px 0; border-bottom: 1px solid var(--forest-2); vertical-align: top; }
-.screen td:last-child { text-align: right; padding-right: 0; white-space: nowrap; }
-.pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; letter-spacing: .04em; }
-.pill.ok { background: rgba(95,196,138,.18); color: #8fe0b0; }
-.pill.warn { background: rgba(240,138,75,.2); color: #ffb38a; }
-.pill.wait { background: rgba(245,184,46,.18); color: #ffd36e; }
-.wires h4 { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 12px; }
-.wires ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-.wires li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; font-size: 15.5px; line-height: 1.5; }
-.wires li::before { content: "\21C4"; color: var(--gold-ink); font-family: var(--mono); }
-.wires b { font-weight: 600; }
-.wires .ships { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--ink-2); }
+.screen td { padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.screen tr:last-child td { border-bottom: 0; }
+.screen td:nth-child(2) { color: var(--ink-muted); }
+.screen td:last-child { text-align: right; white-space: nowrap; }
+@media (max-width: 520px) { .screen td:nth-child(2) { display: none; } }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font: 500 12px/16px var(--display); }
+.badge.ok { background: var(--success-soft); color: var(--success); }
+.badge.warn { background: var(--warning-soft); color: var(--warning); }
+.badge.wait { background: var(--info-soft); color: var(--info); }
+.wires h4 { margin-bottom: 12px; }
+.wires ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.wires li { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.wires b { font: 500 14px/20px var(--display); display: block; }
+.wires span { color: var(--ink-muted); font-size: 14px; line-height: 20px; }
+.wires .ships { margin-top: 16px; font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+.wires .ships b { display: inline; color: var(--ink); }
 
 /* DAY LOG */
-.day { background: var(--paper-2); }
-.log { font-family: var(--mono); font-size: 14.5px; border-top: 2px solid var(--ink); }
-.log li { list-style: none; display: grid; grid-template-columns: 64px 1fr; gap: 10px 20px; padding: 16px 0; border-bottom: 1px solid var(--rule); transition: background .3s; }
-@media (min-width: 760px) { .log li { grid-template-columns: 70px 140px 150px 1fr; } }
-.log ul { margin: 0; padding: 0; }
-.log .t { font-variant-numeric: tabular-nums; color: var(--ink-2); }
-.log .where { color: var(--ink-2); }
-.log .mod { font-weight: 500; }
-.log .ev { font-family: var(--body); font-size: 16px; grid-column: 1 / -1; }
-@media (min-width: 760px) { .log .ev { grid-column: auto; } .log .where, .log .mod { display: block; } }
-@media (max-width: 759px) { .log .where, .log .mod { grid-column: 2; } .log .t { grid-row: span 2; } }
-.log li.now { background: linear-gradient(90deg, rgba(242,169,0,.16), transparent 70%); }
-.log li.now .t { color: var(--gold-ink); font-weight: 500; }
-.log-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 18px; }
-.log-foot button { font: 500 14px var(--mono); background: none; border: 1px solid var(--rule); color: var(--ink); padding: 8px 14px; border-radius: 4px; cursor: pointer; }
+.log { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.log li { display: grid; grid-template-columns: 56px 1fr; gap: 4px 16px; padding: 16px; border-bottom: 1px solid var(--line); border-left: 2px solid transparent; transition: background 320ms var(--ease), border-color 320ms var(--ease); }
+@media (min-width: 768px) { .log li { grid-template-columns: 64px 120px 128px 1fr; gap: 24px; } }
+.log .t { font: 500 14px/24px var(--mono); font-variant-numeric: tabular-nums; color: var(--ink-muted); }
+.log .where { font: 500 14px/24px var(--display); }
+.log .mod { font: 500 14px/24px var(--display); color: var(--accent-text); }
+.log .ev { color: var(--ink-muted); }
+@media (max-width: 767px) { .log .t { grid-row: span 3; } }
+.log li.now { background: var(--selected); border-left-color: var(--accent); }
+.log li.now .ev { color: var(--ink); }
+.log-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-top: 16px; }
+.btn-ghost { height: 40px; padding: 0 16px; background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn-ghost:hover { border-color: var(--ink); }
 
 /* BUILT FOR HERE */
-.here { display: grid; gap: 40px; }
-@media (min-width: 980px) { .here { grid-template-columns: 1fr 1fr; gap: 64px; } }
-.realities { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 2px solid var(--ink); }
-.realities li { padding: 22px 0; border-bottom: 1px solid var(--rule); display: grid; gap: 6px; }
-.realities h3 { font-size: 24px; letter-spacing: -0.01em; font-weight: 600; }
-.realities p { color: var(--ink-2); font-size: 16.5px; max-width: 54ch; }
-.country { min-width: 0; }
-.cty-tabs { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--ink); border-radius: 4px; width: fit-content; max-width: 100%; overflow: hidden; }
-.cty-tabs button { font: 500 14px var(--body); padding: 10px 16px; background: transparent; color: var(--ink); border: 0; border-right: 1px solid var(--ink); cursor: pointer; }
-.cty-tabs button:last-child { border-right: 0; }
-.cty-tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
-.slip { margin-top: 22px; background: var(--paper-2); border: 1px solid var(--rule); padding: 24px; font-family: var(--mono); font-size: 14px; position: relative; }
-.slip::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 6px; background: radial-gradient(circle at 6px -2px, var(--paper) 5px, transparent 5.5px) 0 0 / 12px 6px repeat-x; }
-.slip-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 1px dashed var(--ink-2); padding-bottom: 12px; margin-bottom: 8px; }
-.slip-head b { font-family: var(--display); font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
-.slip table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-.slip td { padding: 8px 0; border-bottom: 1px dotted var(--rule); vertical-align: top; }
-.slip td + td { text-align: right; padding-left: 12px; }
-.slip .note { margin-top: 14px; font-family: var(--body); font-size: 14px; color: var(--ink-2); }
-.slip .who { color: var(--ink-2); font-size: 12px; display: block; }
+.here { display: grid; gap: 48px; }
+@media (min-width: 1024px) { .here { grid-template-columns: 1fr 1fr; gap: 64px; } }
+.here > * { min-width: 0; }
+.realities { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.realities li { padding: 24px 0; border-bottom: 1px solid var(--line); display: grid; gap: 8px; }
+.realities h3 { font-size: 18px; line-height: 26px; }
+.realities p { color: var(--ink-muted); max-width: 58ch; }
+.tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin-top: 12px; }
+.tabs button { font: 500 14px/20px var(--display); padding: 12px 16px; background: transparent; color: var(--ink-muted); border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; }
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.slip { margin-top: 24px; background: var(--surface-subtle); border: 1px solid var(--line); padding: 24px; }
+.slip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--ink); }
+.slip-head b { font: 600 22px/30px var(--display); }
+.slip table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
+.slip td { padding: 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.slip td:first-child { font: 500 14px/20px var(--display); }
+.slip td + td { text-align: right; padding-left: 16px; color: var(--ink-muted); }
+.slip .who { display: block; font: 400 12px/16px var(--text); color: var(--ink-muted); }
+.slip .note { margin-top: 16px; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
 
 /* COMPARE */
-.cmp-wrap { overflow-x: auto; border-top: 2px solid var(--ink); }
-.cmp { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 16px; }
-.cmp th, .cmp td { text-align: left; padding: 18px 16px 18px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
-.cmp thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.cmp-wrap { overflow-x: auto; border-top: 1px solid var(--ink); }
+.cmp { width: 100%; min-width: 680px; border-collapse: collapse; }
+.cmp th, .cmp td { text-align: left; padding: 16px 16px 16px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.cmp thead th { font: 500 12px/16px var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
 .cmp thead th.us { color: var(--ink); }
-.cmp tbody th { font-weight: 600; width: 34%; }
-.cmp td.us { font-weight: 500; }
-.cmp td.us::before { content: "\25CF  "; color: var(--ok); }
-.cmp td.tie::before { content: "\25CF  "; color: var(--ink-2); }
-.cmp td.them { color: var(--ink-2); }
-.cmp-note { margin-top: 18px; color: var(--ink-2); font-size: 15px; max-width: 70ch; }
+.cmp tbody th { font: 500 16px/24px var(--display); width: 34%; }
+.cmp td.us { color: var(--ink); }
+.cmp td.them { color: var(--ink-muted); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; margin-right: 10px; vertical-align: 2px; background: var(--success); }
+.dot.tie { background: var(--line-strong); }
+.cmp-note { margin-top: 24px; color: var(--ink-muted); max-width: 70ch; }
 
 /* PROOF */
-.proof { background: var(--forest); color: var(--on-forest); border-bottom: 0 !important; }
-.proof .head .margin { border-color: var(--on-forest); }
-.proof .label { color: var(--on-forest-2); }
-.proof .head p { color: var(--on-forest-2); }
-.figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--forest-2); }
-@media (min-width: 900px) { .figures { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.figures div { padding: 28px 20px 28px 0; border-bottom: 1px solid var(--forest-2); }
-.figures b { display: block; font-family: var(--display); font-weight: 800; font-size: clamp(44px, 6vw, 76px); letter-spacing: -0.04em; line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
-.figures span { display: block; margin-top: 10px; font-size: 15px; color: var(--on-forest-2); max-width: 24ch; }
-.sec { display: grid; gap: 24px; margin-top: 56px; }
-@media (min-width: 900px) { .sec { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; } }
-.sec h3 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 8px; }
-.sec p { color: var(--on-forest-2); font-size: 16px; }
+.proof { background: var(--panel); color: var(--ink-on-panel); border-bottom: 0 !important; }
+.proof .overline, .proof .lead { color: var(--ink-on-panel-muted); }
+.figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line-on-panel); }
+@media (min-width: 1024px) { .figures { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.figures div { padding: 24px 24px 24px 0; border-bottom: 1px solid var(--line-on-panel); }
+.figures b { display: block; font: 600 32px/40px var(--display); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.figures span { display: block; margin-top: 8px; font-size: 14px; line-height: 20px; color: var(--ink-on-panel-muted); max-width: 26ch; }
+.sec { display: grid; gap: 32px; margin-top: 48px; }
+@media (min-width: 1024px) { .sec { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; } }
+.sec h3 { font-size: 18px; line-height: 26px; margin-bottom: 8px; }
+.sec p { color: var(--ink-on-panel-muted); }
 
 /* CLOSE */
 .close { display: grid; gap: 48px; }
-@media (min-width: 980px) { .close { grid-template-columns: 1.1fr 1fr; gap: 72px; } }
-.close h2 { font-size: clamp(40px, 6vw, 80px); max-width: 12ch; }
-.close .lede { font-size: 19px; color: var(--ink-2); max-width: 52ch; margin-top: 22px; }
-.steps { list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--rule); counter-reset: s; }
-.steps li { counter-increment: s; display: grid; grid-template-columns: 90px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--rule); font-size: 16px; }
-.steps li::before { content: "Week " counter(s); font-family: var(--mono); font-size: 13px; color: var(--ink-2); padding-top: 3px; }
-.steps li:nth-child(3)::before { content: "Month 2+"; }
-.steps li:nth-child(2)::before { content: "Weeks 2-6"; }
-form.req { display: grid; gap: 18px; align-content: start; }
-.field { display: grid; gap: 6px; }
-.field label { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
-.field input, .field select { font: 16px var(--body); color: var(--ink); background: transparent; border: 0; border-bottom: 2px solid var(--ink); padding: 10px 0; border-radius: 0; width: 100%; }
-.field input:focus, .field select:focus { outline: none; border-bottom-color: var(--gold); }
-.field select option { color: #0f1f1a; background: #fff; }
-.row2 { display: grid; gap: 18px; }
-@media (min-width: 560px) { .row2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .close { grid-template-columns: 1.1fr 1fr; gap: 64px; } }
+.close > * { min-width: 0; }
+.close .lead { margin-top: 24px; }
+.steps { list-style: none; margin: 32px 0 0; padding: 0; border-top: 1px solid var(--ink); }
+.steps li { display: grid; grid-template-columns: 96px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.steps .when { font: 500 12px/24px var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.steps b { font-weight: 500; }
+.steps span { color: var(--ink-muted); }
+.steps span b { color: var(--ink); }
+form.req { display: grid; gap: 24px; align-content: start; background: var(--surface-subtle); padding: 32px 24px; border: 1px solid var(--line); }
+.field { display: grid; gap: 8px; }
+.field label, .field .lbl { font: 500 14px/20px var(--display); }
+.field input, .field select { font: 16px/24px var(--text); color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); padding: 0 12px; height: 48px; border-radius: 0; width: 100%; }
+.field input:focus, .field select:focus { outline: none; border-color: var(--line-focus); box-shadow: 0 0 0 1px var(--line-focus); }
+.row2 { display: grid; gap: 24px; }
+@media (min-width: 640px) { .row2 { grid-template-columns: 1fr 1fr; } }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chips label { text-transform: none; letter-spacing: 0; font-family: var(--body); font-size: 14px; color: var(--ink); border: 1px solid var(--rule); padding: 7px 12px; border-radius: 99px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
-.chips input { accent-color: var(--forest); margin: 0; }
-.chips label:has(input:checked) { border-color: var(--ink); background: var(--paper-2); }
-form.req .btn { justify-self: start; background: var(--ink); color: var(--paper); }
-.form-msg { font-size: 15px; padding: 14px 16px; border-left: 3px solid var(--ok); background: var(--paper-2); }
-.fine { font-size: 13px; color: var(--ink-2); }
+.chips label { font: 500 12px/16px var(--display); color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); padding: 8px 12px; border-radius: 2px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.chips input { accent-color: var(--accent-text); margin: 0; }
+.chips label:has(input:checked) { border-color: var(--accent-text); background: var(--selected); }
+form.req .btn { justify-self: start; }
+.form-msg { font-size: 14px; line-height: 20px; padding: 12px 16px; background: var(--success-soft); color: var(--ink); border-left: 2px solid var(--success); }
+.form-msg.err { background: #fbe9e7; border-left-color: var(--danger); }
+:root[data-theme="dark"] .form-msg.err { background: #3a1d1b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .form-msg.err { background: #3a1d1b; } }
+.fine { font-size: 12px; line-height: 16px; color: var(--ink-muted); }
 
-footer { padding-block: 40px; font-size: 14px; color: var(--ink-2); }
-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
-footer a { color: var(--ink-2); }
+footer { padding-block: 40px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-muted); }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
+footer .lockup .idf, footer .lockup .hair { height: 20px; }
+footer .lockup .one { font-size: 17px; }
 </style>
 </head>
 <body>
 
 <nav class="nav" aria-label="Main">
   <div class="wrap">
-    <a class="mark" href="#top">pcl<b>.</b>One</a>
+    <a class="lockup" href="#top" aria-label="pclOne home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="811.977 359.691 107.195 65.258" aria-hidden="true" focusable="false" class="idf"><g fill="currentColor" fill-rule="evenodd"><path d="M 821.144531 371.792969 L 811.976562 371.792969 L 811.976562 424.949219 L 821.144531 424.949219 L 821.164062 400.320312 L 846.964844 400.320312 L 847.042969 400.179688 L 829.855469 400.179688 L 828.875 400.070312 L 825.183594 398.539062 L 822.945312 396.320312 L 821.34375 392.691406 L 821.066406 390.652344 L 821.074219 389.070312 L 821.695312 385.609375 L 823.125 382.949219 L 825.464844 380.761719 L 829.222656 379.449219 L 831.59375 379.339844 L 847.054688 379.339844 L 847.003906 379.25 L 821.144531 379.25 Z M 821.144531 371.792969 "></path><path d="M 846.964844 400.320312 L 821.164062 400.320312 L 821.535156 401.191406 L 823.746094 404.351562 L 826.335938 406.441406 L 829.882812 407.839844 L 833.015625 408.242188 L 834.15625 408.242188 L 835.15625 408.179688 L 839.035156 407.289062 L 841.824219 405.949219 L 844.753906 403.480469 L 846.574219 401.011719 Z M 846.964844 400.320312 "></path><path d="M 847.054688 379.339844 L 831.59375 379.339844 L 832.554688 379.460938 L 833.496094 379.691406 L 836.195312 381.050781 L 838.414062 383.339844 L 839.894531 386.992188 L 840.144531 389.070312 L 840.132812 390.28125 L 839.484375 394.050781 L 838.023438 396.742188 L 835.0625 399.210938 L 832.15625 400.070312 L 829.855469 400.179688 L 847.042969 400.179688 L 848.285156 397.25 L 849.144531 393.429688 L 849.363281 390.28125 L 849.363281 389.070312 L 849.023438 385.339844 L 848.285156 382.429688 L 847.105469 379.429688 Z M 847.054688 379.339844 "></path><path d="M 833.035156 371.332031 L 829.175781 371.910156 L 826.335938 373.132812 L 823.84375 375 L 822.003906 377.410156 L 821.144531 379.25 L 847.003906 379.25 L 844.792969 376.121094 L 842.523438 374.109375 L 839.105469 372.3125 L 835.195312 371.421875 Z M 833.035156 371.332031 "></path><path d="M 872.523438 371.269531 L 868.625 371.492188 L 864.785156 372.5 L 861.785156 373.859375 L 858.804688 376.230469 L 856.863281 378.660156 L 855.332031 381.480469 L 854.222656 385.179688 L 853.832031 388.261719 L 853.792969 390.480469 L 853.824219 391.429688 L 854.453125 395.242188 L 855.453125 398.160156 L 856.914062 400.949219 L 859.503906 403.851562 L 862.09375 405.71875 L 864.933594 407.070312 L 867.832031 407.871094 L 870.851562 408.199219 L 872.832031 408.210938 L 873.792969 408.171875 L 877.582031 407.421875 L 880.382812 406.269531 L 883.132812 404.582031 L 885.464844 402.421875 L 886.953125 400.359375 L 871.234375 400.359375 L 870.304688 400.28125 L 866.714844 398.679688 L 864.582031 396.351562 L 863.375 392.761719 L 863.105469 389.039062 L 863.183594 387.902344 L 863.832031 384.871094 L 865.792969 381.589844 L 869.042969 379.609375 L 872.394531 379.179688 L 886.972656 379.179688 L 886.804688 378.890625 L 884.914062 376.492188 L 882.09375 374.132812 L 878.554688 372.371094 L 875.632812 371.582031 L 873.582031 371.320312 Z M 872.523438 371.269531 "></path><path d="M 889.234375 394.160156 L 879.535156 394.21875 L 879.324219 395.082031 L 878.984375 395.921875 L 877.101562 398.371094 L 874.375 399.96875 L 871.234375 400.359375 L 886.953125 400.359375 L 888.492188 397.152344 L 889.054688 395.179688 Z M 889.234375 394.160156 "></path><path d="M 886.972656 379.179688 L 872.394531 379.179688 L 873.363281 379.289062 L 874.324219 379.53125 L 877.074219 381 L 878.921875 383.410156 L 879.542969 385.351562 L 889.09375 384.539062 L 888.203125 381.589844 L 887.324219 379.769531 Z M 886.972656 379.179688 "></path><path d="M 894.414062 407.75 L 903.5625 407.75 L 903.5625 359.691406 L 894.414062 359.691406 Z M 894.414062 407.75 "></path><path d="M 909.292969 407.769531 L 919.171875 407.769531 L 919.171875 398.210938 L 909.292969 398.210938 Z M 909.292969 407.769531 "></path></g></svg><span class="hair"></span><span class="one">One</span></a>
     <ul>
       <li><a href="#modules">Modules</a></li>
       <li><a href="#here">Built for here</a></li>
@@ -281,22 +314,24 @@ footer a { color: var(--ink-2); }
       <li><a href="#security">Security</a></li>
     </ul>
     <div class="nav-cta">
-      <a class="signin" href="https://pclone.net/login">Sign in</a>
-      <a class="btn btn-gold" href="#walkthrough">Book a walkthrough</a>
+      <a class="textlink signin" href="https://pclone.net/login">Sign in</a>
+      <a class="btn btn-primary" href="#walkthrough">Book a walkthrough</a>
     </div>
   </div>
 </nav>
 
 <header class="opener" id="top">
   <div class="wrap">
-    <div class="kicker"><span>pclOne</span><span>by Phillips Consulting</span><span>Lagos</span></div>
-    <h1>Run the whole firm on <em>one</em> system.</h1>
-    <p class="lede">Finance, HR, clients, projects, compliance and support in a single platform. Designed by consultants who have spent decades fixing operations across Africa, and who got tired of watching good firms run on spreadsheets and WhatsApp.</p>
+    <div>
+      <div class="overline">pclOne by Phillips Consulting</div>
+      <h1>Run the whole firm on one system.</h1>
+      <p class="lead">Finance, people, clients, projects, compliance and support in a single platform. Designed by consultants who have spent decades fixing operations across Africa, and who are tired of watching good firms run on spreadsheets and WhatsApp.</p>
+    </div>
 
     <div class="madlib">
       <div>
         <p class="sentence">
-          <span class="hint">Fill in the blanks. The answer on the right is written for you.</span>
+          <span class="hint overline">Fill in the blanks. The answer is written for you.</span>
           We're a
           <label class="sr" for="ml-org">Type of organisation</label>
           <select id="ml-org">
@@ -318,7 +353,7 @@ footer a { color: var(--ink-2); }
             <option value="za">South Africa</option>
             <option value="multi">several countries</option>
           </select>,
-          and right now our
+          and our
           <label class="sr" for="ml-pain">Area that hurts most</label>
           <select id="ml-pain">
             <option value="finance">finance</option>
@@ -339,12 +374,12 @@ footer a { color: var(--ink-2); }
           </select>.
         </p>
         <div class="opener-cta">
-          <a class="btn btn-gold" href="#walkthrough">Show me this on our data <span class="arrow">&rarr;</span></a>
-          <a class="btn btn-line" href="#modules">See the eight modules</a>
+          <a class="btn btn-white" href="#walkthrough">Show me this on our data</a>
+          <a class="textlink" href="#modules">See the eight modules <span class="chev" aria-hidden="true">&rsaquo;&rsaquo;&rsaquo;</span></a>
         </div>
       </div>
       <div class="answer" aria-live="polite">
-        <h2>What changes in your first quarter</h2>
+        <h2 class="overline">What changes in your first quarter</h2>
         <ol id="answer"></ol>
       </div>
     </div>
@@ -355,19 +390,21 @@ footer a { color: var(--ink-2); }
   <section class="band" id="sprawl" aria-labelledby="sprawl-h">
     <div class="wrap">
       <div class="head">
-        <div class="margin label">The problem</div>
+        <div class="overline">The problem</div>
         <div>
-          <h2 id="sprawl-h">Count the tabs your month-end depends on.</h2>
-          <p>Most firms we meet don't have a software problem. They have a reconciliation problem. Every number gets typed twice, every approval waits on someone's phone, and nobody trusts the report until three people have checked it. Tap each one you recognise.</p>
+          <h2 class="title" id="sprawl-h">Count the tabs your month end depends on.</h2>
+          <p class="lead">Most firms we meet don't have a software problem. They have a reconciliation problem. Every number is typed twice, every approval waits on someone's phone, and nobody trusts the report until three people have checked it. Tap each one you recognise.</p>
         </div>
       </div>
       <div class="sprawl">
-        <div class="margin label">Where work lives today</div>
+        <div class="overline">Where work lives today</div>
         <ul class="sprawl-list" id="sprawl-list"></ul>
         <aside class="tally" aria-live="polite">
-          <div class="big"><span id="tally-n">0</span><small> / 7</small></div>
+          <div class="overline">Moved into pclOne</div>
+          <div class="big"><span id="tally-n">0</span><small> of 7</small></div>
+          <div class="bar"><i id="tally-bar"></i></div>
           <p id="tally-p">Tap a line to see where it goes in pclOne.</p>
-          <button class="btn" id="tally-all" type="button">Move them all</button>
+          <button class="btn btn-primary" id="tally-all" type="button">Move them all</button>
         </aside>
       </div>
     </div>
@@ -376,10 +413,10 @@ footer a { color: var(--ink-2); }
   <section class="band" id="modules" aria-labelledby="mod-h">
     <div class="wrap">
       <div class="head">
-        <div class="margin label">8 modules, 1 record</div>
+        <div class="overline">Eight modules, one record</div>
         <div>
-          <h2 id="mod-h">Eight modules. They share one database, so they never disagree.</h2>
-          <p>Buy the one that hurts most today. Each module reads from the others, so a leave approval moves the project plan, and a purchase order moves the budget, without anyone forwarding a spreadsheet.</p>
+          <h2 class="title" id="mod-h">Eight modules that never disagree.</h2>
+          <p class="lead">Start with the one that hurts most. Every module reads from the same record, so a leave approval moves the project plan and a purchase order moves the budget, without anyone forwarding a spreadsheet.</p>
         </div>
       </div>
       <div class="board">
@@ -389,19 +426,19 @@ footer a { color: var(--ink-2); }
     </div>
   </section>
 
-  <section class="band day" aria-labelledby="day-h">
+  <section class="band subtle" aria-labelledby="day-h">
     <div class="wrap">
       <div class="head">
-        <div class="margin label">One Tuesday, three offices</div>
+        <div class="overline">One Tuesday, three offices</div>
         <div>
-          <h2 id="day-h">Here's what a connected day looks like.</h2>
-          <p>Nobody chased anyone. Nothing got re-typed. Each line below set off the next one on its own. Illustrative activity for a firm with offices in Lagos, Accra and Nairobi.</p>
+          <h2 class="title" id="day-h">Here's what a connected day looks like.</h2>
+          <p class="lead">Nobody chased anyone. Nothing was typed twice. Each line set off the next on its own. Illustrative activity for a firm with offices in Lagos, Accra and Nairobi.</p>
         </div>
       </div>
-      <div class="log"><ul id="log"></ul></div>
+      <ul class="log" id="log"></ul>
       <div class="log-foot">
-        <span class="label">Times shown in WAT</span>
-        <button type="button" id="log-toggle">Pause the day</button>
+        <span class="overline">Times shown in WAT</span>
+        <button type="button" class="btn btn-ghost" id="log-toggle">Pause the day</button>
       </div>
     </div>
   </section>
@@ -409,23 +446,23 @@ footer a { color: var(--ink-2); }
   <section class="band" id="here" aria-labelledby="here-h">
     <div class="wrap">
       <div class="head">
-        <div class="margin label">Built for here</div>
+        <div class="overline">Built for here</div>
         <div>
-          <h2 id="here-h">Global suites were built for somewhere else. You've been paying for the gap.</h2>
-          <p>The big platforms are excellent at what they were designed for. Then you spend a year and a local partner bolting on statutory payroll, chasing currency differences, and training staff to approve things on a laptop they don't carry. pclOne starts from the conditions you actually work in.</p>
+          <h2 class="title" id="here-h">Built for the conditions you actually work in.</h2>
+          <p class="lead">The global platforms are excellent at what they were designed for. Then you spend a year and a local partner bolting on statutory payroll, chasing currency differences, and training staff to approve things on a laptop they don't carry. You've been paying for that gap.</p>
         </div>
       </div>
       <div class="here">
         <ul class="realities">
-          <li><h3>The naira moved again this week.</h3><p>Books, budgets and project margins carry the transaction currency and your reporting currency side by side, so a client paying in dollars and a supplier billing in cedis land in the same P&amp;L without a side spreadsheet.</p></li>
+          <li><h3>The naira moved again this week.</h3><p>Books, budgets and project margins carry the transaction currency and your reporting currency side by side. A client paying in dollars and a supplier billing in cedis land in the same P&amp;L without a side spreadsheet.</p></li>
           <li><h3>Payroll has a dozen statutory lines.</h3><p>Pension, housing funds, levies and PAYE are set up per entity and per country. When rules change, you update the rule once, not every payslip.</p></li>
           <li><h3>Approvers are rarely at a desk.</h3><p>Leave, purchase orders and invoices are approved from a phone in two taps, with the full context attached. The audit trail records who approved what, and when.</p></li>
-          <li><h3>Your people grow through appraisals, not job titles.</h3><p>pclHRM was shaped by a firm that runs performance management for some of the region's largest employers. Appraisals, development plans and skills feed straight into capacity planning.</p></li>
-          <li><h3>Regulators ask for evidence, not intentions.</h3><p>pclComply reviews policy documents against your frameworks in about a minute and keeps every change on record, so audit week stops being a scramble.</p></li>
+          <li><h3>People grow through appraisals.</h3><p>pclHRM was shaped by a firm that runs performance management for some of the region's largest employers. Appraisals, development plans and skills feed straight into capacity planning.</p></li>
+          <li><h3>Regulators ask for evidence.</h3><p>pclComply reviews policy documents against your frameworks in about a minute and keeps every change on record, so audit week stops being a scramble.</p></li>
         </ul>
-        <div class="country">
-          <div class="label" style="margin-bottom:12px">What your payroll has to get right</div>
-          <div class="cty-tabs" role="tablist" aria-label="Country" id="cty-tabs"></div>
+        <div>
+          <div class="overline">What your payroll has to get right</div>
+          <div class="tabs" role="tablist" aria-label="Country" id="cty-tabs"></div>
           <div class="slip" id="slip" role="tabpanel" tabindex="0"></div>
         </div>
       </div>
@@ -435,37 +472,37 @@ footer a { color: var(--ink-2); }
   <section class="band" id="compare" aria-labelledby="cmp-h">
     <div class="wrap">
       <div class="head">
-        <div class="margin label">The fair comparison</div>
+        <div class="overline">The fair comparison</div>
         <div>
-          <h2 id="cmp-h">pclOne against the global suite plus local add-ons.</h2>
-          <p>Where the big platforms are as good, we say so. The difference shows up in the rows that cost you money every month.</p>
+          <h2 class="title" id="cmp-h">pclOne against a patched global suite.</h2>
+          <p class="lead">Where the big platforms are as good, we say so. The difference shows up in the rows that cost you money every month.</p>
         </div>
       </div>
       <div class="cmp-wrap">
         <table class="cmp">
-          <thead><tr><th scope="col">What you need</th><th scope="col" class="us">pclOne</th><th scope="col">Global suite, locally patched</th></tr></thead>
+          <thead><tr><th scope="col">What you need</th><th scope="col" class="us">pclOne</th><th scope="col">Global suite with local add-ons</th></tr></thead>
           <tbody>
-            <tr><th scope="row">Finance, HR, CRM and projects on one record</th><td class="us">One database from day one</td><td class="them">Separate apps joined by integrations you maintain</td></tr>
-            <tr><th scope="row">Statutory payroll for African jurisdictions</th><td class="us">Configured per entity and country</td><td class="them">Third-party add-on or local partner</td></tr>
-            <tr><th scope="row">Project profitability including people cost</th><td class="us">Live, from timesheets, payroll and procurement</td><td class="them">Monthly export and a spreadsheet</td></tr>
-            <tr><th scope="row">Compliance document review</th><td class="us">Built in, about 60 seconds per review</td><td class="them">Separate GRC tool or manual review</td></tr>
-            <tr><th scope="row">Who implements it</th><td class="us">Phillips Consulting, who have run these processes in the region for decades</td><td class="them">Reseller network, support across time zones</td></tr>
-            <tr><th scope="row">Microsoft sign-in</th><td class="tie">Yes</td><td class="them">Yes</td></tr>
-            <tr><th scope="row">Mobile approvals</th><td class="tie">Yes</td><td class="them">Yes</td></tr>
+            <tr><th scope="row">Finance, HR, CRM and projects on one record</th><td class="us"><span class="dot"></span>One database from day one</td><td class="them">Separate apps joined by integrations you maintain</td></tr>
+            <tr><th scope="row">Statutory payroll for African jurisdictions</th><td class="us"><span class="dot"></span>Configured per entity and country</td><td class="them">Third-party add-on or local partner</td></tr>
+            <tr><th scope="row">Project profitability including people cost</th><td class="us"><span class="dot"></span>Live, from timesheets, payroll and procurement</td><td class="them">Monthly export and a spreadsheet</td></tr>
+            <tr><th scope="row">Compliance document review</th><td class="us"><span class="dot"></span>Built in, about 60 seconds per review</td><td class="them">Separate GRC tool or manual review</td></tr>
+            <tr><th scope="row">Who implements it</th><td class="us"><span class="dot"></span>Phillips Consulting, who have run these processes in the region for decades</td><td class="them">Reseller network, support across time zones</td></tr>
+            <tr><th scope="row">Microsoft sign-in</th><td class="us"><span class="dot tie"></span>Yes</td><td class="them">Yes</td></tr>
+            <tr><th scope="row">Mobile approvals</th><td class="us"><span class="dot tie"></span>Yes</td><td class="them">Yes</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="cmp-note">If you already run one global suite well and only need one more module, we'll tell you. Many clients start by plugging pclOne into what they have.</p>
+      <p class="cmp-note">If you already run one global suite well and only need one more module, we'll tell you. Many clients start by connecting pclOne to what they have.</p>
     </div>
   </section>
 
   <section class="band proof" id="security" aria-labelledby="proof-h">
     <div class="wrap">
       <div class="head">
-        <div class="margin label">Proof</div>
+        <div class="overline">Proof</div>
         <div>
-          <h2 id="proof-h">We run our own firm on it.</h2>
-          <p>pclOne started as the system Phillips Consulting built for itself: our appraisals, our projects, our finance. We sell it because it held up under our own month-ends first.</p>
+          <h2 class="title" id="proof-h">We run our own firm on it.</h2>
+          <p class="lead">pclOne began as the system Phillips Consulting built for itself: our appraisals, our projects, our finance. We sell it because it held up under our own month ends first.</p>
         </div>
       </div>
       <div class="figures">
@@ -475,9 +512,9 @@ footer a { color: var(--ink-2); }
         <div><b>100%</b><span>of changes and approvals on the audit trail</span></div>
       </div>
       <div class="sec">
-        <div><h3>Your data, walled off</h3><p>Each client runs in its own isolated environment. Administration stays central, data never mixes.</p></div>
-        <div><h3>Sign in the way you already do</h3><p>Microsoft single sign-on, with role-based access so a project lead sees the project, not the payroll.</p></div>
-        <div><h3>Encrypted end to end</h3><p>Data is encrypted in transit and at rest. Every record keeps its history, so nothing is silently overwritten.</p></div>
+        <div><h3>Your data, walled off.</h3><p>Each client runs in its own isolated environment. Administration stays central and data never mixes.</p></div>
+        <div><h3>Sign in as you already do.</h3><p>Microsoft single sign-on, with role-based access so a project lead sees the project, not the payroll.</p></div>
+        <div><h3>Encrypted end to end.</h3><p>Data is encrypted in transit and at rest. Every record keeps its history, so nothing is silently overwritten.</p></div>
       </div>
     </div>
   </section>
@@ -485,31 +522,33 @@ footer a { color: var(--ink-2); }
   <section class="band" id="walkthrough" aria-labelledby="close-h" style="border-bottom:0">
     <div class="wrap close">
       <div>
-        <h2 id="close-h">Start with one module. Keep the rest for when they've earned it.</h2>
-        <p class="lede">A 45-minute walkthrough with a consultant, not a sales script. Bring your messiest process. We'll show you what it looks like in pclOne, and we'll tell you honestly if you don't need us.</p>
+        <div class="overline">Getting started</div>
+        <h2 class="title" id="close-h" style="margin-top:16px">Start with one module.</h2>
+        <p class="lead">Add the rest when they've earned it. Book a 45-minute walkthrough with a consultant, not a sales script. Bring your messiest process and we'll show you what it looks like in pclOne. If you don't need us, we'll say so.</p>
         <ol class="steps">
-          <li><span><b>Map one process.</b> We sit with your team and document how it really runs today.</span></li>
-          <li><span><b>Go live on one module.</b> Your data moved over, your people trained, your rules configured.</span></li>
-          <li><span><b>Add the next one.</b> Each new module connects to what is already there. No re-implementation.</span></li>
+          <li><span class="when">Week 1</span><span><b>Map one process.</b> We sit with your team and document how it really runs today.</span></li>
+          <li><span class="when">Weeks 2 to 6</span><span><b>Go live on one module.</b> Your data moved over, your people trained, your rules configured.</span></li>
+          <li><span class="when">Month 2 on</span><span><b>Add the next one.</b> Each new module connects to what is already there, with no reimplementation.</span></li>
         </ol>
       </div>
       <form class="req" id="req" novalidate>
+        <h3 style="font-size:18px;line-height:26px">Book a walkthrough.</h3>
         <div class="row2">
           <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
           <div class="field"><label for="f-email">Work email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
         </div>
         <div class="row2">
-          <div class="field"><label for="f-co">Company</label><input id="f-co" name="company" autocomplete="organization" required></div>
+          <div class="field"><label for="f-co">Organisation</label><input id="f-co" name="company" autocomplete="organization" required></div>
           <div class="field"><label for="f-size">Team size</label>
             <select id="f-size" name="size"><option>Under 50</option><option selected>50 to 250</option><option>250 to 1,000</option><option>Over 1,000</option></select></div>
         </div>
         <div class="field">
-          <label id="f-mods-l">Where do you want to start?</label>
+          <span class="lbl" id="f-mods-l">Where do you want to start?</span>
           <div class="chips" role="group" aria-labelledby="f-mods-l" id="f-mods"></div>
         </div>
-        <button class="btn" type="submit">Book my walkthrough <span class="arrow">&rarr;</span></button>
-        <div class="form-msg" id="form-msg" hidden></div>
-        <p class="fine">We'll reply within one working day. Already a client? <a href="https://pclone.net/login">Sign in to pclOne</a>.</p>
+        <button class="btn btn-primary" type="submit">Book my walkthrough</button>
+        <div class="form-msg" id="form-msg" role="status" hidden></div>
+        <p class="fine">We reply within one working day. Already a client? <a href="https://pclone.net/login">Sign in to pclOne</a>.</p>
       </form>
     </div>
   </section>
@@ -517,8 +556,8 @@ footer a { color: var(--ink-2); }
 
 <footer>
   <div class="wrap">
-    <span>&copy; 2026 Phillips Consulting. pclOne is a pcl. product.</span>
-    <a href="https://pclone.net/login">Sign in</a>
+    <span class="lockup" aria-label="pclOne"><svg xmlns="http://www.w3.org/2000/svg" viewBox="811.977 359.691 107.195 65.258" aria-hidden="true" focusable="false" class="idf"><g fill="currentColor" fill-rule="evenodd"><path d="M 821.144531 371.792969 L 811.976562 371.792969 L 811.976562 424.949219 L 821.144531 424.949219 L 821.164062 400.320312 L 846.964844 400.320312 L 847.042969 400.179688 L 829.855469 400.179688 L 828.875 400.070312 L 825.183594 398.539062 L 822.945312 396.320312 L 821.34375 392.691406 L 821.066406 390.652344 L 821.074219 389.070312 L 821.695312 385.609375 L 823.125 382.949219 L 825.464844 380.761719 L 829.222656 379.449219 L 831.59375 379.339844 L 847.054688 379.339844 L 847.003906 379.25 L 821.144531 379.25 Z M 821.144531 371.792969 "></path><path d="M 846.964844 400.320312 L 821.164062 400.320312 L 821.535156 401.191406 L 823.746094 404.351562 L 826.335938 406.441406 L 829.882812 407.839844 L 833.015625 408.242188 L 834.15625 408.242188 L 835.15625 408.179688 L 839.035156 407.289062 L 841.824219 405.949219 L 844.753906 403.480469 L 846.574219 401.011719 Z M 846.964844 400.320312 "></path><path d="M 847.054688 379.339844 L 831.59375 379.339844 L 832.554688 379.460938 L 833.496094 379.691406 L 836.195312 381.050781 L 838.414062 383.339844 L 839.894531 386.992188 L 840.144531 389.070312 L 840.132812 390.28125 L 839.484375 394.050781 L 838.023438 396.742188 L 835.0625 399.210938 L 832.15625 400.070312 L 829.855469 400.179688 L 847.042969 400.179688 L 848.285156 397.25 L 849.144531 393.429688 L 849.363281 390.28125 L 849.363281 389.070312 L 849.023438 385.339844 L 848.285156 382.429688 L 847.105469 379.429688 Z M 847.054688 379.339844 "></path><path d="M 833.035156 371.332031 L 829.175781 371.910156 L 826.335938 373.132812 L 823.84375 375 L 822.003906 377.410156 L 821.144531 379.25 L 847.003906 379.25 L 844.792969 376.121094 L 842.523438 374.109375 L 839.105469 372.3125 L 835.195312 371.421875 Z M 833.035156 371.332031 "></path><path d="M 872.523438 371.269531 L 868.625 371.492188 L 864.785156 372.5 L 861.785156 373.859375 L 858.804688 376.230469 L 856.863281 378.660156 L 855.332031 381.480469 L 854.222656 385.179688 L 853.832031 388.261719 L 853.792969 390.480469 L 853.824219 391.429688 L 854.453125 395.242188 L 855.453125 398.160156 L 856.914062 400.949219 L 859.503906 403.851562 L 862.09375 405.71875 L 864.933594 407.070312 L 867.832031 407.871094 L 870.851562 408.199219 L 872.832031 408.210938 L 873.792969 408.171875 L 877.582031 407.421875 L 880.382812 406.269531 L 883.132812 404.582031 L 885.464844 402.421875 L 886.953125 400.359375 L 871.234375 400.359375 L 870.304688 400.28125 L 866.714844 398.679688 L 864.582031 396.351562 L 863.375 392.761719 L 863.105469 389.039062 L 863.183594 387.902344 L 863.832031 384.871094 L 865.792969 381.589844 L 869.042969 379.609375 L 872.394531 379.179688 L 886.972656 379.179688 L 886.804688 378.890625 L 884.914062 376.492188 L 882.09375 374.132812 L 878.554688 372.371094 L 875.632812 371.582031 L 873.582031 371.320312 Z M 872.523438 371.269531 "></path><path d="M 889.234375 394.160156 L 879.535156 394.21875 L 879.324219 395.082031 L 878.984375 395.921875 L 877.101562 398.371094 L 874.375 399.96875 L 871.234375 400.359375 L 886.953125 400.359375 L 888.492188 397.152344 L 889.054688 395.179688 Z M 889.234375 394.160156 "></path><path d="M 886.972656 379.179688 L 872.394531 379.179688 L 873.363281 379.289062 L 874.324219 379.53125 L 877.074219 381 L 878.921875 383.410156 L 879.542969 385.351562 L 889.09375 384.539062 L 888.203125 381.589844 L 887.324219 379.769531 Z M 886.972656 379.179688 "></path><path d="M 894.414062 407.75 L 903.5625 407.75 L 903.5625 359.691406 L 894.414062 359.691406 Z M 894.414062 407.75 "></path><path d="M 909.292969 407.769531 L 919.171875 407.769531 L 919.171875 398.210938 L 909.292969 398.210938 Z M 909.292969 407.769531 "></path></g></svg><span class="hair"></span><span class="one">One</span></span>
+    <span>&copy; 2026 Phillips Consulting. All rights reserved.</span>
   </div>
 </footer>
 
@@ -529,74 +568,72 @@ footer a { color: var(--ink-2); }
 
   var MODS = [
     { id: "finance", n: "Finance", pitch: "Project-linked finance, procurement and inventory, with live budgets and approval workflows.",
-      screen: { title: "Budget vs actual · Q4", rows: [["Eko Rail advisory", "₦184.2m / ₦210m", "ok", "88%"], ["Accra HR transformation", "GH₵2.9m / GH₵3.1m", "warn", "94%"], ["PO-2291 · laptops (12)", "₦18.6m", "wait", "awaiting CFO"], ["FX revaluation, USD receivables", "+₦4.1m", "ok", "posted"]] },
-      wires: [["pclProjects", "every PO and invoice lands on the project it belongs to"], ["pclHRM", "payroll cost flows into project margins without an export"], ["pclAnalytics", "cash, burn and margin on the executive dashboard"]],
-      ships: "Replaces: the budget workbook, emailed POs, the quarterly margin surprise." },
+      screen: { title: "Budget against actual, Q4", rows: [["Eko Rail advisory", "₦184.2m of ₦210m", "ok", "88%"], ["Accra HR transformation", "GH₵2.9m of GH₵3.1m", "warn", "94%"], ["PO-2291, laptops (12)", "₦18.6m", "wait", "Awaiting CFO"], ["FX revaluation, USD receivables", "+₦4.1m", "ok", "Posted"]] },
+      wires: [["pclProjects", "Every PO and invoice lands on the project it belongs to."], ["pclHRM", "Payroll cost flows into project margins without an export."], ["pclAnalytics", "Cash, burn and margin on the executive dashboard."]],
+      ships: "The budget workbook, emailed POs and the quarterly margin surprise." },
     { id: "hr", n: "HRM", pitch: "People records, appraisals, development plans, leave and capacity planning, with skills tracked across the firm.",
-      screen: { title: "Appraisal cycle · H2", rows: [["Self-assessments", "212 of 240", "ok", "88%"], ["Manager reviews", "131 of 240", "wait", "due Fri"], ["Calibration · Lagos", "4 panels", "ok", "booked"], ["Leave · Accra office, Dec", "9 people", "warn", "overlap"]] },
-      wires: [["pclProjects", "approved leave shifts the capacity plan the same minute"], ["pclFinance", "payroll and statutory lines post to the ledger"], ["pclDiagnostics", "assessment results feed development plans"]],
-      ships: "Replaces: appraisal forms in email, the leave spreadsheet, guesswork on who is free next month." },
-    { id: "crm", n: "CRM", pitch: "Clients and pipeline with deal forecasting and activity history that the rest of the firm can actually see.",
-      screen: { title: "Pipeline · this quarter", rows: [["Proposal · Tier-1 bank, Lagos", "$420k", "wait", "60%"], ["Renewal · Nairobi utility", "KSh 38m", "ok", "90%"], ["Discovery · Accra telco", "$150k", "wait", "25%"], ["Weighted forecast", "$1.12m", "ok", "on track"]] },
-      wires: [["pclProjects", "a won deal becomes a staffed project, budget included"], ["pclDesk", "account leads see open complaints before the client call"], ["pclAnalytics", "forecast vs capacity on one chart"]],
-      ships: "Replaces: the pipeline someone updates on Friday night." },
+      screen: { title: "Appraisal cycle, H2", rows: [["Self-assessments", "212 of 240", "ok", "88%"], ["Manager reviews", "131 of 240", "wait", "Due Fri"], ["Calibration, Lagos", "4 panels", "ok", "Booked"], ["Leave, Accra office, Dec", "9 people", "warn", "Overlap"]] },
+      wires: [["pclProjects", "Approved leave shifts the capacity plan the same minute."], ["pclFinance", "Payroll and statutory lines post to the ledger."], ["pclDiagnostics", "Assessment results feed development plans."]],
+      ships: "Appraisal forms in email, the leave spreadsheet and guesswork about who is free next month." },
+    { id: "crm", n: "CRM", pitch: "Clients and pipeline with deal forecasting and an activity history the rest of the firm can actually see.",
+      screen: { title: "Pipeline, this quarter", rows: [["Proposal, tier-1 bank, Lagos", "$420k", "wait", "60%"], ["Renewal, Nairobi utility", "KSh 38m", "ok", "90%"], ["Discovery, Accra telco", "$150k", "wait", "25%"], ["Weighted forecast", "$1.12m", "ok", "On track"]] },
+      wires: [["pclProjects", "A won deal becomes a staffed project, budget included."], ["pclDesk", "Account leads see open complaints before the client call."], ["pclAnalytics", "Forecast and capacity on one chart."]],
+      ships: "The pipeline someone updates on Friday night." },
     { id: "projects", n: "Projects", pitch: "The full project lifecycle with live profitability, SLA monitoring and team capacity planning.",
-      screen: { title: "Delivery board", rows: [["Eko Rail advisory", "Phase 2 of 4", "ok", "margin 31%"], ["Accra HR transformation", "Phase 3 of 3", "warn", "margin 12%"], ["Nairobi utility audit", "Kick-off Mon", "wait", "3 unstaffed"], ["Utilisation · firm-wide", "78%", "ok", "target 75%"]] },
-      wires: [["pclFinance", "spend and invoices update margin as they happen"], ["pclHRM", "staff the project from who is actually available"], ["pclCRM", "the sold scope and the delivered scope stay in one place"]],
-      ships: "Replaces: status decks, utilisation spreadsheets, the margin you find out about after the project ends." },
-    { id: "comply", n: "Comply", pitch: "AI-assisted compliance: automated document review, framework tracking and an audit-readiness score.",
-      screen: { title: "Framework readiness", rows: [["ISO 27001 · policy pack", "reviewed in 52s", "warn", "3 gaps"], ["NDPA data protection", "14 of 16 controls", "ok", "88%"], ["AML/CFT procedures", "due for review", "wait", "12 days"], ["Audit readiness score", "81 / 100", "ok", "+6"]] },
-      wires: [["pclDesk", "gaps become tracked tickets with owners and deadlines"], ["pclAnalytics", "readiness score on the board pack"], ["pclHRM", "policy attestations tracked per employee"]],
-      ships: "Replaces: the compliance binder and audit-week overtime." },
+      screen: { title: "Delivery board", rows: [["Eko Rail advisory", "Phase 2 of 4", "ok", "Margin 31%"], ["Accra HR transformation", "Phase 3 of 3", "warn", "Margin 12%"], ["Nairobi utility audit", "Starts Mon", "wait", "3 unstaffed"], ["Utilisation, firm-wide", "Target 75%", "ok", "78%"]] },
+      wires: [["pclFinance", "Spend and invoices update margin as they happen."], ["pclHRM", "Staff the project from who is actually available."], ["pclCRM", "The sold scope and the delivered scope stay in one place."]],
+      ships: "Status decks, utilisation spreadsheets and the margin you discover after the project ends." },
+    { id: "comply", n: "Comply", pitch: "AI-assisted compliance: automated document review, framework tracking and an audit readiness score.",
+      screen: { title: "Framework readiness", rows: [["ISO 27001 policy pack", "Reviewed in 52s", "warn", "3 gaps"], ["NDPA data protection", "14 of 16 controls", "ok", "88%"], ["AML/CFT procedures", "Due for review", "wait", "12 days"], ["Audit readiness score", "81 of 100", "ok", "+6"]] },
+      wires: [["pclDesk", "Gaps become tracked tickets with owners and deadlines."], ["pclAnalytics", "The readiness score sits in the board pack."], ["pclHRM", "Policy attestations tracked per employee."]],
+      ships: "The compliance binder and audit week overtime." },
     { id: "diag", n: "Diagnostics", pitch: "Expert-designed assessments that show where your organisation stands and what to fix first.",
-      screen: { title: "Org assessment · results", rows: [["Leadership alignment", "3.1 / 5", "warn", "priority"], ["Process maturity", "3.8 / 5", "ok", ""], ["Digital readiness", "2.6 / 5", "warn", "priority"], ["Responses", "184 of 200", "ok", "92%"]] },
-      wires: [["pclAnalytics", "results become part of the Organisational Health Score"], ["pclHRM", "findings turn into development plans"], ["pclProjects", "priorities turn into scoped improvement work"]],
-      ships: "Replaces: the consultant's survey that ends up in a PDF nobody opens." },
+      screen: { title: "Organisation assessment", rows: [["Leadership alignment", "3.1 of 5", "warn", "Priority"], ["Process maturity", "3.8 of 5", "ok", "Sound"], ["Digital readiness", "2.6 of 5", "warn", "Priority"], ["Responses", "184 of 200", "ok", "92%"]] },
+      wires: [["pclAnalytics", "Results feed the Organisational Health Score."], ["pclHRM", "Findings become development plans."], ["pclProjects", "Priorities become scoped improvement work."]],
+      ships: "The survey that ends up in a PDF nobody opens." },
     { id: "analytics", n: "Analytics", pitch: "Firm-wide analytics with an Organisational Health Score, executive dashboards and a custom report builder.",
-      screen: { title: "Executive view", rows: [["Organisational Health Score", "74", "ok", "+3 QoQ"], ["Revenue vs plan", "102%", "ok", ""], ["Receivables > 90 days", "₦41m", "warn", "4 clients"], ["Attrition, trailing 12m", "9.4%", "ok", "below target"]] },
-      wires: [["Every module", "reads live data, so there is no month-end refresh"], ["pclFinance", "drill from a board number down to the invoice"], ["pclHRM", "people metrics next to financial ones"]],
-      ships: "Replaces: the board pack that takes a week to assemble." },
+      screen: { title: "Executive view", rows: [["Organisational Health Score", "74", "ok", "+3 QoQ"], ["Revenue against plan", "102%", "ok", "Ahead"], ["Receivables over 90 days", "₦41m", "warn", "4 clients"], ["Attrition, trailing 12 months", "9.4%", "ok", "Below target"]] },
+      wires: [["Every module", "Reads live data, so there is no month end refresh."], ["pclFinance", "Drill from a board number down to the invoice."], ["pclHRM", "People metrics next to financial ones."]],
+      ships: "The board pack that takes a week to assemble." },
     { id: "desk", n: "Desk", pitch: "A two-stream helpdesk for client complaints and internal IT support, with SLAs and a knowledge base.",
-      screen: { title: "Open tickets", rows: [["DESK-118 · client billing query", "Nairobi", "warn", "SLA 4h"], ["IT-442 · laptop access", "Lagos", "ok", "resolved"], ["DESK-121 · report request", "Accra", "wait", "assigned"], ["First response, median", "38 min", "ok", "target 1h"]] },
-      wires: [["pclCRM", "complaints show on the client record"], ["pclComply", "compliance gaps open as tickets"], ["pclAnalytics", "SLA performance by office and team"]],
-      ships: "Replaces: the shared inbox and the IT WhatsApp group." }
+      screen: { title: "Open tickets", rows: [["DESK-118, billing query", "Nairobi", "warn", "SLA 4h"], ["IT-442, laptop access", "Lagos", "ok", "Resolved"], ["DESK-121, report request", "Accra", "wait", "Assigned"], ["First response, median", "Target 1h", "ok", "38 min"]] },
+      wires: [["pclCRM", "Complaints show on the client record."], ["pclComply", "Compliance gaps open as tickets."], ["pclAnalytics", "SLA performance by office and team."]],
+      ships: "The shared inbox and the IT WhatsApp group." }
   ];
   var byId = {}; MODS.forEach(function (m) { byId[m.id] = m; });
-
-  // ---------- Opener mad-lib ----------
-  var CTY = {
-    ng: { name: "Nigeria", cur: "naira", lines: "PAYE, pension (8% + 10%), NHF, NSITF and ITF" },
-    gh: { name: "Ghana", cur: "cedi", lines: "PAYE and SSNIT tiers (5.5% + 13%)" },
-    ke: { name: "Kenya", cur: "shilling", lines: "PAYE, NSSF, SHIF and the housing levy" },
-    za: { name: "South Africa", cur: "rand", lines: "PAYE, UIF and SDL" }
-  };
   var $ = function (id) { return document.getElementById(id); };
-  var answer = $("answer");
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
+  // ---------- Opener ----------
+  var CTY = {
+    ng: { name: "Nigeria", cur: "naira", lines: "PAYE, pension (8% and 10%), NHF, NSITF and ITF" },
+    gh: { name: "Ghana", cur: "cedis", lines: "PAYE and SSNIT (5.5% and 13%)" },
+    ke: { name: "Kenya", cur: "shillings", lines: "PAYE, NSSF, SHIF and the housing levy" },
+    za: { name: "South Africa", cur: "rand", lines: "PAYE, UIF and SDL" }
+  };
+  var answer = $("answer");
   function renderAnswer() {
     var org = $("ml-org").value, c = $("ml-country").value, pain = $("ml-pain").value, where = $("ml-where").value;
     var n = parseInt($("ml-size").value, 10); if (!(n > 0)) n = 180;
-    var m = byId[pain];
-    var items = [];
+    var m = byId[pain], items = [];
     items.push("<strong>Your " + esc($("ml-pain").selectedOptions[0].text) + " moves out of " + esc(where) + " and into pcl" + m.n + ".</strong> " + esc(m.pitch));
-    if (c === "multi") items.push("<strong>Each country runs as its own entity</strong> with its own currency, statutory rules and approvers. Group reporting rolls up into one view, in the currency your board reads.");
-    else items.push("<strong>Set up for " + CTY[c].name + " on day one.</strong> " + CTY[c].lines + " are configured for your entity, and your books report in " + CTY[c].cur + " and any currency you invoice in.");
-    if (n < 50) items.push("<strong>At " + n + " people, keep it small.</strong> Start with pcl" + m.n + " and pclHRM. Add the rest when the firm grows into them, on the same record.");
-    else if (n <= 600) items.push("<strong>At " + n + " people, reconciliation is the hidden payroll.</strong> Someone on your team spends days each month matching numbers between tools. That work stops.");
-    else items.push("<strong>At " + n.toLocaleString() + " people, control matters most.</strong> Microsoft sign-in, role-based access and isolated environments keep each team in its lane.");
-    items.push("<strong>Every approval leaves a trail.</strong> Who signed off, when, and on what figure. Your next " + (org === "development programme" ? "donor audit" : org === "financial services firm" ? "regulatory exam" : "audit") + " starts from evidence.");
+    if (c === "multi") items.push("<strong>Each country runs as its own entity</strong>, with its own currency, statutory rules and approvers. Group reporting rolls up into one view, in the currency your board reads.");
+    else items.push("<strong>Set up for " + CTY[c].name + " from day one.</strong> " + CTY[c].lines + " are configured for your entity, and your books report in " + CTY[c].cur + " alongside any currency you invoice in.");
+    if (n < 50) items.push("<strong>At " + n + " people, keep it small.</strong> Start with pcl" + m.n + " and pclHRM, and add the rest as you grow, on the same record.");
+    else if (n <= 600) items.push("<strong>At " + n + " people, reconciliation is a hidden payroll.</strong> Someone on your team spends days each month matching numbers between tools. That work stops.");
+    else items.push("<strong>At " + n.toLocaleString("en-GB") + " people, control matters most.</strong> Microsoft sign-in, role-based access and isolated environments keep each team in its lane.");
+    items.push("<strong>Every approval leaves a trail.</strong> Who signed off, when, and on what figure. Your next " + (org === "development programme" ? "donor audit" : org === "financial services firm" ? "regulatory examination" : "audit") + " starts from evidence.");
     answer.innerHTML = items.map(function (h) { return "<li><span>" + h + "</span></li>"; }).join("");
     answer.classList.remove("flash"); void answer.offsetWidth; answer.classList.add("flash");
   }
   ["ml-org", "ml-country", "ml-pain", "ml-where"].forEach(function (id) { $(id).addEventListener("change", renderAnswer); });
-  $("ml-size").addEventListener("input", function () { this.style.width = Math.max(2, this.value.length + 1.6) + "ch"; renderAnswer(); });
-  $("ml-size").style.width = "4.6ch";
-  renderAnswer();
+  function sizeInput() { var el = $("ml-size"); el.style.width = Math.max(2, el.value.length + 1.4) + "ch"; }
+  $("ml-size").addEventListener("input", function () { sizeInput(); renderAnswer(); });
+  sizeInput(); renderAnswer();
 
-  // ---------- Sprawl list ----------
+  // ---------- Sprawl ----------
   var SPRAWL = [
-    ["The budget workbook", "Version 14_final_FINAL, emailed on Thursday", "finance"],
+    ["The budget workbook", "Version 14, final, emailed on Thursday", "finance"],
     ["The approvals WhatsApp group", "Where purchase orders go to wait", "finance"],
     ["Appraisal forms in email", "Half returned, none comparable", "hr"],
     ["The leave calendar", "Nobody checks it before staffing a project", "hr"],
@@ -606,13 +643,14 @@ footer a { color: var(--ink-2); }
   ];
   var list = $("sprawl-list"), done = 0;
   list.innerHTML = SPRAWL.map(function (s, i) {
-    return '<li><button type="button" aria-pressed="false" data-i="' + i + '"><span class="what">' + esc(s[0]) + '<span class="why">' + esc(s[1]) + '</span></span><span class="to"><b>tap to move</b><i>&rarr; pcl' + byId[s[2]].n + '</i></span></button></li>';
+    return '<li><button type="button" aria-pressed="false" data-i="' + i + '"><span class="what">' + esc(s[0]) + '<span class="why">' + esc(s[1]) + '</span></span><span class="to"><b>Tap to move</b><i>To pcl' + byId[s[2]].n + '</i></span></button></li>';
   }).join("");
+  var MSGS = ["Tap a line to see where it goes in pclOne.", "One less thing to reconcile.", "Two systems retired. The numbers already agree.", "Three down. Month end just got shorter.", "Four. Your finance team gets Fridays back.", "Five. One sign-in, one source of truth.", "Six. Audit week becomes a normal week.", "All seven, on one record. That's pclOne."];
   function tally() {
     done = list.querySelectorAll("li.done").length;
     $("tally-n").textContent = done;
-    var msgs = ["Tap a line to see where it goes in pclOne.", "One less thing to reconcile.", "Two systems retired. The numbers already agree.", "Three down. Month-end just got shorter.", "Four. Your finance team gets their Fridays back.", "Five. One login, one source of truth.", "Six. Audit week is now a normal week.", "All seven, on one record. That's pclOne."];
-    $("tally-p").textContent = msgs[done];
+    $("tally-bar").style.width = (done / SPRAWL.length * 100) + "%";
+    $("tally-p").textContent = MSGS[done];
     $("tally-all").textContent = done === SPRAWL.length ? "Put them back" : "Move them all";
   }
   list.addEventListener("click", function (e) {
@@ -628,38 +666,39 @@ footer a { color: var(--ink-2); }
   });
   tally();
 
-  // ---------- Modules switchboard ----------
+  // ---------- Modules ----------
   var idx = $("mod-index"), panel = $("mod-panel");
   idx.innerHTML = MODS.map(function (m, i) {
-    return '<li role="presentation"><button role="tab" id="tab-' + m.id + '" aria-controls="mod-panel" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? 0 : -1) + '" data-id="' + m.id + '"><span class="k">0' + (i + 1) + '</span><span class="n"><b>pcl</b>' + m.n + '</span></button></li>';
+    return '<li role="presentation"><button role="tab" id="tab-' + m.id + '" aria-controls="mod-panel" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? 0 : -1) + '" data-id="' + m.id + '"><span class="k">0' + (i + 1) + '</span><span>pcl' + m.n + '</span></button></li>';
   }).join("");
   function showMod(id, focus) {
     var m = byId[id];
     idx.querySelectorAll("button").forEach(function (b) { var s = b.dataset.id === id; b.setAttribute("aria-selected", s); b.tabIndex = s ? 0 : -1; if (s && focus) b.focus(); });
     panel.setAttribute("aria-labelledby", "tab-" + id);
     panel.innerHTML =
-      '<h3>pcl' + m.n + '</h3><p class="pitch">' + esc(m.pitch) + '</p>' +
-      '<div class="mod-grid"><div class="screen" aria-label="Example pcl' + m.n + ' screen"><div class="screen-top"><span>pcl' + m.n + ' / ' + esc(m.screen.title) + '</span><span>sample data</span></div><table><tbody>' +
-      m.screen.rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td>' + (r[3] ? '<span class="pill ' + r[2] + '">' + esc(r[3]) + '</span>' : '') + '</td></tr>'; }).join("") +
-      '</tbody></table></div><div class="wires"><h4>Talks to</h4><ul>' +
-      m.wires.map(function (w) { return '<li><span><b>' + esc(w[0]) + '</b>: ' + esc(w[1]) + '</span></li>'; }).join("") +
-      '</ul><p class="ships">' + esc(m.ships) + '</p></div></div>';
+      '<h3>pcl' + m.n + '.</h3><p class="pitch">' + esc(m.pitch) + '</p>' +
+      '<div class="mod-grid"><div class="screen"><div class="screen-top"><span>' + esc(m.screen.title) + '</span><span class="overline">Sample data</span></div><table><tbody>' +
+      m.screen.rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td><span class="badge ' + r[2] + '">' + esc(r[3]) + '</span></td></tr>'; }).join("") +
+      '</tbody></table></div><div class="wires"><h4 class="overline">Connected to</h4><ul>' +
+      m.wires.map(function (w) { return '<li><b>' + esc(w[0]) + '</b><span>' + esc(w[1]) + '</span></li>'; }).join("") +
+      '</ul><p class="ships"><b>Retires:</b> ' + esc(m.ships) + '</p></div></div>';
   }
   idx.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) showMod(b.dataset.id); });
   idx.addEventListener("keydown", function (e) {
     var keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 };
     if (!(e.key in keys)) return; e.preventDefault();
-    var cur = MODS.findIndex(function (m) { return idx.querySelector('[aria-selected="true"]').dataset.id === m.id; });
+    var curId = idx.querySelector('[aria-selected="true"]').dataset.id;
+    var cur = MODS.findIndex(function (m) { return m.id === curId; });
     showMod(MODS[(cur + keys[e.key] + MODS.length) % MODS.length].id, true);
   });
   showMod("finance");
 
   // ---------- Day log ----------
   var LOG = [
-    ["08:12", "Lagos", "pclFinance", "PO-2291 for 12 laptops approved by the CFO from her phone. The Eko Rail budget updates before she puts it down."],
-    ["09:40", "Accra", "pclHRM", "Ama's December leave is approved. The capacity plan for the year-end audit shifts her tasks to Kojo, who has room."],
+    ["08:12", "Lagos", "pclFinance", "PO-2291 for 12 laptops is approved by the CFO from her phone. The Eko Rail budget updates before she puts it down."],
+    ["09:40", "Accra", "pclHRM", "Ama's December leave is approved. The capacity plan for the year-end audit moves her tasks to Kojo, who has room."],
     ["10:15", "Lagos", "pclCRM", "The bank proposal moves to 60%. pclProjects drafts a staffing plan from people who are actually free in January."],
-    ["11:05", "Nairobi", "pclDesk", "A billing complaint reaches its 4-hour SLA. It escalates to the account lead, who sees it on the client record."],
+    ["11:05", "Nairobi", "pclDesk", "A billing complaint reaches its four-hour SLA. It escalates to the account lead, who sees it on the client record."],
     ["13:30", "Lagos", "pclComply", "The updated data protection policy is reviewed in 52 seconds. Three gaps become tickets with owners."],
     ["15:20", "Accra", "pclFinance", "A client pays in dollars. The receivable revalues to cedis at today's rate and the project margin updates."],
     ["17:45", "All offices", "pclAnalytics", "The managing partner opens one dashboard. Revenue, utilisation and the health score are already current."]
@@ -676,10 +715,10 @@ footer a { color: var(--ink-2); }
 
   // ---------- Country slip ----------
   var SLIPS = {
-    ng: { name: "Nigeria", cur: "NGN", rows: [["PAYE", "Personal income tax, progressive bands", "per state IRS"], ["Pension (CRA)", "Employee 8%, employer 10%", "to PFA"], ["NHF", "2.5% of basic", "employee"], ["NSITF", "1% of payroll", "employer"], ["ITF", "1% of payroll, qualifying employers", "employer"]] },
-    gh: { name: "Ghana", cur: "GHS", rows: [["PAYE", "Progressive bands", "GRA"], ["SSNIT", "Employee 5.5%, employer 13%", "tier 1 & 2"], ["Tier 3", "Voluntary provident fund", "optional"]] },
-    ke: { name: "Kenya", cur: "KES", rows: [["PAYE", "Progressive bands, less personal relief", "KRA"], ["NSSF", "Tier I and II, employee and employer", "matched"], ["SHIF", "2.75% of gross", "employee"], ["Housing levy", "1.5% employee, 1.5% employer", "matched"], ["NITA", "Fixed monthly levy", "employer"]] },
-    za: { name: "South Africa", cur: "ZAR", rows: [["PAYE", "Progressive bands, less rebates", "SARS"], ["UIF", "1% employee, 1% employer", "capped"], ["SDL", "1% of payroll, qualifying employers", "employer"]] }
+    ng: { name: "Nigeria", cur: "NGN", rows: [["PAYE", "Personal income tax, progressive bands", "State IRS"], ["Pension", "Employee 8%, employer 10%", "To the PFA"], ["NHF", "2.5% of basic salary", "Employee"], ["NSITF", "1% of payroll", "Employer"], ["ITF", "1% of payroll, qualifying employers", "Employer"]] },
+    gh: { name: "Ghana", cur: "GHS", rows: [["PAYE", "Progressive bands", "GRA"], ["SSNIT", "Employee 5.5%, employer 13%", "Tiers 1 and 2"], ["Tier 3", "Voluntary provident fund", "Optional"]] },
+    ke: { name: "Kenya", cur: "KES", rows: [["PAYE", "Progressive bands, less personal relief", "KRA"], ["NSSF", "Tiers I and II", "Matched"], ["SHIF", "2.75% of gross pay", "Employee"], ["Housing levy", "Employee 1.5%, employer 1.5%", "Matched"], ["NITA", "Fixed monthly levy", "Employer"]] },
+    za: { name: "South Africa", cur: "ZAR", rows: [["PAYE", "Progressive bands, less rebates", "SARS"], ["UIF", "Employee 1%, employer 1%", "Capped"], ["SDL", "1% of payroll, qualifying employers", "Employer"]] }
   };
   var tabs = $("cty-tabs"), slip = $("slip");
   tabs.innerHTML = Object.keys(SLIPS).map(function (k, i) { return '<button role="tab" id="cty-' + k + '" aria-controls="slip" aria-selected="' + (i === 0) + '" data-k="' + k + '">' + SLIPS[k].name + '</button>'; }).join("");
@@ -687,12 +726,21 @@ footer a { color: var(--ink-2); }
     var s = SLIPS[k];
     tabs.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.k === k); });
     slip.setAttribute("aria-labelledby", "cty-" + k);
-    slip.innerHTML = '<div class="slip-head"><b>' + s.name + '</b><span>Statutory lines · ' + s.cur + '</span></div><table><tbody>' +
+    slip.innerHTML = '<div class="slip-head"><b>' + s.name + '.</b><span class="overline">Statutory lines, ' + s.cur + '</span></div><table><tbody>' +
       s.rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '<span class="who">' + esc(r[2]) + '</span></td><td>' + esc(r[1]) + '</td></tr>'; }).join("") +
-      '</tbody></table><p class="note">pclHRM holds these as rules on the entity, not formulas in a payslip. Rates shown for reference as of November 2026. Confirm current rates with your tax adviser.</p>';
+      '</tbody></table><p class="note">pclHRM holds these as rules on the entity, not formulas in a payslip. Rates shown for reference as of 24 Nov 2026. Confirm current rates with your tax adviser.</p>';
   }
   tabs.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) showSlip(b.dataset.k); });
   showSlip("ng");
+
+  // ---------- Nav underline follows the section in view ----------
+  var navLinks = document.querySelectorAll(".nav ul a");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) navLinks.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id); }); });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    ["modules", "here", "compare", "security"].forEach(function (id) { io.observe($(id)); });
+  }
 
   // ---------- Walkthrough form ----------
   $("f-mods").innerHTML = MODS.map(function (m) { return '<label><input type="checkbox" name="modules" value="' + m.id + '"' + (m.id === "finance" ? " checked" : "") + '> pcl' + m.n + '</label>'; }).join("");
@@ -703,13 +751,15 @@ footer a { color: var(--ink-2); }
     e.preventDefault();
     var f = e.target, msg = $("form-msg");
     var bad = ["f-name", "f-email", "f-co"].filter(function (id) { return !$(id).checkValidity() || !$(id).value.trim(); });
-    if (bad.length) { msg.hidden = false; msg.style.borderLeftColor = "var(--warn)"; msg.textContent = "Add your name, a work email and your company so a consultant can reach you."; $(bad[0]).focus(); return; }
-    var data = Object.fromEntries(new FormData(f)); data.modules = new FormData(f).getAll("modules");
-    msg.hidden = false; msg.style.borderLeftColor = "var(--ok)";
-    if (!FORM_ENDPOINT) { msg.textContent = "Preview only: this form is not connected yet, so nothing was sent. Thanks, " + data.name.split(" ")[0] + "."; return; }
+    msg.hidden = false;
+    if (bad.length) { msg.className = "form-msg err"; msg.textContent = "Add your name, a work email and your organisation so a consultant can reach you."; $(bad[0]).focus(); return; }
+    var fd = new FormData(f), data = Object.fromEntries(fd); data.modules = fd.getAll("modules");
+    var first = data.name.trim().split(" ")[0];
+    msg.className = "form-msg";
+    if (!FORM_ENDPOINT) { msg.textContent = "Preview only. This form is not connected yet, so nothing was sent. Thank you, " + first + "."; return; }
     fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
-      .then(function (r) { if (!r.ok) throw 0; msg.textContent = "Thanks, " + data.name.split(" ")[0] + ". A pcl. consultant will email you within one working day."; f.reset(); })
-      .catch(function () { msg.style.borderLeftColor = "var(--warn)"; msg.textContent = "That didn't go through. Check your connection and try again."; });
+      .then(function (r) { if (!r.ok) throw 0; msg.textContent = "Thank you, " + first + ". A Phillips Consulting consultant will email you within one working day."; f.reset(); })
+      .catch(function () { msg.className = "form-msg err"; msg.textContent = "Your request didn't go through. Check your connection and try again."; });
   });
 })();
 </script>
