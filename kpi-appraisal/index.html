@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPI Appraisal Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #edf4f1; font-family: Roboto, system-ui, sans-serif; color: #111816; padding: 24px 16px 48px; }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  .demo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 18px; }
+  .demo-bar span { font-size: 12px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: #66706c; margin-right: 6px; }
+  .demo-bar button {
+    appearance: none; cursor: pointer; font: 500 13.5px Roboto, sans-serif; color: #111816;
+    background: #fff; border: 1px solid #e3e9e6; border-radius: 999px; padding: 8px 14px;
+  }
+  .demo-bar button[aria-pressed="true"] { color: #fff; background: #14352d; border-color: #14352d; }
+  .demo-bar .reset { margin-left: auto; color: #0b5e50; background: none; border: 0; }
+  .log { margin-top: 16px; font: 12px ui-monospace, monospace; color: #66706c; min-height: 1em; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="demo-bar" role="group" aria-label="Demo stage">
+      <span>Demo stage</span>
+      <button data-stage="self">1 · Self-rating</button>
+      <button data-stage="lineManager">2 · Line manager</button>
+      <button data-stage="pillarLead">3 · Pillar Lead</button>
+      <button data-stage="complete">Complete</button>
+      <button class="reset" id="reset">Reset demo</button>
+    </div>
+
+    <kpi-appraisal id="appraisal" stage="self"></kpi-appraisal>
+    <div class="log" id="log"></div>
+  </div>
+
+<script src="kpi-appraisal.js"></script>
+<script>
+
+  // Sample data. KPI 1 is from the real screen; KPIs 2–3 and all ratings are examples.
+  const KPIS = [
+    { id: 'k1', target: 'Monthly target of 50,000,000', goal: 'Meet monthly targets', weight: 25 },
+    { id: 'k2', target: 'Client satisfaction score of 85%', goal: 'Keep key accounts satisfied', weight: 40 },
+    { id: 'k3', target: 'Quarterly product releases of 4', goal: 'Ship planned releases on schedule', weight: 35 },
+  ];
+  const SAMPLE = {
+    self:        { k1: [3, 'I met 50% of my target'], k2: [4, 'Scored 88% across my four accounts'], k3: [3, 'All four releases shipped, one a week late'] },
+    lineManager: { k1: [2, 'You did not meet up to 50%'], k2: [4, 'Strong feedback from both public sector clients'], k3: [3, ''] },
+    pillarLead:  { k1: [2, ''], k2: [3, 'Good, but one account dipped below target in Q3'], k3: [3, 'Agreed'] },
+  };
+  const ORDER = ['self', 'lineManager', 'pillarLead', 'complete'];
+
+  const el = document.getElementById('appraisal');
+  let data;
+  function freshData() { return { kpis: KPIS.map(k => ({ ...k, reviews: {} })) }; }
+
+  // Jumping ahead fills earlier roles that were never rated with sample ratings.
+  function goTo(stage) {
+    const upto = ORDER.indexOf(stage);
+    for (const role of ORDER.slice(0, upto)) {
+      if (role === 'complete') continue;
+      data.kpis.forEach(k => {
+        if (!k.reviews[role]?.rating) { const [rating, comment] = SAMPLE[role][k.id]; k.reviews[role] = { rating, comment }; }
+      });
+    }
+    el.setAttribute('stage', stage);
+    el.data = data;
+    document.querySelectorAll('[data-stage]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.stage === stage)));
+  }
+
+  el.addEventListener('kpi-rating-change', e => { data = el.data; });
+  el.addEventListener('kpi-submit', e => {
+    data = el.data;
+    document.getElementById('log').textContent = 'kpi-submit → ' + JSON.stringify(e.detail);
+    const next = ORDER[ORDER.indexOf(e.detail.role) + 1];
+    setTimeout(() => goTo(next), 900);
+  });
+  el.addEventListener('kpi-history', e => { document.getElementById('log').textContent = 'kpi-history → ' + JSON.stringify(e.detail); });
+
+  document.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => goTo(b.dataset.stage)));
+  document.getElementById('reset').addEventListener('click', () => { data = freshData(); goTo('self'); document.getElementById('log').textContent = ''; });
+
+  data = freshData();
+  goTo('self');
+</script>
+</body>
+</html>
