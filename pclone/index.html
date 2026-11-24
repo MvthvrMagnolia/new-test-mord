@@ -395,6 +395,59 @@ footer { padding-block: 32px 40px; font-size: 14px; color: var(--ink-muted); }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid var(--line); padding-top: 32px; }
 footer .lockup .idf, footer .lockup .hair { height: 20px; }
 footer .lockup .one { font-size: 17px; }
+/* MOBILE AND TABLET */
+.menu-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-md); background: transparent; border: 1px solid #3a3a3a; color: #ffffff; cursor: pointer; }
+.menu-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: square; }
+[hidden] { display: none !important; }
+.menu-btn path { transition: transform 200ms var(--ease); transform-box: fill-box; transform-origin: center; }
+.menu-btn[aria-expanded="true"] .l1 { transform: translateY(4px) rotate(45deg); }
+.menu-btn[aria-expanded="true"] .l2 { transform: translateY(-4px) rotate(-45deg); }
+@media (min-width: 1024px) { .menu-btn { display: none; } }
+.mnav { position: absolute; left: 0; right: 0; top: 100%; background: #000000; border-top: 1px solid #222222; padding: 8px max(16px, env(safe-area-inset-right, 0px)) 20px max(16px, env(safe-area-inset-left, 0px)); display: grid; box-shadow: 0 24px 40px -20px rgba(0,0,0,.5); }
+.mnav a { color: #ffffff; text-decoration: none; font: 500 17px/24px var(--display); padding: 14px 0; border-bottom: 1px solid #222222; }
+.mnav a:last-child { border-bottom: 0; color: #c9cacc; }
+@media (min-width: 1024px) { .mnav { display: none !important; } }
+.textlink { min-height: 44px; }
+.sentence select, .sentence input { min-height: 40px; }
+@media (max-width: 767px) {
+  section.band { padding-block: 56px; }
+  .opener { padding-block: 40px 24px; }
+  .opener h1 { font-size: 32px; line-height: 40px; max-width: none; }
+  .title { font-size: 26px; line-height: 34px; }
+  .lead { font-size: 17px; line-height: 27px; }
+  .head { margin-bottom: 28px; }
+  .madlib { padding: 24px 18px; }
+  .answer { padding: 18px; }
+  .nav .btn { padding: 0 14px; font-size: 13px; }
+  .lockup .one { font-size: 20px; }
+  /* payroll lines stack */
+  .line { grid-template-columns: 1fr; }
+  .pay { justify-content: flex-start; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+  .tabs button { white-space: nowrap; flex: none; }
+  .country, .realities { padding-left: 18px; padding-right: 18px; }
+  /* comparison table becomes stacked rows */
+  .cmp-wrap { overflow: hidden; }
+  .cmp, .cmp tbody, .cmp tr, .cmp th, .cmp td { display: block; width: 100%; min-width: 0; }
+  .cmp thead { display: none; }
+  .cmp tbody tr { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+  .cmp tbody tr:last-child { border-bottom: 0; }
+  .cmp th, .cmp td { padding: 0; border: 0 !important; }
+  .cmp tbody th { width: 100%; margin-bottom: 12px; }
+  .cmp td { padding: 10px 12px; border-radius: var(--r-md); margin-top: 6px; }
+  .cmp td.us { background: var(--accent-soft); }
+  .cmp td.them { background: var(--surface-subtle); }
+  .cmp td::before { content: attr(data-label); display: block; font: 500 11px/16px var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px; }
+  .cmp td.us::before { color: var(--accent-text); }
+  .cmp tbody tr:hover th, .cmp tbody tr:hover td.them { background: inherit; }
+  .cmp tbody tr:hover td.them { background: var(--surface-subtle); }
+  .cmp-bar { flex-direction: column; align-items: flex-start; }
+  .steps li { grid-template-columns: 1fr; gap: 4px; }
+  form.req { padding: 24px 18px; }
+  .figures div { padding: 20px 16px; }
+  .figures b { font-size: 32px; line-height: 40px; }
+  .proof-block { padding: 32px 20px; }
+}
 /* Black nav and footer (jet black) */
 body { margin: 0; }
 body::before { background: #000000; }
@@ -425,9 +478,11 @@ footer .wrap { border-top: 0; padding-top: 0; }
     <div class="nav-cta">
       <a class="textlink signin" href="https://pclone.net/login">Sign in</a>
       <a class="btn btn-primary" href="#walkthrough">Book a walkthrough</a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="l1" d="M4 8h16"/><path class="l2" d="M4 16h16"/></svg></button>
     </div>
   </div>
   <span class="progress" id="progress"></span>
+  <div class="mnav" id="mnav" hidden><a href="#modules">Modules</a><a href="#here">Made for Africa</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="https://pclone.net/login">Sign in</a></div>
 </nav>
 
 <header class="opener" id="top">
@@ -763,7 +818,7 @@ footer .wrap { border-top: 0; padding-top: 0; }
     answer.classList.remove("flash"); void answer.offsetWidth; answer.classList.add("flash");
   }
   ["ml-org", "ml-country", "ml-pain", "ml-where"].forEach(function (id) { $(id).addEventListener("change", renderAnswer); });
-  function sizeInput() { var el = $("ml-size"); el.style.width = Math.max(2, el.value.length + 1.4) + "ch"; }
+  function sizeInput() { var el = $("ml-size"); el.style.width = "calc(" + Math.max(2, el.value.length) + "ch + 32px)"; }
   $("ml-size").addEventListener("input", function () { sizeInput(); renderAnswer(); });
   sizeInput(); renderAnswer();
 
@@ -935,6 +990,15 @@ footer .wrap { border-top: 0; padding-top: 0; }
   }
 
   tidy(document);
+
+  // ---------- Mobile menu and stacked table labels ----------
+  var mb = $("menu-btn"), mn = $("mnav");
+  function setMenu(open) { mb.setAttribute("aria-expanded", open); mn.hidden = !open; }
+  mb.addEventListener("click", function () { setMenu(mn.hidden); });
+  mn.addEventListener("click", function (e) { if (e.target.closest("a")) setMenu(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
+  var heads = Array.prototype.map.call(document.querySelectorAll("#cmp thead th"), function (th) { return th.firstChild.nodeValue.trim(); });
+  document.querySelectorAll("#cmp tbody tr").forEach(function (tr) { tr.querySelectorAll("td").forEach(function (td, i) { td.setAttribute("data-label", heads[i + 1]); }); });
 
   // ---------- Comparison filter ----------
   var cmpRows = document.querySelectorAll("#cmp tbody tr");
