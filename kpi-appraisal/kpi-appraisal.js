@@ -1,6 +1,5 @@
 /**
- * <kpi-appraisal> — reusable KPI appraisal component for pclOne (no framework, no dependencies).
- * Styled to the pclOne design system: square, black and white first, teal as a line only.
+ * <kpi-appraisal> — reusable KPI appraisal component (no framework, no dependencies).
  *
  * The flow is Self-rating → Line manager → Pillar Lead. The `stage` attribute says whose turn it is:
  * earlier reviews show read-only, the current reviewer's column is editable, later reviewers are hidden.
@@ -14,7 +13,7 @@
  *   el.data = {
  *     employee: {                                 // Section I — all optional
  *       name: 'Funke Ajayi', grade: 'Senior Associate', pillar: 'Client Market Engine',
- *       practiceArea: 'Public Sector', reviewPeriod: 'H2 2026 · 1 Jul – 31 Dec 2026',
+ *       practiceArea: 'Public Sector', reviewPeriod: 'H2 2026 · 1 July – 31 December 2026',
  *     },
  *     kpis: [{                                    // Section II — one per performance target
  *       id: 'k1',
@@ -40,10 +39,9 @@
  * Attributes
  *   stage        self | lineManager | pillarLead | complete   (default: self)
  *   readonly     show the stage without an editable column (e.g. the employee watching their review)
- *   heading      section title (default "KPIs."; pclOne headers end in a full stop)
+ *   heading      card title (default "KPIs")
  *   description  line under the title
  *   signer       employee | manager — shows a Sign button for that party if they have not signed
- *   theme        light | dark — force a theme; otherwise it follows the page's tokens or the OS setting
  *
  * Properties
  *   data          read/write; reading returns a copy including anything typed in
@@ -56,315 +54,242 @@
  *   kpi-history        detail { kpiId }                          "Review history" clicked
  *   kpi-sign           detail { party, date }                    Sign button clicked (date is today, ISO)
  *
- * Theming: the component reads the pclOne tokens (--ink, --surface, --accent, --font-display, …) from the
- * page when tokens.css is loaded, and falls back to the same values built in when it is not.
+ * Theme from outside with CSS custom properties, e.g. kpi-appraisal { --kpi-brand: #00907a; }
  */
 
 const ROLES = [
-  { key: 'self',        who: 'Employee',     role: 'Self-rating', badge: 'E',  avatar: 'a-black' },
-  { key: 'lineManager', who: 'Line manager', role: 'Review',      badge: 'LM', avatar: 'a-green' },
-  { key: 'pillarLead',  who: 'Pillar Lead',  role: 'Review',      badge: 'PL', avatar: 'a-deep' },
+  { key: 'self',        who: 'Employee',     role: 'Self-rating', badge: 'E' },
+  { key: 'lineManager', who: 'Line manager', role: 'Review',      badge: 'LM' },
+  { key: 'pillarLead',  who: 'Pillar Lead',  role: 'Review',      badge: 'PL' },
 ];
 const DEFAULT_LABELS = ['', 'Far Below Expectation', 'Below Expectation', 'Meets Expectation', 'Exceeds Expectation', 'Far Exceeds Expectation'];
 const DEFAULT_BANDS = [[4.5, 'Outstanding'], [3.5, 'Exceeds Expectations'], [2.5, 'Meets Expectations'], [0, 'Below Expectations']];
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 const tone = r => !r ? 'tone-none' : r <= 2 ? 'tone-low' : r === 3 ? 'tone-mid' : 'tone-high';
-const badgeTone = r => r <= 2 ? 'b-warning' : r >= 4 ? 'b-success' : 'b-neutral';
-// Pick out the figures in a target sentence ("… sales of 50,000,000" → 50,000,000 reads in brand green).
+// Highlight the figures in a target sentence ("… sales of 50,000,000" → 50,000,000 stands out).
 const figures = t => esc(t).replace(/([₦$€£]?\d[\d,.]*\s?%?(?:\s?(?:k|m|bn|million|billion))?)/gi, '<em class="fig">$1</em>');
-// pclOne date style: "24 Nov 2026".
-const fmtDate = d => { const x = new Date(d); return isNaN(x) ? esc(d) : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
+const fmtDate = d => { const x = new Date(d); return isNaN(x) ? esc(d) : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); };
 const list = v => (Array.isArray(v) ? v : String(v ?? '').split(/\n|;\s*/)).map(x => String(x).trim()).filter(Boolean);
 
-// pclOne icon style: outline, 1.5px stroke, square caps, mitred joins; they take currentColor.
-const svg = (d, size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${d}</svg>`;
 const ICON = {
-  measure: svg('<path d="M3 20h18M6 17v-5M12 17V6M18 17v-8"/>'),
-  clock:   svg('<rect x="3.75" y="5.25" width="16.5" height="15"/><path d="M3.75 9.75h16.5M8.25 3v4.5M15.75 3v4.5"/>'),
-  actions: svg('<path d="M4 7l2 2 3.5-3.5M4 15l2 2 3.5-3.5M13 7.5h7M13 15.5h7"/>'),
-  history: svg('<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 3.75V7.5h3.75"/><path d="M12 8v4.5l3 2"/>', 16),
-  pen:     svg('<path d="M15 4.5l4.5 4.5L9 19.5H4.5V15z"/>', 16),
-  check:   svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 14),
+  goal: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.3" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="3.3" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r=".9" fill="currentColor"/></svg>',
+  history: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9M2.5 2.5v2.2h2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 5.2V8l2 1.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  measure: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 13.5h12M4 11V8M8 11V4.5M12 11V6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  clock: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 6.5h12M5.5 1.8v2.4M10.5 1.8v2.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  actions: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.5l1.2 1.2L6.5 3.4M3 10.5l1.2 1.2 2.3-2.3M9 4.5h4.5M9 10.5h4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  pen: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10.5 2.5l3 3L6 13H3v-3l7.5-7.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+  check: '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 
 const STYLE = `
-  /* pclOne tokens: taken from the page's tokens.css when present, else these fallbacks (light). */
   :host {
-    --k-bg: var(--bg, #ffffff);
-    --k-surface: var(--surface, #ffffff);
-    --k-subtle: var(--surface-subtle, #f5f5f5);
-    --k-sunken: var(--surface-sunken, #e6e6e6);
-    --k-disabled-bg: var(--surface-disabled, #f0f0f0);
-    --k-ink: var(--ink, #231f20);
-    --k-muted: var(--ink-muted, #5f6062);
-    --k-disabled: var(--ink-disabled, #a3a5a7);
-    --k-line: var(--line, #e6e6e6);
-    --k-line-strong: var(--line-strong, #797a7d);
-    --k-focus: var(--line-focus, #1f5747);
-    --k-primary: var(--primary, #231f20);
-    --k-primary-hover: var(--primary-hover, #13352b);
-    --k-primary-pressed: var(--primary-pressed, #000000);
-    --k-on-primary: var(--on-primary, #ffffff);
-    --k-accent: var(--accent, #00a48d);
-    --k-accent-text: var(--accent-text, #1f5747);
-    --k-success: var(--success, #1f5747);
-    --k-success-soft: var(--success-soft, #e4f1ec);
-    --k-warning: var(--warning, #8a5300);
-    --k-warning-soft: var(--warning-soft, #fbf0dc);
-    --k-hover: var(--state-hover, #231f200d);
-    --k-pressed: var(--state-pressed, #231f201f);
-    --k-panel: var(--panel, #262324);
-    --k-green-700: var(--green-700, #1f5747);
-    --k-green-900: var(--green-900, #13352b);
-    --k-rich-black: var(--rich-black, #231f20);
-    --k-display: var(--font-display, Poppins, "Segoe UI", system-ui, sans-serif);
-    --k-text: var(--font-text, Roboto, system-ui, -apple-system, "Segoe UI", sans-serif);
-    --k-fast: var(--duration-fast, 120ms);
-    --k-base: var(--duration-base, 200ms);
-    --k-instant: var(--duration-instant, 80ms);
-    --k-ease: var(--ease-standard, cubic-bezier(0.2, 0, 0, 1));
-
-    display: block; color: var(--k-ink); font: 400 16px/24px var(--k-text);
+    --brand: var(--kpi-brand, #00907a);
+    --brand-deep: var(--kpi-brand-deep, #14352d);
+    --brand-soft: var(--kpi-brand-soft, #e3f4ef);
+    --brand-ink: var(--kpi-brand-ink, #0b5e50);
+    --accent: var(--kpi-accent, #3dbb8f);
+    --surface: var(--kpi-surface, #ffffff);
+    --inset: var(--kpi-inset, #f7f9f8);
+    --ink: var(--kpi-ink, #111816);
+    --muted: var(--kpi-muted, #66706c);
+    --faint: var(--kpi-faint, #b4bbb8);
+    --line: var(--kpi-line, #e3e9e6);
+    --track: var(--kpi-track, #e4e8e6);
+    --warn: var(--kpi-warn, #d98a12);
+    --warn-soft: var(--kpi-warn-soft, #fdf0dc);
+    --warn-ink: var(--kpi-warn-ink, #8a5300);
+    --display: var(--kpi-display-font, Poppins, system-ui, sans-serif);
+    display: block; color: var(--ink);
+    font-family: var(--kpi-font, Roboto, system-ui, sans-serif);
     -webkit-font-smoothing: antialiased;
   }
-  /* Dark fallbacks, used only when the page has no tokens.css of its own. */
-  :host([theme="dark"]) {
-    --k-bg: var(--bg, #231f20); --k-surface: var(--surface, #2b2728); --k-subtle: var(--surface-subtle, #1c191a);
-    --k-sunken: var(--surface-sunken, #171415); --k-disabled-bg: var(--surface-disabled, #2b2728);
-    --k-ink: var(--ink, #ffffff); --k-muted: var(--ink-muted, #a3a5a7); --k-disabled: var(--ink-disabled, #6b6768);
-    --k-line: var(--line, #3d3839); --k-line-strong: var(--line-strong, #8b8e90); --k-focus: var(--line-focus, #42bb98);
-    --k-primary: var(--primary, #ffffff); --k-primary-hover: var(--primary-hover, #42bb98); --k-primary-pressed: var(--primary-pressed, #2f9c7d);
-    --k-on-primary: var(--on-primary, #231f20); --k-accent-text: var(--accent-text, #42bb98);
-    --k-success: var(--success, #42bb98); --k-success-soft: var(--success-soft, #17322a);
-    --k-warning: var(--warning, #f2b544); --k-warning-soft: var(--warning-soft, #3a2c12);
-    --k-hover: var(--state-hover, #ffffff12); --k-pressed: var(--state-pressed, #ffffff24);
-  }
-  @media (prefers-color-scheme: dark) {
-    :host(:not([theme="light"])) {
-      --k-bg: var(--bg, #231f20); --k-surface: var(--surface, #2b2728); --k-subtle: var(--surface-subtle, #1c191a);
-      --k-sunken: var(--surface-sunken, #171415); --k-disabled-bg: var(--surface-disabled, #2b2728);
-      --k-ink: var(--ink, #ffffff); --k-muted: var(--ink-muted, #a3a5a7); --k-disabled: var(--ink-disabled, #6b6768);
-      --k-line: var(--line, #3d3839); --k-line-strong: var(--line-strong, #8b8e90); --k-focus: var(--line-focus, #42bb98);
-      --k-primary: var(--primary, #ffffff); --k-primary-hover: var(--primary-hover, #42bb98); --k-primary-pressed: var(--primary-pressed, #2f9c7d);
-      --k-on-primary: var(--on-primary, #231f20); --k-accent-text: var(--accent-text, #42bb98);
-      --k-success: var(--success, #42bb98); --k-success-soft: var(--success-soft, #17322a);
-      --k-warning: var(--warning, #f2b544); --k-warning-soft: var(--warning-soft, #3a2c12);
-      --k-hover: var(--state-hover, #ffffff12); --k-pressed: var(--state-pressed, #ffffff24);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0ms !important; } }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .overline { font: 500 12px/16px var(--k-display); letter-spacing: .08em; text-transform: uppercase; color: var(--k-muted); }
-  .num { font-variant-numeric: tabular-nums; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; }
 
-  .root { background: var(--k-surface); border: 1px solid var(--k-line); padding: 32px; }
+  .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  h2 { font-family: var(--display); font-size: 20px; font-weight: 600; letter-spacing: -.3px; }
+  .desc { margin-top: 6px; font-size: 14.5px; color: var(--muted); }
 
-  /* SectionHeader: Poppins title with full stop, 24px teal dash, one-line description */
-  .sh { display: flex; flex-direction: column; gap: 8px; max-width: 640px; }
-  h2 { font: 600 22px/30px var(--k-display); text-wrap: balance; }
-  .dash { width: 24px; height: 2px; background: var(--k-accent); }
-  .desc { font-size: 16px; line-height: 24px; color: var(--k-muted); }
-
-  /* Stepper: a 2px line over each label — ink when done, teal for the current step */
-  .steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 24px; counter-reset: step; }
-  .step { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 2px solid var(--k-line); counter-increment: step; }
-  .step-n { font: 500 12px/16px var(--k-display); letter-spacing: .08em; color: var(--k-muted); }
-  .step-n::before { content: "STEP " counter(step); }
-  .step-label { font: 500 14px/20px var(--k-display); color: var(--k-muted); display: inline-flex; align-items: center; gap: 4px; }
-  .step.done { border-top-color: var(--k-ink); }
-  .step.done .step-label, .step.current .step-label { color: var(--k-ink); }
-  .step.current { border-top-color: var(--k-accent); }
+  /* Flow stepper */
+  .flow { list-style: none; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .flow li { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: var(--faint); }
+  .flow li + li::before { content: ""; width: 18px; height: 1.5px; background: var(--track); border-radius: 2px; margin-right: 2px; }
+  .flow .n { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; border: 1.5px solid var(--track); background: var(--surface); }
+  .flow .done { color: var(--brand-ink); }
+  .flow .done .n { color: #fff; background: var(--brand); border-color: var(--brand); }
+  .flow .now { color: var(--ink); }
+  .flow .now .n { color: var(--brand-ink); border-color: var(--brand); box-shadow: 0 0 0 3px rgba(0,144,122,.15); }
 
   /* Section I: background */
-  .profile { margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border-top: 1px solid var(--k-line); border-left: 1px solid var(--k-line); }
-  .profile > div { padding: 12px 16px; border-right: 1px solid var(--k-line); border-bottom: 1px solid var(--k-line); min-width: 0; }
-  .profile dd { margin-top: 4px; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
-  .profile .p-name dd { font: 500 16px/24px var(--k-display); }
+  .profile { margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .profile div { background: var(--surface); padding: 12px 14px; min-width: 0; }
+  .profile dt { font-size: 11px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .profile dd { margin-top: 3px; font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+  .profile .p-name dd { font-family: var(--display); font-weight: 600; font-size: 15px; }
 
-  /* Overall scores: the page's one dark feature block */
-  .summary { margin-top: 24px; background: var(--k-panel); color: #ffffff; padding: 24px; border: 1px solid var(--k-panel); }
-  :host([theme="dark"]) .summary { border-color: var(--k-line); }
-  @media (prefers-color-scheme: dark) { :host(:not([theme="light"])) .summary { border-color: var(--k-line); } }
-  .summary .overline { color: #c9cacc; }
-  .summary .dash { margin-top: 8px; }
-  .sum-grid { margin-top: 20px; display: grid; grid-template-columns: repeat(var(--cols), 1fr); }
-  .sum { padding: 0 24px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
-  .sum:first-child { padding-left: 0; }
-  .sum + .sum { border-left: 1px solid #3d3839; }
-  .sum .who-name { color: #ffffff; }
-  .sum .who-role { color: #c9cacc; }
-  .sum .avatar { box-shadow: 0 0 0 1px #ffffff33; }
-  .sum .b-solid { background: #ffffff; color: #231f20; }
-  .stat { font: 600 32px/40px var(--k-display); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
-  .stat small { font: 500 14px/20px var(--k-display); color: #c9cacc; letter-spacing: 0; }
-  .sum-pending { font: 500 14px/20px var(--k-display); color: #c9cacc; }
-  .sum-pending b { display: block; font: 600 32px/40px var(--k-display); color: #ffffff; }
-  .sum .track { background: #3d3839; }
-  .band { font: 500 14px/20px var(--k-display); color: #ffffff; display: inline-flex; align-items: center; gap: 8px; }
-  .band::before { content: ""; width: 6px; height: 6px; border-radius: 9999px; background: var(--k-accent); }
-  .band.low::before { background: #f2b544; }
+  /* Overall scores */
+  .summary { margin-top: 20px; display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 12px; }
+  .sum { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--inset); }
+  .sum.active { border-color: rgba(0,144,122,.35); background: var(--brand-soft); }
+  .sum-score { text-align: right; }
+  .sum-score .big { font-size: 24px; }
+  .sum-score .big span { font-size: 13px; }
+  .sum-score .label { font-size: 12.5px; margin-top: 2px; }
+  .sum-pending { font-size: 13px; color: var(--muted); text-align: right; }
+  .sum-pending b { display: block; font-size: 18px; font-family: var(--display); color: var(--ink); }
 
-  .weight-note { margin-top: 12px; font-size: 12px; line-height: 16px; color: var(--k-muted); }
-  .weight-note.off { color: var(--k-warning); }
+  .who { display: flex; align-items: center; gap: 10px; }
+  .badge { flex: none; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--brand-ink); background: var(--brand-soft); }
+  .sum.active .badge { background: var(--surface); }
+  .who-name { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .who-role { font-size: 12px; color: var(--muted); }
+  .you { font-size: 10.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: #fff; background: var(--brand); padding: 2px 6px; border-radius: 4px; }
 
-  /* KPI card */
-  .kpi { margin-top: 24px; border: 1px solid var(--k-line); background: var(--k-surface); }
-  .kpi-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 24px; }
-  .kpi-main { min-width: 0; max-width: 760px; display: flex; flex-direction: column; gap: 8px; }
-  h3 { font: 600 18px/26px var(--k-display); text-wrap: balance; overflow-wrap: anywhere; }
-  h3 .fig { font-style: normal; color: var(--k-accent-text); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .kpi-desc { font-size: 14px; line-height: 20px; color: var(--k-muted); }
-  .weight { flex: none; width: 120px; display: flex; flex-direction: column; gap: 8px; text-align: right; }
-  .weight .w-val { font: 600 22px/30px var(--k-display); font-variant-numeric: tabular-nums; }
-  .track { height: 4px; background: var(--k-sunken); overflow: hidden; }
-  .track i { display: block; height: 100%; background: var(--k-accent); transition: width 320ms var(--k-ease); }
+  /* KPI */
+  .kpi { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .target {
+    position: relative; display: flex; align-items: center; gap: 24px; padding: 22px 24px; color: #fff;
+    background: radial-gradient(120% 140% at 100% 0%, rgba(61,187,143,.35), transparent 55%), linear-gradient(135deg, var(--brand-deep), #1b4a3d);
+  }
+  .target::after {
+    content: ""; position: absolute; right: 120px; top: 50%; width: 132px; height: 84px; transform: translateY(-50%); pointer-events: none;
+    background:
+      linear-gradient(rgba(255,255,255,.06), rgba(255,255,255,.06)) 0 0 / 40px 40px no-repeat,
+      linear-gradient(rgba(255,255,255,.10), rgba(255,255,255,.10)) 46px 0 / 40px 40px no-repeat,
+      linear-gradient(rgba(255,255,255,.04), rgba(255,255,255,.04)) 92px 0 / 40px 40px no-repeat,
+      linear-gradient(rgba(255,255,255,.04), rgba(255,255,255,.04)) 0 44px / 40px 40px no-repeat,
+      linear-gradient(rgba(255,255,255,.06), rgba(255,255,255,.06)) 46px 44px / 40px 40px no-repeat,
+      linear-gradient(rgba(255,255,255,.10), rgba(255,255,255,.10)) 92px 44px / 40px 40px no-repeat;
+  }
+  .target-main { flex: 1; min-width: 0; position: relative; z-index: 1; }
+  .eyebrow { display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 500; letter-spacing: .8px; text-transform: uppercase; color: rgba(255,255,255,.65); }
+  .eyebrow .dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,.4); }
+  .t-value { margin-top: 10px; font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.3; letter-spacing: -.3px; max-width: 760px; overflow-wrap: anywhere; }
+  .t-value .fig { font-style: normal; color: var(--accent); white-space: nowrap; }
+  .t-desc { margin-top: 8px; display: flex; align-items: flex-start; gap: 6px; font-size: 13.5px; line-height: 1.45; color: rgba(255,255,255,.8); max-width: 760px; }
+  .t-desc svg { flex: none; margin-top: 2px; }
 
-  .specs { display: grid; grid-template-columns: repeat(var(--specs), 1fr); border-top: 1px solid var(--k-line); background: var(--k-subtle); }
-  .spec { display: flex; gap: 12px; padding: 16px 24px; min-width: 0; }
-  .spec + .spec { border-left: 1px solid var(--k-line); }
-  .spec > svg { flex: none; color: var(--k-ink); margin-top: 0; }
-  .spec dd { margin-top: 4px; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
-  .spec ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
-  .spec li { position: relative; padding-left: 16px; }
-  .spec li::before { content: ""; position: absolute; left: 0; top: 9px; width: 8px; height: 2px; background: var(--k-accent); }
+  /* How the KPI is measured, reviewed and delivered */
+  .specs { display: grid; grid-template-columns: repeat(var(--specs), 1fr); border-bottom: 1px solid var(--line); background: var(--inset); }
+  .spec { display: flex; gap: 10px; padding: 14px 22px; min-width: 0; }
+  .spec + .spec { border-left: 1px solid var(--line); }
+  .spec-ico { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: var(--brand-ink); background: var(--brand-soft); }
+  .spec dt { font-size: 11px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .spec dd { margin-top: 3px; font-size: 13.5px; line-height: 1.45; overflow-wrap: anywhere; }
+  .spec ul { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+  .spec li { position: relative; padding-left: 12px; }
+  .spec li::before { content: ""; position: absolute; left: 0; top: .6em; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .weight { position: relative; z-index: 1; flex: none; width: 76px; height: 76px; display: grid; place-items: center; }
+  .weight svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .weight b { font-family: var(--display); font-size: 18px; font-weight: 600; line-height: 1; }
+  .weight small { display: block; margin-top: 3px; font-size: 10px; letter-spacing: .6px; text-transform: uppercase; color: rgba(255,255,255,.7); text-align: center; }
 
-  /* Reviews */
-  .reviews { display: grid; grid-template-columns: repeat(var(--cols), 1fr); border-top: 1px solid var(--k-line); }
-  .review { padding: 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-  .review + .review { border-left: 1px solid var(--k-line); }
-  .review.editing { background: var(--k-subtle); }
+  .reviews { display: grid; grid-template-columns: repeat(var(--cols), 1fr); }
+  .review { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .review + .review { border-left: 1px solid var(--line); }
+  .review.editing { background: linear-gradient(180deg, rgba(0,144,122,.05), transparent 70%); }
 
-  .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .avatar { flex: none; width: 32px; height: 32px; border-radius: 9999px; display: grid; place-items: center; font: 500 12px/16px var(--k-display); color: #ffffff; }
-  .a-black { background: var(--k-rich-black); }
-  .a-green { background: var(--k-green-700); }
-  .a-deep  { background: var(--k-green-900); }
-  .who-name { font: 500 14px/20px var(--k-display); display: flex; align-items: center; gap: 8px; }
-  .who-role { font-size: 12px; line-height: 16px; color: var(--k-muted); }
+  .rating { display: flex; align-items: center; gap: 14px; }
+  .big { font-family: var(--display); font-size: 30px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .big span { font-size: 14px; font-weight: 500; color: var(--faint); }
+  .scale { display: flex; gap: 4px; margin-top: 6px; }
+  .scale i { width: 22px; height: 6px; border-radius: 3px; background: var(--track); }
+  .label { font-size: 14px; font-weight: 500; }
+  .meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .tone-low .big, .tone-low .label { color: var(--warn-ink); }
+  .tone-low .scale i.on { background: var(--warn); }
+  .tone-mid .big, .tone-mid .label { color: var(--brand); }
+  .tone-mid .scale i.on { background: var(--brand); }
+  .tone-high .big, .tone-high .label { color: var(--brand-ink); }
+  .tone-high .scale i.on { background: var(--brand-ink); }
+  .tone-none .label { color: var(--muted); font-weight: 400; }
 
-  .badge { display: inline-flex; align-items: center; gap: 6px; height: 20px; padding: 0 8px; border-radius: 2px; font: 500 12px/16px var(--k-display); white-space: nowrap; background: var(--k-sunken); color: var(--k-ink); }
-  .badge.dot::before { content: ""; width: 6px; height: 6px; border-radius: 9999px; background: currentColor; }
-  .b-success { background: var(--k-success-soft); color: var(--k-success); }
-  .b-warning { background: var(--k-warning-soft); color: var(--k-warning); }
-  .b-solid { background: var(--k-primary); color: var(--k-on-primary); }
+  .comment { font-size: 13.5px; line-height: 1.5; padding: 10px 12px 10px 14px; border-radius: 10px; background: var(--inset); border-left: 3px solid var(--brand); overflow-wrap: anywhere; }
+  .tone-low .comment { border-left-color: var(--warn); }
+  .comment.none { background: none; border-left-color: var(--line); color: var(--faint); font-style: italic; }
+  .waiting { font-size: 13.5px; color: var(--faint); font-style: italic; }
 
-  .score { display: flex; align-items: baseline; gap: 4px; }
-  .score b { font: 600 32px/40px var(--k-display); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
-  .score span { font: 500 14px/20px var(--k-display); color: var(--k-muted); }
-  .tone-low .score b { color: var(--k-warning); }
-  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; width: 120px; }
-  .scale i { height: 4px; background: var(--k-sunken); }
-  .tone-mid .scale i.on, .tone-high .scale i.on { background: var(--k-accent); }
-  .tone-low .scale i.on { background: var(--k-warning); }
-  .rating-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
-  .weighted { font-size: 12px; line-height: 16px; color: var(--k-muted); font-variant-numeric: tabular-nums; }
-
-  .comment { font-size: 14px; line-height: 20px; padding: 12px 16px; background: var(--k-subtle); overflow-wrap: anywhere; }
-  .comment.none { background: none; padding: 0; color: var(--k-muted); font-size: 12px; line-height: 16px; }
-  .waiting { font-size: 14px; color: var(--k-muted); }
-
-  /* Editable rating: five square options, black when chosen */
-  .field-label { font: 500 14px/20px var(--k-display); display: flex; justify-content: space-between; gap: 8px; }
-  .field-label span { font: 400 12px/16px var(--k-text); color: var(--k-muted); }
-  .picker { border: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-width: 320px; }
+  /* Editable rating */
+  .picker { border: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-width: 340px; }
   .picker label { position: relative; cursor: pointer; }
   .picker input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
   .picker span {
-    display: grid; place-items: center; height: 40px;
-    font: 500 16px/24px var(--k-display); color: var(--k-ink);
-    background: var(--k-surface); border: 1px solid var(--k-line-strong);
-    transition: background-color var(--k-fast) var(--k-ease), border-color var(--k-fast) var(--k-ease), color var(--k-fast) var(--k-ease);
+    display: grid; place-items: center; height: 44px; border-radius: 10px;
+    font-family: var(--display); font-size: 17px; font-weight: 600; color: var(--muted);
+    background: var(--surface); border: 1.5px solid var(--line); transition: background 150ms, border-color 150ms, color 150ms, transform 150ms;
   }
-  .picker label:hover span { border-color: var(--k-ink); background-image: linear-gradient(var(--k-hover), var(--k-hover)); }
-  .picker input:focus-visible + span { outline: 2px solid var(--k-focus); outline-offset: 2px; }
-  .picker input:checked + span { background: var(--k-primary); border-color: var(--k-primary); color: var(--k-on-primary); }
-  .picker label:hover input:checked + span { background: var(--k-primary-hover); border-color: var(--k-primary-hover); }
-  .pick-meta { display: flex; align-items: center; gap: 12px; min-height: 20px; }
-  .pick-hint { font-size: 12px; line-height: 16px; color: var(--k-muted); }
-
+  .picker label:hover span { border-color: var(--faint); color: var(--ink); }
+  .picker input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .picker input:checked + span { color: #fff; transform: translateY(-1px); }
+  .tone-low .picker input:checked + span { background: var(--warn); border-color: var(--warn); }
+  .tone-mid .picker input:checked + span { background: var(--brand); border-color: var(--brand); }
+  .tone-high .picker input:checked + span { background: var(--brand-ink); border-color: var(--brand-ink); }
+  .pick-meta { display: flex; align-items: baseline; gap: 10px; min-height: 20px; }
+  .pick-meta .meta { margin-top: 0; }
   textarea {
-    width: 100%; min-height: 88px; resize: vertical; padding: 12px;
-    font: 400 16px/24px var(--k-text); color: var(--k-ink); background: var(--k-surface);
-    border: 1px solid var(--k-line-strong); border-radius: 0;
-    transition: border-color var(--k-fast) var(--k-ease), box-shadow var(--k-fast);
+    width: 100%; resize: vertical; min-height: 64px; font: 13.5px/1.5 inherit; font-family: inherit; color: var(--ink);
+    padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface);
   }
-  textarea::placeholder { color: var(--k-muted); }
-  textarea:hover { border-color: var(--k-ink); }
-  textarea:focus { outline: none; border-color: var(--k-ink); box-shadow: inset 0 -2px 0 var(--k-accent); }
-  .comment-field { display: flex; flex-direction: column; gap: 6px; }
-  .solo .review.editing { display: grid; grid-template-columns: minmax(0, 320px) 1fr; column-gap: 32px; row-gap: 16px; }
+  textarea:focus { outline: 2px solid var(--brand); outline-offset: -1px; border-color: transparent; }
+  .solo .review.editing { display: grid; grid-template-columns: minmax(0, 340px) 1fr; grid-template-rows: auto 1fr; column-gap: 32px; row-gap: 14px; }
   .solo .review.editing .who { grid-column: 1 / -1; }
-  .rate-block { display: flex; flex-direction: column; gap: 12px; }
+  .solo .review.editing .rate-block { display: flex; flex-direction: column; gap: 10px; }
+  .rate-block { display: flex; flex-direction: column; gap: 10px; }
 
-  .foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 16px 24px; border-top: 1px solid var(--k-line); min-height: 56px; }
-  .gap { font-size: 14px; line-height: 20px; color: var(--k-muted); }
-  .gap b { font-weight: 500; color: var(--k-warning); }
-  .gap.agree b { color: var(--k-success); }
-
-  /* TextLink: Poppins label over a 24px teal underline that grows on hover */
-  .link {
-    appearance: none; border: 0; background: none; cursor: pointer; margin-left: auto;
-    display: inline-flex; align-items: center; gap: 8px; position: relative; padding-bottom: 6px;
-    font: 500 14px/20px var(--k-display); color: var(--k-ink); white-space: nowrap;
-  }
-  .link::after { content: ""; position: absolute; left: 0; bottom: 0; width: 24px; height: 2px; background: var(--k-accent); transition: width var(--k-base) var(--k-ease); }
-  .link:hover::after { width: 100%; }
-  .link:focus-visible, .btn:focus-visible { outline: 2px solid var(--k-focus); outline-offset: 2px; }
+  .foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 22px; border-top: 1px solid var(--line); background: var(--inset); min-height: 50px; }
+  .gap { font-size: 12.5px; color: var(--muted); }
+  .gap b { color: var(--warn-ink); font-weight: 600; }
+  .gap.agree b { color: var(--brand-ink); }
+  .link { appearance: none; border: 0; background: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font: 500 13px inherit; font-family: inherit; color: var(--brand-ink); padding: 6px 8px; border-radius: 8px; margin-left: auto; white-space: nowrap; }
+  .link:hover { background: var(--brand-soft); }
 
   /* Section III: signatures & date */
-  .agreement { margin-top: 24px; border: 1px solid var(--k-line); }
-  .agreement-head { padding: 24px 24px 0; display: flex; flex-direction: column; gap: 8px; }
-  .agreement-head h3 { font: 600 18px/26px var(--k-display); }
-  .agreement-head p { font-size: 14px; line-height: 20px; color: var(--k-muted); }
-  .signs { display: grid; grid-template-columns: 1fr 1fr; margin-top: 16px; border-top: 1px solid var(--k-line); }
-  .sign { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; min-width: 0; }
-  .sign + .sign { border-left: 1px solid var(--k-line); }
-  .sign-name { margin-top: 4px; font: 500 16px/24px var(--k-display); }
-  .sign-date { font-size: 12px; line-height: 16px; color: var(--k-muted); }
-  .sign-wait { margin-top: 4px; font-size: 14px; color: var(--k-muted); }
-
-  /* Buttons: square, Poppins Medium; primary is black and deepens to green on hover */
-  .btn {
-    appearance: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    height: 40px; padding: 0 20px; border: 1px solid transparent; border-radius: 0;
-    font: 500 14px/20px var(--k-display); white-space: nowrap;
-    transition: background-color var(--k-fast) var(--k-ease), border-color var(--k-fast) var(--k-ease), color var(--k-fast) var(--k-ease);
-  }
-  .btn-primary { background: var(--k-primary); color: var(--k-on-primary); }
-  .btn-primary:hover:not(:disabled) { background: var(--k-primary-hover); }
-  .btn-primary:active:not(:disabled) { background: var(--k-primary-pressed); transition-duration: var(--k-instant); }
-  .btn-secondary { background: transparent; color: var(--k-ink); border-color: var(--k-line-strong); height: 32px; padding: 0 12px; font-size: 12px; line-height: 16px; }
-  .btn-secondary:hover { border-color: var(--k-ink); background: var(--k-hover); }
-  .btn:disabled { background: var(--k-disabled-bg); color: var(--k-disabled); border-color: transparent; cursor: not-allowed; }
+  .agreement { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .agree-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--inset); }
+  .agree-head h3 { font-size: 14px; font-weight: 600; }
+  .agree-head p { font-size: 12.5px; color: var(--muted); }
+  .signs { display: grid; grid-template-columns: 1fr 1fr; }
+  .sign { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; min-width: 0; }
+  .sign + .sign { border-left: 1px solid var(--line); }
+  .sign-who { font-size: 11px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .sign-name { margin-top: 3px; font-family: var(--display); font-size: 16px; font-weight: 600; font-style: italic; }
+  .sign-date { margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+  .sign-ok { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: var(--brand-ink); background: var(--brand-soft); padding: 4px 10px; border-radius: 999px; }
+  .sign-wait { margin-top: 3px; font-size: 13.5px; color: var(--faint); font-style: italic; }
+  .sign-btn { flex: none; appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font: 500 13px inherit; font-family: inherit; color: #fff; background: var(--brand-deep); border: 0; padding: 8px 14px; border-radius: 9px; }
 
   /* Submit bar */
-  .actions { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; border-top: 1px solid var(--k-line); }
-  .progress { flex: 1; max-width: 360px; display: flex; flex-direction: column; gap: 8px; }
-  .progress-top { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; line-height: 20px; color: var(--k-muted); font-variant-numeric: tabular-nums; }
-  .progress-top b { font: 500 14px/20px var(--k-display); color: var(--k-ink); }
-  .submitted { display: inline-flex; align-items: center; gap: 8px; font: 500 14px/20px var(--k-display); color: var(--k-success); }
-  .why-disabled { font-size: 12px; line-height: 16px; color: var(--k-muted); margin-top: 4px; text-align: right; }
+  .actions { margin-top: 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px 14px 20px; border-radius: 12px; background: var(--inset); border: 1px solid var(--line); }
+  .progress { display: flex; align-items: center; gap: 12px; font-size: 13.5px; color: var(--muted); }
+  .bar { width: 120px; height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--brand); border-radius: inherit; transition: width 200ms; }
+  .submit {
+    appearance: none; cursor: pointer; border: 0; display: inline-flex; align-items: center; gap: 8px;
+    font: 500 14px inherit; font-family: inherit; color: #fff; background: var(--brand-deep);
+    padding: 11px 18px; border-radius: 10px; transition: opacity 150ms;
+  }
+  .submit:hover { background: #0f2a23; }
+  .submit:disabled { opacity: .4; cursor: not-allowed; }
+  .submitted { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 500; color: var(--brand-ink); }
 
-  @media (max-width: 1023px) {
-    .sum-grid, .reviews, .specs, .signs { grid-template-columns: 1fr; }
-    .sum { padding: 16px 0 0; }
-    .sum + .sum { border-left: 0; border-top: 1px solid #3d3839; margin-top: 16px; }
-    .review + .review, .spec + .spec, .sign + .sign { border-left: 0; border-top: 1px solid var(--k-line); }
+  .weight-note { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+  .weight-note.off { color: var(--warn-ink); }
+
+  @media (max-width: 860px) {
+    .summary, .reviews, .specs, .signs { grid-template-columns: 1fr; }
+    .review + .review, .spec + .spec, .sign + .sign { border-left: 0; border-top: 1px solid var(--line); }
+    .target::after { display: none; }
     .solo .review.editing { display: flex; }
   }
-  @media (max-width: 639px) {
-    .root { padding: 16px; }
-    .kpi-head { flex-direction: column; gap: 16px; padding: 16px; }
-    .weight { width: 100%; text-align: left; }
-    .review, .spec, .sign { padding: 16px; }
-    .foot { padding: 16px; }
-    .summary { padding: 16px; }
-    .steps { grid-template-columns: 1fr; }
+  @media (max-width: 480px) {
+    .card { padding: 18px; }
+    .target { padding: 18px; gap: 14px; }
+    .t-value { font-size: 28px; }
+    .weight { width: 64px; height: 64px; }
     .actions { flex-direction: column; align-items: stretch; }
-    .progress { max-width: none; }
+    .submit { justify-content: center; }
   }
 `;
 
@@ -403,8 +328,8 @@ class KpiAppraisal extends HTMLElement {
   _overall(role) {
     const kpis = this._kpis;
     if (!kpis.length || this._ratedCount(role) < kpis.length) return null;
-    const w = kpis.reduce((s, k) => s + (+k.weight || 0), 0) || 1;
-    return kpis.reduce((s, k) => s + this._review(k, role).rating * (+k.weight || 0), 0) / w;
+    const w = kpis.reduce((s, k) => s + (k.weight || 0), 0) || 1;
+    return kpis.reduce((s, k) => s + this._review(k, role).rating * (k.weight || 0), 0) / w;
   }
   _band(score) { return (this._bands.find(([min]) => score >= min) || [0, ''])[1]; }
 
@@ -412,15 +337,17 @@ class KpiAppraisal extends HTMLElement {
 
   _render() {
     const visible = this._visible, active = this._active, cols = visible.length;
-    const heading = this.getAttribute('heading') || 'KPIs.';
+    const heading = this.getAttribute('heading') || 'KPIs';
     const desc = this.getAttribute('description') ?? (active === 'self'
       ? 'Rate how well you delivered each locked KPI from 1 to 5.'
       : active ? 'Review each KPI. Earlier ratings are shown for reference.' : 'The ratings given for each of your locked KPIs this cycle.');
 
     this.shadowRoot.innerHTML = `<style>${STYLE}</style>
-      <section class="root ${cols === 1 ? 'solo' : ''}" style="--cols:${cols}">
-        <header class="sh"><h2>${esc(heading)}</h2><span class="dash" aria-hidden="true"></span><p class="desc">${esc(desc)}</p></header>
-        <ol class="steps" aria-label="Appraisal progress" data-steps>${this._steps()}</ol>
+      <section class="card ${cols === 1 ? 'solo' : ''}" style="--cols:${cols}">
+        <div class="head">
+          <div><h2>${esc(heading)}</h2><p class="desc">${esc(desc)}</p></div>
+          ${this._flow()}
+        </div>
         ${this._profile()}
         <div class="summary" data-summary>${this._summary()}</div>
         ${this._weightNote()}
@@ -430,82 +357,100 @@ class KpiAppraisal extends HTMLElement {
       </section>`;
   }
 
-  _steps() {
-    const idx = this._stageIndex, done = this._submitted;
-    return ROLES.map((r, i) => {
-      const state = i < idx || (i === idx && done) ? 'done' : i === idx ? 'current' : '';
-      return `<li class="step ${state}" ${state === 'current' ? 'aria-current="step"' : ''}><span class="step-n"></span><span class="step-label">${state === 'done' ? ICON.check : ''}${esc(r.who)}</span></li>`;
-    }).join('');
-  }
-
   _profile() {
     const e = this._data.employee;
     if (!e) return '';
     const items = [['p-name', 'Name', e.name], ['', 'Grade', e.grade], ['', 'Pillar', e.pillar], ['', 'Practice area', e.practiceArea], ['', 'Review period', e.reviewPeriod]]
       .filter(([, , v]) => v);
-    return `<dl class="profile" aria-label="Background information">${items.map(([c, k, v]) => `<div class="${c}"><dt class="overline">${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
-  }
-
-  _summary() {
-    const n = this._kpis.length;
-    return `<div class="overline">Overall score</div><span class="dash" aria-hidden="true"></span>
-      <div class="sum-grid">${this._visible.map(r => {
-        const score = this._overall(r.key), rated = this._ratedCount(r.key), isActive = r.key === this._active;
-        const body = score != null
-          ? `<div class="stat">${score.toFixed(2)}<small> / 5</small></div><span class="band ${score < 2.5 ? 'low' : ''}">${esc(this._band(score))}</span>`
-          : `<div class="sum-pending"><b class="num">${rated} of ${n}</b>KPIs rated</div><div class="track" aria-hidden="true"><i style="width:${n ? rated / n * 100 : 0}%"></i></div>`;
-        return `<div class="sum">${this._who(r, isActive)}${body}</div>`;
-      }).join('')}</div>`;
+    return `<dl class="profile" aria-label="Background information">${items.map(([c, k, v]) => `<div class="${c}"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
   }
 
   _weightNote() {
     const n = this._kpis.length, total = this._kpis.reduce((s, k) => s + (+k.weight || 0), 0);
     if (!n) return '';
     const ok = Math.abs(total - 100) < 0.01;
-    return `<p class="weight-note ${ok ? '' : 'off'}">${n} KPI${n === 1 ? '' : 's'} · weights total ${+total.toFixed(2)}%${ok ? '' : '. The KPI form requires 100%'}. Overall scores are weighted by each KPI's share.</p>`;
+    return `<p class="weight-note ${ok ? '' : 'off'}">${n} KPI${n === 1 ? '' : 's'} · weights total ${+total.toFixed(2)}%${ok ? '' : ' — the template requires 100%'}. Overall scores are weighted by each KPI's share.</p>`;
+  }
+
+  _agreement() {
+    const so = this._data.signoffs;
+    if (!so) return '';
+    const signer = this.getAttribute('signer');
+    const party = (key, label) => {
+      const s = so[key];
+      if (s?.name) return `<div class="sign"><div><div class="sign-who">${label}</div><div class="sign-name">${esc(s.name)}</div><div class="sign-date">${s.date ? 'Signed ' + fmtDate(s.date) : 'Signed'}</div></div><span class="sign-ok">${ICON.check}Signed</span></div>`;
+      const btn = signer === key ? `<button class="sign-btn" data-sign="${key}">${ICON.pen}Sign</button>` : '';
+      return `<div class="sign"><div><div class="sign-who">${label}</div><div class="sign-wait">Awaiting signature</div></div>${btn}</div>`;
+    };
+    return `<section class="agreement" aria-label="Signatures and date">
+      <div class="agree-head"><h3>KPI agreement</h3><p>Signatures &amp; date</p></div>
+      <div class="signs">${party('employee', 'Employee')}${party('manager', 'Manager')}</div>
+    </section>`;
+  }
+
+  _flow() {
+    const idx = this._stageIndex, done = this._submitted;
+    return `<ol class="flow" aria-label="Appraisal progress">${ROLES.map((r, i) => {
+      const state = i < idx || (i === idx && done) ? 'done' : i === idx ? 'now' : '';
+      return `<li class="${state}" ${state === 'now' ? 'aria-current="step"' : ''}><span class="n">${state === 'done' ? ICON.check : i + 1}</span>${esc(r.who)}</li>`;
+    }).join('')}</ol>`;
+  }
+
+  _summary() {
+    const n = this._kpis.length;
+    return this._visible.map(r => {
+      const score = this._overall(r.key), isActive = r.key === this._active;
+      const right = score != null
+        ? `<div class="sum-score ${tone(Math.round(score))}"><div class="big">${score.toFixed(2)}<span> / 5</span></div><div class="label">${esc(this._band(score))}</div></div>`
+        : `<div class="sum-pending"><b>${this._ratedCount(r.key)} of ${n}</b>rated</div>`;
+      return `<div class="sum ${isActive ? 'active' : ''}">${this._who(r, isActive)}${right}</div>`;
+    }).join('');
   }
 
   _who(r, isYou) {
-    return `<div class="who"><span class="avatar ${r.avatar}" aria-hidden="true">${r.badge}</span>
-      <div><div class="who-name">${esc(r.who)}${isYou ? '<span class="badge b-solid">You</span>' : ''}</div><div class="who-role">${esc(r.role)}</div></div></div>`;
+    return `<div class="who"><span class="badge" aria-hidden="true">${r.badge}</span>
+      <div><div class="who-name">${esc(r.who)}${isYou ? '<span class="you">You</span>' : ''}</div><div class="who-role">${esc(r.role)}</div></div></div>`;
   }
 
   _kpi(k, i) {
-    const actions = list(k.keyActions), w = +k.weight || 0;
+    const actions = list(k.keyActions);
     const specs = [
       k.measurement && ['measure', 'Measurement method', `<dd>${esc(k.measurement)}</dd>`],
       k.timeline && ['clock', 'Review timeline', `<dd>${esc(k.timeline)}</dd>`],
       actions.length && ['actions', 'Key actions', `<dd><ul>${actions.map(a => `<li>${esc(a)}</li>`).join('')}</ul></dd>`],
     ].filter(Boolean);
+    const r = 33, c = 2 * Math.PI * r, w = k.weight || 0;
     return `<article class="kpi" data-kpi="${i}">
-      <div class="kpi-head">
-        <div class="kpi-main">
-          <div class="overline">KPI ${i + 1} · Locked</div>
-          <h3>${figures(k.target)}</h3>
-          ${k.description ? `<p class="kpi-desc">${esc(k.description)}</p>` : ''}
+      <div class="target">
+        <div class="target-main">
+          <div class="eyebrow">KPI ${i + 1}<span class="dot"></span>Locked</div>
+          <h3 class="t-value">${figures(k.target)}</h3>
+          ${k.description ? `<p class="t-desc">${ICON.goal}<span>${esc(k.description)}</span></p>` : ''}
         </div>
-        <div class="weight">
-          <div class="overline">Weight</div>
-          <div class="w-val">${w}%</div>
-          <div class="track" role="img" aria-label="Weight ${w}% of 100%"><i style="width:${Math.min(w, 100)}%"></i></div>
+        <div class="weight" aria-label="Weight ${w}%">
+          <svg viewBox="0 0 76 76" width="100%" height="100%" aria-hidden="true">
+            <circle cx="38" cy="38" r="${r}" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/>
+            <circle cx="38" cy="38" r="${r}" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(c * w / 100).toFixed(1)} ${c.toFixed(1)}"/>
+          </svg>
+          <div><b>${w}%</b><small>weight</small></div>
         </div>
       </div>
-      ${specs.length ? `<dl class="specs" style="--specs:${specs.length}">${specs.map(([ico, t, dd]) => `<div class="spec">${ICON[ico]}<div><dt class="overline">${t}</dt>${dd}</div></div>`).join('')}</dl>` : ''}
+      ${specs.length ? `<dl class="specs" style="--specs:${specs.length}">${specs.map(([ico, t, dd]) => `<div class="spec"><span class="spec-ico">${ICON[ico]}</span><div><dt>${t}</dt>${dd}</div></div>`).join('')}</dl>` : ''}
       <div class="reviews">${this._visible.map(role => role.key === this._active ? this._editor(k, i, role) : this._readonly(k, role)).join('')}</div>
       <div class="foot" data-foot="${i}">${this._foot(k)}</div>
     </article>`;
   }
 
   _readonly(k, role) {
-    const rv = this._review(k, role.key), w = +k.weight || 0;
+    const rv = this._review(k, role.key), w = k.weight || 0;
     if (!rv?.rating) return `<div class="review tone-none">${this._who(role)}<p class="waiting">Not rated yet</p></div>`;
     return `<div class="review ${tone(rv.rating)}">
       ${this._who(role)}
-      <div>
-        <div class="score"><b>${rv.rating}</b><span>/ 5</span></div>
-        <div class="scale" aria-hidden="true">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= rv.rating ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="rating">
+        <div><div class="big">${rv.rating}<span> / 5</span></div>
+          <div class="scale" aria-hidden="true">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= rv.rating ? 'on' : ''}"></i>`).join('')}</div></div>
+        <div><div class="label">${esc(this._labels[rv.rating])}</div><div class="meta">Weighted ${(rv.rating * w / 100).toFixed(2)}</div></div>
       </div>
-      <div class="rating-meta"><span class="badge dot ${badgeTone(rv.rating)}">${esc(this._labels[rv.rating])}</span><span class="weighted">Weighted ${(rv.rating * w / 100).toFixed(2)}</span></div>
       ${rv.comment ? `<p class="comment">${esc(rv.comment)}</p>` : '<p class="comment none">No comment provided</p>'}
     </div>`;
   }
@@ -516,21 +461,18 @@ class KpiAppraisal extends HTMLElement {
       ${this._who(role, true)}
       <div class="rate-block">
         <fieldset class="picker"><legend class="sr">Rating for KPI ${i + 1}</legend>
-          ${[1, 2, 3, 4, 5].map(n => `<label title="${esc(this._labels[n])}"><input type="radio" name="${name}" value="${n}" ${rv.rating === n ? 'checked' : ''} aria-label="${n}, ${esc(this._labels[n])}"><span>${n}</span></label>`).join('')}
+          ${[1, 2, 3, 4, 5].map(n => `<label title="${esc(this._labels[n])}"><input type="radio" name="${name}" value="${n}" ${rv.rating === n ? 'checked' : ''} aria-label="${n} – ${esc(this._labels[n])}"><span>${n}</span></label>`).join('')}
         </fieldset>
         <div class="pick-meta" data-pickmeta>${this._pickMeta(rv.rating, k.weight)}</div>
       </div>
-      <div class="comment-field">
-        <label class="field-label" for="c-${i}">Comment <span>Optional</span></label>
-        <textarea id="c-${i}" data-comment="${i}" rows="3" placeholder="${role.key === 'self' ? 'What did you deliver against this target?' : 'Explain your rating for the employee'}">${esc(rv.comment)}</textarea>
-      </div>
+      <textarea data-comment="${i}" rows="2" placeholder="${role.key === 'self' ? 'What did you deliver? (optional)' : 'Add a comment for the employee (optional)'}" aria-label="Comment for KPI ${i + 1}">${esc(rv.comment)}</textarea>
     </div>`;
   }
 
   _pickMeta(rating, weight) {
     return rating
-      ? `<span class="badge dot ${badgeTone(rating)}">${esc(this._labels[rating])}</span><span class="weighted">Weighted ${(rating * (+weight || 0) / 100).toFixed(2)}</span>`
-      : '<span class="pick-hint">Choose a rating from 1 to 5</span>';
+      ? `<span class="label">${esc(this._labels[rating])}</span><span class="meta">Weighted ${(rating * (weight || 0) / 100).toFixed(2)}</span>`
+      : '<span class="label">Pick a rating from 1 to 5</span>';
   }
 
   _foot(k) {
@@ -549,35 +491,12 @@ class KpiAppraisal extends HTMLElement {
     return `${note}<button class="link" data-history>${ICON.history}Review history</button>`;
   }
 
-  _agreement() {
-    const so = this._data.signoffs;
-    if (!so) return '';
-    const signer = this.getAttribute('signer');
-    const party = (key, label) => {
-      const s = so[key];
-      if (s?.name) return `<div class="sign"><div><div class="overline">${label}</div><div class="sign-name">${esc(s.name)}</div><div class="sign-date">${s.date ? 'Signed ' + fmtDate(s.date) : 'Signed'}</div></div><span class="badge dot b-success">Signed</span></div>`;
-      const btn = signer === key ? `<button class="btn btn-secondary" data-sign="${key}">${ICON.pen}Sign</button>` : '';
-      return `<div class="sign"><div><div class="overline">${label}</div><div class="sign-wait">Awaiting signature</div></div>${btn}</div>`;
-    };
-    return `<section class="agreement" aria-label="Signatures and date">
-      <div class="agreement-head"><h3>KPI agreement.</h3><p>Signatures and dates confirming these KPIs.</p></div>
-      <div class="signs">${party('employee', 'Employee')}${party('manager', 'Manager')}</div>
-    </section>`;
-  }
-
   _actions() {
     const n = this._kpis.length, rated = this._ratedCount(this._active), all = n > 0 && rated === n;
-    const who = ROLES.find(r => r.key === this._active);
-    if (this._submitted) return `<span class="submitted">${ICON.check}${this._active === 'self' ? 'Self-rating submitted' : 'Review submitted'}</span>`;
+    if (this._submitted) return `<span class="submitted">${ICON.check} Submitted</span><span class="progress">${rated} of ${n} rated</span>`;
     const label = this._active === 'self' ? 'Submit self-rating' : 'Submit review';
-    return `<div class="progress">
-        <div class="progress-top"><b>${esc(who.who === 'Employee' ? 'Your self-rating' : 'Your review')}</b><span>${rated} of ${n} rated</span></div>
-        <div class="track" aria-hidden="true"><i style="width:${n ? rated / n * 100 : 0}%"></i></div>
-      </div>
-      <div>
-        <button class="btn btn-primary" data-submit ${all ? '' : 'disabled'}>${label}</button>
-        ${all ? '' : `<p class="why-disabled">Rate every KPI to submit</p>`}
-      </div>`;
+    return `<div class="progress"><div class="bar"><i style="width:${n ? rated / n * 100 : 0}%"></i></div>${all ? 'All KPIs rated' : `${rated} of ${n} rated`}</div>
+      <button class="submit" data-submit ${all ? '' : 'disabled'}>${label}</button>`;
   }
 
   /* ---------- interaction ---------- */
@@ -615,7 +534,7 @@ class KpiAppraisal extends HTMLElement {
       const role = this._active;
       this._submitted = true;
       this.shadowRoot.querySelector('[data-actions]').innerHTML = this._actions();
-      this.shadowRoot.querySelector('[data-steps]').innerHTML = this._steps();
+      this.shadowRoot.querySelector('.flow').outerHTML = this._flow();
       this.dispatchEvent(new CustomEvent('kpi-submit', { bubbles: true, composed: true, detail: {
         role, reviews: this._kpis.map((k, i) => ({ kpiId: k.id ?? i, rating: this._review(k, role).rating, comment: this._review(k, role).comment || '' })),
       } }));
