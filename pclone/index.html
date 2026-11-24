@@ -395,6 +395,18 @@ footer { padding-block: 32px 40px; font-size: 14px; color: var(--ink-muted); }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid var(--line); padding-top: 32px; }
 footer .lockup .idf, footer .lockup .hair { height: 20px; }
 footer .lockup .one { font-size: 17px; }
+/* Black nav and footer (brand rich black) */
+body { margin: 0; }
+body::before { background: #231f20; }
+.nav { background: #231f20; border-bottom-color: #231f20; }
+.nav .lockup, footer .lockup { color: #ffffff; }
+.nav ul a { color: #c9cacc; }
+.nav ul a:hover, .nav ul a.on { color: #ffffff; }
+.nav .textlink { color: #ffffff; }
+.nav .btn-primary { background: #ffffff; color: #231f20; }
+.nav .btn-primary:hover { background: #42bb98; color: #231f20; }
+footer { background: #231f20; color: #c9cacc; margin-top: 40px; }
+footer .wrap { border-top: 0; padding-top: 0; }
 </style>
 </head>
 <body>
