@@ -54,7 +54,7 @@
  *   kpi-history        detail { kpiId }                          "Review history" clicked
  *   kpi-sign           detail { party, date }                    Sign button clicked (date is today, ISO)
  *
- * Theme from outside with CSS custom properties, e.g. kpi-appraisal { --kpi-brand: #00907a; }
+ * Theme from outside with CSS custom properties, e.g. kpi-appraisal { --kpi-brand: #00907a; --kpi-mint: #6fd6ae; }
  */
 
 const ROLES = [
@@ -96,9 +96,10 @@ const STYLE = `
     --faint: var(--kpi-faint, #b4bbb8);
     --line: var(--kpi-line, #e3e9e6);
     --track: var(--kpi-track, #e4e8e6);
-    --warn: var(--kpi-warn, #d98a12);
-    --warn-soft: var(--kpi-warn-soft, #fdf0dc);
-    --warn-ink: var(--kpi-warn-ink, #8a5300);
+    /* Mint: the accent for lower ratings and rating gaps (lighter than the brand green, so 1–2 still read apart from 3–5) */
+    --mint: var(--kpi-mint, #6fd6ae);
+    --mint-soft: var(--kpi-mint-soft, #e3f7ee);
+    --mint-ink: var(--kpi-mint-ink, #1f7a5c);
     --display: var(--kpi-display-font, Poppins, system-ui, sans-serif);
     display: block; color: var(--ink);
     font-family: var(--kpi-font, Roboto, system-ui, sans-serif);
@@ -198,8 +199,8 @@ const STYLE = `
   .scale i { width: 22px; height: 6px; border-radius: 3px; background: var(--track); }
   .label { font-size: 14px; font-weight: 500; }
   .meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
-  .tone-low .big, .tone-low .label { color: var(--warn-ink); }
-  .tone-low .scale i.on { background: var(--warn); }
+  .tone-low .big, .tone-low .label { color: var(--mint-ink); }
+  .tone-low .scale i.on { background: var(--mint); }
   .tone-mid .big, .tone-mid .label { color: var(--brand); }
   .tone-mid .scale i.on { background: var(--brand); }
   .tone-high .big, .tone-high .label { color: var(--brand-ink); }
@@ -207,7 +208,7 @@ const STYLE = `
   .tone-none .label { color: var(--muted); font-weight: 400; }
 
   .comment { font-size: 13.5px; line-height: 1.5; padding: 10px 12px 10px 14px; border-radius: 10px; background: var(--inset); border-left: 3px solid var(--brand); overflow-wrap: anywhere; }
-  .tone-low .comment { border-left-color: var(--warn); }
+  .tone-low .comment { border-left-color: var(--mint); }
   .comment.none { background: none; border-left-color: var(--line); color: var(--faint); font-style: italic; }
   .waiting { font-size: 13.5px; color: var(--faint); font-style: italic; }
 
@@ -223,7 +224,7 @@ const STYLE = `
   .picker label:hover span { border-color: var(--faint); color: var(--ink); }
   .picker input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: 2px; }
   .picker input:checked + span { color: #fff; transform: translateY(-1px); }
-  .tone-low .picker input:checked + span { background: var(--warn); border-color: var(--warn); }
+  .tone-low .picker input:checked + span { background: var(--mint); border-color: var(--mint); color: var(--brand-deep); }
   .tone-mid .picker input:checked + span { background: var(--brand); border-color: var(--brand); }
   .tone-high .picker input:checked + span { background: var(--brand-ink); border-color: var(--brand-ink); }
   .pick-meta { display: flex; align-items: baseline; gap: 10px; min-height: 20px; }
@@ -240,7 +241,7 @@ const STYLE = `
 
   .foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 22px; border-top: 1px solid var(--line); background: var(--inset); min-height: 50px; }
   .gap { font-size: 12.5px; color: var(--muted); }
-  .gap b { color: var(--warn-ink); font-weight: 600; }
+  .gap b { color: var(--mint-ink); font-weight: 600; }
   .gap.agree b { color: var(--brand-ink); }
   .link { appearance: none; border: 0; background: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font: 500 13px inherit; font-family: inherit; color: var(--brand-ink); padding: 6px 8px; border-radius: 8px; margin-left: auto; white-space: nowrap; }
   .link:hover { background: var(--brand-soft); }
@@ -275,7 +276,7 @@ const STYLE = `
   .submitted { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 500; color: var(--brand-ink); }
 
   .weight-note { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
-  .weight-note.off { color: var(--warn-ink); }
+  .weight-note.off { color: var(--mint-ink); }
 
   @media (max-width: 860px) {
     .summary, .reviews, .specs, .signs { grid-template-columns: 1fr; }
