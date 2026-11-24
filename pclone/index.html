@@ -395,18 +395,20 @@ footer { padding-block: 32px 40px; font-size: 14px; color: var(--ink-muted); }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid var(--line); padding-top: 32px; }
 footer .lockup .idf, footer .lockup .hair { height: 20px; }
 footer .lockup .one { font-size: 17px; }
-/* Black nav and footer (brand rich black) */
+/* Black nav and footer (jet black) */
 body { margin: 0; }
-body::before { background: #231f20; }
-.nav { background: #231f20; border-bottom-color: #231f20; }
+body::before { background: #000000; }
+.nav { background: #000000; border-bottom-color: #000000; }
 .nav .lockup, footer .lockup { color: #ffffff; }
 .nav ul a { color: #c9cacc; }
 .nav ul a:hover, .nav ul a.on { color: #ffffff; }
 .nav .textlink { color: #ffffff; }
-.nav .btn-primary { background: #ffffff; color: #231f20; }
-.nav .btn-primary:hover { background: #42bb98; color: #231f20; }
-footer { background: #231f20; color: #c9cacc; margin-top: 40px; }
+.nav .btn-primary { background: #ffffff; color: #000000; }
+.nav .btn-primary:hover { background: #42bb98; color: #000000; }
+footer { background: #000000; color: #c9cacc; margin-top: 40px; }
 footer .wrap { border-top: 0; padding-top: 0; }
+.opener .lead { max-width: 50ch; }
+.status .caps { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -431,7 +433,7 @@ footer .wrap { border-top: 0; padding-top: 0; }
 <header class="opener" id="top">
   <div class="wrap">
     <div>
-      <span class="status">pclOne by Phillips Consulting</span>
+      <span class="status">pcl.One <span class="caps">Enterprise solution</span></span>
       <h1>Run the whole firm on one system.</h1>
       <p class="lead">Finance, people, clients, projects, compliance and support in a single platform. Designed by consultants who have spent decades fixing operations across Africa, and who are tired of watching good firms run on spreadsheets and WhatsApp.</p>
     </div>
@@ -720,7 +722,7 @@ footer .wrap { border-top: 0; padding-top: 0; }
   var byId = {}; MODS.forEach(function (m) { byId[m.id] = m; });
   var $ = function (id) { return document.getElementById(id); };
   // Keep the last two words of a text run together, so no line ends on a lone word.
-  var TIDY = "p, li, td, th, h1, h2, h3, h4, .why, .sv, .ev, .what, .score b, .score span";
+  var TIDY = "p, li, td, th, h1, h2, h3, h4, .why, .sv, .ev, .what, .role, .score b, .score span, .lead, .desc";
   function noOrphan(el) {
     var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), last = null, n;
     while ((n = w.nextNode())) if (/\S/.test(n.nodeValue)) last = n;
@@ -728,7 +730,13 @@ footer .wrap { border-top: 0; padding-top: 0; }
     var v = last.nodeValue.replace(/\s+$/, ""), i = v.lastIndexOf(" ");
     if (i > 0 && v.length - i <= 16) last.nodeValue = v.slice(0, i) + "\u00a0" + v.slice(i + 1) + last.nodeValue.slice(v.length);
   }
-  function tidy(root) { (root || document).querySelectorAll(TIDY).forEach(noOrphan); }
+  // Never leave a short joining word at the end of a line: bind it to the word that follows.
+  var GLUE = /(^|[\s\u00a0(])(a|an|the|of|on|in|at|to|by|for|and|or|with|from|its|our|your|per|no|is|we)\s+(?=\S)/gi;
+  function glue(el) {
+    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) { var v = n.nodeValue, g = v.replace(GLUE, "$1$2\u00a0"); if (g !== v) n.nodeValue = g; }
+  }
+  function tidy(root) { (root || document).querySelectorAll(TIDY).forEach(function (el) { glue(el); noOrphan(el); }); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   // ---------- Opener ----------
