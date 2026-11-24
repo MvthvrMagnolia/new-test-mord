@@ -169,12 +169,18 @@ const STYLE = `
   .eyebrow .dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,.4); }
   .t-value { margin-top: 10px; font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.3; letter-spacing: -.3px; max-width: 760px; overflow-wrap: anywhere; }
   .t-value .fig { font-style: normal; color: var(--accent); white-space: nowrap; }
-  .t-desc { margin-top: 8px; display: flex; align-items: flex-start; gap: 6px; font-size: 13.5px; line-height: 1.45; color: rgba(255,255,255,.8); max-width: 760px; }
-  .t-desc svg { flex: none; margin-top: 2px; }
+  .t-desc { margin-top: 10px; display: flex; align-items: baseline; gap: 10px; font-size: 13.5px; line-height: 1.45; color: rgba(255,255,255,.85); max-width: 760px; }
+  .t-desc-label {
+    flex: none; display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10.5px; font-weight: 500; letter-spacing: .7px; text-transform: uppercase; color: rgba(255,255,255,.75);
+    padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.14);
+  }
+  .t-desc-label svg { width: 12px; height: 12px; }
 
   /* How the KPI is measured, reviewed and delivered */
-  .specs { display: grid; grid-template-columns: repeat(var(--specs), 1fr); border-bottom: 1px solid var(--line); background: var(--inset); }
-  .spec { display: flex; gap: 10px; padding: 14px 22px; min-width: 0; }
+  .specs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); background: var(--inset); }
+  .spec { display: flex; gap: 10px; padding: 14px 22px; min-width: 0; grid-column: span var(--span, 1); }
+  .spec.wide dd { max-width: 560px; }
   .spec + .spec { border-left: 1px solid var(--line); }
   .spec-ico { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: var(--brand-ink); background: var(--brand-soft); }
   .spec dt { font-size: 11px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
@@ -281,6 +287,7 @@ const STYLE = `
   @media (max-width: 860px) {
     .summary, .reviews, .specs, .signs { grid-template-columns: 1fr; }
     .review + .review, .spec + .spec, .sign + .sign { border-left: 0; border-top: 1px solid var(--line); }
+    .spec { grid-column: auto; }
     .target::after { display: none; }
     .solo .review.editing { display: flex; }
   }
@@ -420,13 +427,15 @@ class KpiAppraisal extends HTMLElement {
       k.timeline && ['clock', 'Review timeline', `<dd>${esc(k.timeline)}</dd>`],
       actions.length && ['actions', 'Key actions', `<dd><ul>${actions.map(a => `<li>${esc(a)}</li>`).join('')}</ul></dd>`],
     ].filter(Boolean);
+    // Fill the 3-column row whatever is present: 3 items → 1 each, 2 → 2 + 1, 1 → full width.
+    const spans = { 1: [3], 2: [2, 1], 3: [1, 1, 1] }[specs.length] || [];
     const r = 33, c = 2 * Math.PI * r, w = k.weight || 0;
     return `<article class="kpi" data-kpi="${i}">
       <div class="target">
         <div class="target-main">
           <div class="eyebrow">KPI ${i + 1}<span class="dot"></span>Locked</div>
           <h3 class="t-value">${figures(k.target)}</h3>
-          ${k.description ? `<p class="t-desc">${ICON.goal}<span>${esc(k.description)}</span></p>` : ''}
+          ${k.description ? `<p class="t-desc"><span class="t-desc-label">${ICON.goal}Description</span><span>${esc(k.description)}</span></p>` : ''}
         </div>
         <div class="weight" aria-label="Weight ${w}%">
           <svg viewBox="0 0 76 76" width="100%" height="100%" aria-hidden="true">
@@ -436,7 +445,7 @@ class KpiAppraisal extends HTMLElement {
           <div><b>${w}%</b><small>weight</small></div>
         </div>
       </div>
-      ${specs.length ? `<dl class="specs" style="--specs:${specs.length}">${specs.map(([ico, t, dd]) => `<div class="spec"><span class="spec-ico">${ICON[ico]}</span><div><dt>${t}</dt>${dd}</div></div>`).join('')}</dl>` : ''}
+      ${specs.length ? `<dl class="specs">${specs.map(([ico, t, dd], n) => `<div class="spec ${spans[n] > 1 ? 'wide' : ''}" style="--span:${spans[n]}"><span class="spec-ico">${ICON[ico]}</span><div><dt>${t}</dt>${dd}</div></div>`).join('')}</dl>` : ''}
       <div class="reviews">${this._visible.map(role => role.key === this._active ? this._editor(k, i, role) : this._readonly(k, role)).join('')}</div>
       <div class="foot" data-foot="${i}">${this._foot(k)}</div>
     </article>`;
