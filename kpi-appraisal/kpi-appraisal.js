@@ -7,18 +7,33 @@
  *   <script src="kpi-appraisal.js"></script>      (plain script, or import it as a module)
  *   <kpi-appraisal stage="self"></kpi-appraisal>
  *
+ * Fields follow the KPI Form template: Section I (background), Section II (work performance targets),
+ * Section III (signatures & date).
+ *
  *   el.data = {
- *     kpis: [{
+ *     employee: {                                 // Section I — all optional
+ *       name: 'Funke Ajayi', grade: 'Senior Associate', pillar: 'Client Market Engine',
+ *       practiceArea: 'Public Sector', reviewPeriod: 'H2 2026 · 1 July – 31 December 2026',
+ *     },
+ *     kpis: [{                                    // Section II — one per performance target
  *       id: 'k1',
- *       target: 'Monthly target of 50,000,000',   // "<label> of <figure>" is split for display
- *       goal: 'Meet monthly targets',             // optional
- *       weight: 25,                               // percent
+ *       target: 'Achieve monthly sales of 50,000,000',  // Performance Target (KPI & Expected Outcome) *
+ *       description: 'Meet monthly targets',            // Description *
+ *       weight: 25,                                     // Weight * (all KPIs should total 100)
+ *       measurement: 'Monthly sales report from CRM',   // Measurement Method *
+ *       keyActions: ['Weekly pipeline review'],         // Key Actions (optional) — string or array
+ *       timeline: 'Monthly',                            // Review Timeline *
  *       reviews: {                                // any of these may be missing
  *         self:        { rating: 3, comment: 'I met 50% of my target' },
  *         lineManager: { rating: 2, comment: '' },
  *         pillarLead:  { rating: 2, comment: '' },
  *       },
  *     }],
+ *     managerName: 'Tari Benson',                 // used when the manager signs from this screen
+ *     signoffs: {                                 // Section III — { name, date } once signed
+ *       employee: { name: 'Funke Ajayi', date: '2026-07-08' },
+ *       manager:  null,
+ *     },
  *   };
  *
  * Attributes
@@ -26,6 +41,7 @@
  *   readonly     show the stage without an editable column (e.g. the employee watching their review)
  *   heading      card title (default "KPIs")
  *   description  line under the title
+ *   signer       employee | manager — shows a Sign button for that party if they have not signed
  *
  * Properties
  *   data          read/write; reading returns a copy including anything typed in
@@ -36,6 +52,7 @@
  *   kpi-rating-change  detail { kpiId, role, rating, comment }   on every rating or comment change
  *   kpi-submit         detail { role, reviews: [{ kpiId, rating, comment }] }
  *   kpi-history        detail { kpiId }                          "Review history" clicked
+ *   kpi-sign           detail { party, date }                    Sign button clicked (date is today, ISO)
  *
  * Theme from outside with CSS custom properties, e.g. kpi-appraisal { --kpi-brand: #00907a; }
  */
@@ -50,11 +67,18 @@ const DEFAULT_BANDS = [[4.5, 'Outstanding'], [3.5, 'Exceeds Expectations'], [2.5
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 const tone = r => !r ? 'tone-none' : r <= 2 ? 'tone-low' : r === 3 ? 'tone-mid' : 'tone-high';
-const splitTarget = t => { const m = String(t).match(/^(.*?)\s+of\s+([\d.,]+.*)$/i); return m ? [m[1], m[2]] : ['Target', t]; };
+// Highlight the figures in a target sentence ("… sales of 50,000,000" → 50,000,000 stands out).
+const figures = t => esc(t).replace(/([₦$€£]?\d[\d,.]*\s?%?(?:\s?(?:k|m|bn|million|billion))?)/gi, '<em class="fig">$1</em>');
+const fmtDate = d => { const x = new Date(d); return isNaN(x) ? esc(d) : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); };
+const list = v => (Array.isArray(v) ? v : String(v ?? '').split(/\n|;\s*/)).map(x => String(x).trim()).filter(Boolean);
 
 const ICON = {
   goal: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.3" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="3.3" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r=".9" fill="currentColor"/></svg>',
   history: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9M2.5 2.5v2.2h2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 5.2V8l2 1.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  measure: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 13.5h12M4 11V8M8 11V4.5M12 11V6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  clock: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 6.5h12M5.5 1.8v2.4M10.5 1.8v2.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  actions: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.5l1.2 1.2L6.5 3.4M3 10.5l1.2 1.2 2.3-2.3M9 4.5h4.5M9 10.5h4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  pen: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10.5 2.5l3 3L6 13H3v-3l7.5-7.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
   check: '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 
@@ -98,6 +122,13 @@ const STYLE = `
   .flow .now { color: var(--ink); }
   .flow .now .n { color: var(--brand-ink); border-color: var(--brand); box-shadow: 0 0 0 3px rgba(0,144,122,.15); }
 
+  /* Section I: background */
+  .profile { margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .profile div { background: var(--surface); padding: 12px 14px; min-width: 0; }
+  .profile dt { font-size: 11px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .profile dd { margin-top: 3px; font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+  .profile .p-name dd { font-family: var(--display); font-weight: 600; font-size: 15px; }
+
   /* Overall scores */
   .summary { margin-top: 20px; display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 12px; }
   .sum { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--inset); }
@@ -135,9 +166,21 @@ const STYLE = `
   .target-main { flex: 1; min-width: 0; position: relative; z-index: 1; }
   .eyebrow { display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 500; letter-spacing: .8px; text-transform: uppercase; color: rgba(255,255,255,.65); }
   .eyebrow .dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,.4); }
-  .t-label { margin-top: 8px; font-size: 14px; color: rgba(255,255,255,.8); }
-  .t-value { margin-top: 2px; font-family: var(--display); font-weight: 600; font-size: 34px; line-height: 1.1; letter-spacing: -.8px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-  .t-goal { margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,.8); }
+  .t-value { margin-top: 10px; font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.3; letter-spacing: -.3px; max-width: 760px; overflow-wrap: anywhere; }
+  .t-value .fig { font-style: normal; color: var(--accent); white-space: nowrap; }
+  .t-desc { margin-top: 8px; display: flex; align-items: flex-start; gap: 6px; font-size: 13.5px; line-height: 1.45; color: rgba(255,255,255,.8); max-width: 760px; }
+  .t-desc svg { flex: none; margin-top: 2px; }
+
+  /* How the KPI is measured, reviewed and delivered */
+  .specs { display: grid; grid-template-columns: repeat(var(--specs), 1fr); border-bottom: 1px solid var(--line); background: var(--inset); }
+  .spec { display: flex; gap: 10px; padding: 14px 22px; min-width: 0; }
+  .spec + .spec { border-left: 1px solid var(--line); }
+  .spec-ico { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: var(--brand-ink); background: var(--brand-soft); }
+  .spec dt { font-size: 11px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .spec dd { margin-top: 3px; font-size: 13.5px; line-height: 1.45; overflow-wrap: anywhere; }
+  .spec ul { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+  .spec li { position: relative; padding-left: 12px; }
+  .spec li::before { content: ""; position: absolute; left: 0; top: .6em; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
   .weight { position: relative; z-index: 1; flex: none; width: 76px; height: 76px; display: grid; place-items: center; }
   .weight svg { position: absolute; inset: 0; transform: rotate(-90deg); }
   .weight b { font-family: var(--display); font-size: 18px; font-weight: 600; line-height: 1; }
@@ -199,8 +242,23 @@ const STYLE = `
   .gap { font-size: 12.5px; color: var(--muted); }
   .gap b { color: var(--warn-ink); font-weight: 600; }
   .gap.agree b { color: var(--brand-ink); }
-  .link { appearance: none; border: 0; background: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font: 500 13px inherit; font-family: inherit; color: var(--brand-ink); padding: 6px 8px; border-radius: 8px; margin-left: auto; }
+  .link { appearance: none; border: 0; background: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font: 500 13px inherit; font-family: inherit; color: var(--brand-ink); padding: 6px 8px; border-radius: 8px; margin-left: auto; white-space: nowrap; }
   .link:hover { background: var(--brand-soft); }
+
+  /* Section III: signatures & date */
+  .agreement { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .agree-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--inset); }
+  .agree-head h3 { font-size: 14px; font-weight: 600; }
+  .agree-head p { font-size: 12.5px; color: var(--muted); }
+  .signs { display: grid; grid-template-columns: 1fr 1fr; }
+  .sign { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; min-width: 0; }
+  .sign + .sign { border-left: 1px solid var(--line); }
+  .sign-who { font-size: 11px; font-weight: 500; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .sign-name { margin-top: 3px; font-family: var(--display); font-size: 16px; font-weight: 600; font-style: italic; }
+  .sign-date { margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+  .sign-ok { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: var(--brand-ink); background: var(--brand-soft); padding: 4px 10px; border-radius: 999px; }
+  .sign-wait { margin-top: 3px; font-size: 13.5px; color: var(--faint); font-style: italic; }
+  .sign-btn { flex: none; appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font: 500 13px inherit; font-family: inherit; color: #fff; background: var(--brand-deep); border: 0; padding: 8px 14px; border-radius: 9px; }
 
   /* Submit bar */
   .actions { margin-top: 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px 14px 20px; border-radius: 12px; background: var(--inset); border: 1px solid var(--line); }
@@ -216,9 +274,12 @@ const STYLE = `
   .submit:disabled { opacity: .4; cursor: not-allowed; }
   .submitted { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 500; color: var(--brand-ink); }
 
+  .weight-note { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+  .weight-note.off { color: var(--warn-ink); }
+
   @media (max-width: 860px) {
-    .summary, .reviews { grid-template-columns: 1fr; }
-    .review + .review { border-left: 0; border-top: 1px solid var(--line); }
+    .summary, .reviews, .specs, .signs { grid-template-columns: 1fr; }
+    .review + .review, .spec + .spec, .sign + .sign { border-left: 0; border-top: 1px solid var(--line); }
     .target::after { display: none; }
     .solo .review.editing { display: flex; }
   }
@@ -233,7 +294,7 @@ const STYLE = `
 `;
 
 class KpiAppraisal extends HTMLElement {
-  static observedAttributes = ['stage', 'readonly', 'heading', 'description'];
+  static observedAttributes = ['stage', 'readonly', 'heading', 'description', 'signer'];
 
   constructor() {
     super();
@@ -287,10 +348,44 @@ class KpiAppraisal extends HTMLElement {
           <div><h2>${esc(heading)}</h2><p class="desc">${esc(desc)}</p></div>
           ${this._flow()}
         </div>
+        ${this._profile()}
         <div class="summary" data-summary>${this._summary()}</div>
+        ${this._weightNote()}
         ${this._kpis.map((k, i) => this._kpi(k, i)).join('')}
+        ${this._agreement()}
         ${active ? `<div class="actions" data-actions>${this._actions()}</div>` : ''}
       </section>`;
+  }
+
+  _profile() {
+    const e = this._data.employee;
+    if (!e) return '';
+    const items = [['p-name', 'Name', e.name], ['', 'Grade', e.grade], ['', 'Pillar', e.pillar], ['', 'Practice area', e.practiceArea], ['', 'Review period', e.reviewPeriod]]
+      .filter(([, , v]) => v);
+    return `<dl class="profile" aria-label="Background information">${items.map(([c, k, v]) => `<div class="${c}"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
+  }
+
+  _weightNote() {
+    const n = this._kpis.length, total = this._kpis.reduce((s, k) => s + (+k.weight || 0), 0);
+    if (!n) return '';
+    const ok = Math.abs(total - 100) < 0.01;
+    return `<p class="weight-note ${ok ? '' : 'off'}">${n} KPI${n === 1 ? '' : 's'} · weights total ${+total.toFixed(2)}%${ok ? '' : ' — the template requires 100%'}. Overall scores are weighted by each KPI's share.</p>`;
+  }
+
+  _agreement() {
+    const so = this._data.signoffs;
+    if (!so) return '';
+    const signer = this.getAttribute('signer');
+    const party = (key, label) => {
+      const s = so[key];
+      if (s?.name) return `<div class="sign"><div><div class="sign-who">${label}</div><div class="sign-name">${esc(s.name)}</div><div class="sign-date">${s.date ? 'Signed ' + fmtDate(s.date) : 'Signed'}</div></div><span class="sign-ok">${ICON.check}Signed</span></div>`;
+      const btn = signer === key ? `<button class="sign-btn" data-sign="${key}">${ICON.pen}Sign</button>` : '';
+      return `<div class="sign"><div><div class="sign-who">${label}</div><div class="sign-wait">Awaiting signature</div></div>${btn}</div>`;
+    };
+    return `<section class="agreement" aria-label="Signatures and date">
+      <div class="agree-head"><h3>KPI agreement</h3><p>Signatures &amp; date</p></div>
+      <div class="signs">${party('employee', 'Employee')}${party('manager', 'Manager')}</div>
+    </section>`;
   }
 
   _flow() {
@@ -318,15 +413,19 @@ class KpiAppraisal extends HTMLElement {
   }
 
   _kpi(k, i) {
-    const [label, value] = splitTarget(k.target);
+    const actions = list(k.keyActions);
+    const specs = [
+      k.measurement && ['measure', 'Measurement method', `<dd>${esc(k.measurement)}</dd>`],
+      k.timeline && ['clock', 'Review timeline', `<dd>${esc(k.timeline)}</dd>`],
+      actions.length && ['actions', 'Key actions', `<dd><ul>${actions.map(a => `<li>${esc(a)}</li>`).join('')}</ul></dd>`],
+    ].filter(Boolean);
     const r = 33, c = 2 * Math.PI * r, w = k.weight || 0;
     return `<article class="kpi" data-kpi="${i}">
       <div class="target">
         <div class="target-main">
           <div class="eyebrow">KPI ${i + 1}<span class="dot"></span>Locked</div>
-          <div class="t-label">${esc(label)}</div>
-          <div class="t-value">${esc(value)}</div>
-          ${k.goal ? `<div class="t-goal">${ICON.goal}${esc(k.goal)}</div>` : ''}
+          <h3 class="t-value">${figures(k.target)}</h3>
+          ${k.description ? `<p class="t-desc">${ICON.goal}<span>${esc(k.description)}</span></p>` : ''}
         </div>
         <div class="weight" aria-label="Weight ${w}%">
           <svg viewBox="0 0 76 76" width="100%" height="100%" aria-hidden="true">
@@ -336,6 +435,7 @@ class KpiAppraisal extends HTMLElement {
           <div><b>${w}%</b><small>weight</small></div>
         </div>
       </div>
+      ${specs.length ? `<dl class="specs" style="--specs:${specs.length}">${specs.map(([ico, t, dd]) => `<div class="spec"><span class="spec-ico">${ICON[ico]}</span><div><dt>${t}</dt>${dd}</div></div>`).join('')}</dl>` : ''}
       <div class="reviews">${this._visible.map(role => role.key === this._active ? this._editor(k, i, role) : this._readonly(k, role)).join('')}</div>
       <div class="foot" data-foot="${i}">${this._foot(k)}</div>
     </article>`;
@@ -438,6 +538,15 @@ class KpiAppraisal extends HTMLElement {
       this.dispatchEvent(new CustomEvent('kpi-submit', { bubbles: true, composed: true, detail: {
         role, reviews: this._kpis.map((k, i) => ({ kpiId: k.id ?? i, rating: this._review(k, role).rating, comment: this._review(k, role).comment || '' })),
       } }));
+      return;
+    }
+    const sb = e.target.closest('[data-sign]');
+    if (sb) {
+      const party = sb.dataset.sign, date = new Date().toISOString().slice(0, 10);
+      const name = party === 'employee' ? this._data.employee?.name : this._data.managerName;
+      this._data.signoffs = { ...this._data.signoffs, [party]: { name: name || 'Signed', date } };
+      this.shadowRoot.querySelector('.agreement').outerHTML = this._agreement();
+      this.dispatchEvent(new CustomEvent('kpi-sign', { bubbles: true, composed: true, detail: { party, date } }));
       return;
     }
     const h = e.target.closest('[data-history]');

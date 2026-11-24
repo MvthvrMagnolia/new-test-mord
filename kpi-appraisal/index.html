@@ -39,12 +39,18 @@
 <script src="kpi-appraisal.js"></script>
 <script>
 
-  // Sample data. KPI 1 is from the real screen; KPIs 2–3 and all ratings are examples.
+  // Sample data shaped like the KPI Form template. KPI 1 comes from the real screen; everything else is an example.
+  const EMPLOYEE = { name: 'Funke Ajayi', grade: 'Senior Associate', pillar: 'Client Market Engine', practiceArea: 'Public Sector',
+                     reviewPeriod: 'H2 2026 · 1 July – 31 December 2026' };
   const KPIS = [
-    { id: 'k1', target: 'Monthly target of 50,000,000', goal: 'Meet monthly targets', weight: 25 },
-    { id: 'k2', target: 'Client satisfaction score of 85%', goal: 'Keep key accounts satisfied', weight: 40 },
-    { id: 'k3', target: 'Quarterly product releases of 4', goal: 'Ship planned releases on schedule', weight: 35 },
+    { id: 'k1', target: 'Achieve monthly sales of 50,000,000', description: 'Meet monthly targets', weight: 25,
+      measurement: 'Monthly sales report from the CRM', keyActions: ['Weekly pipeline review', 'Two new public sector leads a month'], timeline: 'Monthly' },
+    { id: 'k2', target: 'Maintain a client satisfaction score of 85%', description: 'Keep key accounts satisfied and renewing', weight: 40,
+      measurement: 'Quarterly client satisfaction survey', keyActions: [], timeline: 'Quarterly' },
+    { id: 'k3', target: 'Deliver 4 product releases each quarter', description: 'Ship planned releases on schedule', weight: 35,
+      measurement: 'Release log signed off by the product owner', keyActions: 'Agree release scope at the start of each quarter', timeline: 'Quarterly' },
   ];
+  const SIGNOFFS = { employee: { name: 'Funke Ajayi', date: '2026-07-08' }, manager: { name: 'Tari Benson', date: '2026-07-10' } };
   const SAMPLE = {
     self:        { k1: [3, 'I met 50% of my target'], k2: [4, 'Scored 88% across my four accounts'], k3: [3, 'All four releases shipped, one a week late'] },
     lineManager: { k1: [2, 'You did not meet up to 50%'], k2: [4, 'Strong feedback from both public sector clients'], k3: [3, ''] },
@@ -54,7 +60,7 @@
 
   const el = document.getElementById('appraisal');
   let data;
-  function freshData() { return { kpis: KPIS.map(k => ({ ...k, reviews: {} })) }; }
+  function freshData() { return { employee: EMPLOYEE, signoffs: SIGNOFFS, kpis: KPIS.map(k => ({ ...k, reviews: {} })) }; }
 
   // Jumping ahead fills earlier roles that were never rated with sample ratings.
   function goTo(stage) {
