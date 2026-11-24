@@ -57,6 +57,9 @@ a { color: var(--accent-text); }
 @media (min-width: 1024px) { .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); } }
 h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; margin: 0; text-wrap: balance; hyphens: none; }
 p { margin: 0; }
+/* Rag, widows and orphans: balanced headings, "pretty" paragraph breaks, no hyphenation, and the last two words of short runs kept together by script. */
+p, li, td, th, .lead, .why, .sv, .ev, .note, .cmp-note { text-wrap: pretty; hyphens: manual; orphans: 2; widows: 2; }
+h1, h2, h3, h4, .title, .what, .score b { text-wrap: balance; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .overline { font-family: var(--display); font-weight: 500; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
 .title { font-size: 28px; line-height: 36px; max-width: 22ch; }
@@ -262,20 +265,42 @@ section.band { padding-block: 72px; }
 .slip .note { margin-top: 16px; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
 
 /* COMPARE */
-.cmp-wrap { overflow-x: auto; padding: 8px 24px; }
-.cmp { width: 100%; min-width: 680px; border-collapse: collapse; }
-.cmp th, .cmp td { text-align: left; padding: 16px 16px 16px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-.cmp tbody tr:last-child th, .cmp tbody tr:last-child td { border-bottom: 0; }
-.cmp tbody tr { transition: background 150ms; }
-.cmp tbody tr:hover { background: var(--surface-subtle); }
-.cmp thead th { font: 500 12px/16px var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
-.cmp thead th.us { color: var(--accent-text); }
-.cmp tbody th { font: 500 15px/22px var(--display); width: 34%; }
-.cmp td.us { color: var(--ink); }
+.cmp-wrap { overflow-x: auto; padding: 0; }
+.cmp-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; }
+.score { display: flex; align-items: center; gap: 14px; }
+.ring { --p: 71; width: 48px; height: 48px; border-radius: 9999px; background: conic-gradient(var(--accent) calc(var(--p) * 1%), var(--track) 0); display: grid; place-items: center; flex: none; }
+.ring::after { content: ""; width: 36px; height: 36px; border-radius: 9999px; background: var(--bg); }
+.score b { font: 600 18px/26px var(--display); display: block; }
+.score span { font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+.seg { display: inline-flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 9999px; }
+.seg button { font: 500 14px/20px var(--display); padding: 8px 16px; border: 0; border-radius: 9999px; background: transparent; color: var(--ink-muted); cursor: pointer; transition: background 200ms var(--ease), color 200ms; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--forest); color: #ffffff; }
+.cmp { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; }
+.cmp th, .cmp td { text-align: left; padding: 18px 20px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.cmp thead th { font: 500 12px/16px var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); padding-top: 20px; padding-bottom: 20px; background: var(--surface-subtle); }
+.cmp thead th:first-child { border-top-left-radius: var(--r-lg); }
+.cmp thead th:last-child { border-top-right-radius: var(--r-lg); }
+.cmp thead th.us { background: var(--forest); color: #ffffff; letter-spacing: 0; text-transform: none; font-size: 16px; line-height: 22px; position: relative; }
+.cmp thead th.us small { display: block; font: 400 12px/16px var(--text); color: var(--on-forest-muted); margin-top: 2px; }
+.cmp tbody th { font: 500 15px/22px var(--display); width: 32%; }
+.cmp tbody th .cat { display: block; font: 500 11px/16px var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 4px; }
+.cmp td.us { background: var(--accent-soft); color: var(--ink); font-weight: 500; border-left: 1px solid rgba(0,164,141,.18); border-right: 1px solid rgba(0,164,141,.18); border-bottom-color: rgba(0,164,141,.18); }
 .cmp td.them { color: var(--ink-muted); }
-.dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; margin-right: 10px; vertical-align: 2px; background: var(--accent); }
-.dot.tie { background: var(--line-strong); }
-.cmp-note { margin-top: 20px; color: var(--ink-muted); max-width: 70ch; }
+.cmp tbody tr:last-child th, .cmp tbody tr:last-child td { border-bottom: 0; }
+.cmp tbody tr { transition: opacity 250ms var(--ease); }
+.cmp tbody tr:hover th, .cmp tbody tr:hover td.them { background: var(--surface-subtle); }
+.cmp tbody tr:hover td.us { background: #d6efe4; }
+.cmp tbody tr.tie-row.dim { opacity: .35; }
+.cell { display: flex; gap: 12px; align-items: flex-start; }
+.ic { flex: none; width: 24px; height: 24px; border-radius: 9999px; display: grid; place-items: center; font: 600 13px/1 var(--display); margin-top: -1px; }
+.ic.yes { background: var(--accent); color: #ffffff; }
+.ic.eq { background: var(--surface); color: var(--ink-muted); border: 1px solid var(--line-strong); }
+.ic.part { background: var(--warning-soft); color: var(--warning); }
+.ic svg { width: 12px; height: 12px; }
+.cmp tbody tr.pop td.us { animation: cpop 500ms var(--ease); }
+@keyframes cpop { 40% { background: #c9ebdc; } }
+.cmp-note { margin-top: 20px; color: var(--ink-muted); max-width: 58ch; }
 
 /* PROOF */
 .proof-block { background: var(--forest); color: var(--on-forest); border-radius: var(--r-lg); padding: 40px 24px; }
@@ -506,17 +531,21 @@ footer .lockup .one { font-size: 17px; }
           <p class="lead">Global suites are good software, and where they match pclOne the table says so. The gaps sit in local payroll, project margins and compliance. Those are the gaps your team fills by hand at every month end.</p>
         </div>
       </div>
+      <div class="cmp-bar">
+        <div class="score"><span class="ring" style="--p:71" aria-hidden="true"></span><div><b>pclOne leads on 5 of 7</b><span>The other 2 are a fair tie.</span></div></div>
+        <div class="seg" role="group" aria-label="Rows to show"><button type="button" aria-pressed="true" data-f="all">All rows</button><button type="button" aria-pressed="false" data-f="diff">Only the differences</button></div>
+      </div>
       <div class="cmp-wrap panel">
-        <table class="cmp">
-          <thead><tr><th scope="col">What you need</th><th scope="col" class="us">pclOne</th><th scope="col">Global suite with local add-ons</th></tr></thead>
+        <table class="cmp" id="cmp">
+          <thead><tr><th scope="col">What you need</th><th scope="col" class="us">pclOne<small>by Phillips Consulting</small></th><th scope="col">Global suite with local add-ons</th></tr></thead>
           <tbody>
-            <tr><th scope="row">Finance, HR, CRM and projects on one record</th><td class="us"><span class="dot"></span>One database from day one</td><td class="them">Separate apps joined by integrations you maintain</td></tr>
-            <tr><th scope="row">Statutory payroll for African jurisdictions</th><td class="us"><span class="dot"></span>Configured per entity and country</td><td class="them">Third-party add-on or local partner</td></tr>
-            <tr><th scope="row">Project profitability including people cost</th><td class="us"><span class="dot"></span>Live, from timesheets, payroll and procurement</td><td class="them">Monthly export and a spreadsheet</td></tr>
-            <tr><th scope="row">Compliance document review</th><td class="us"><span class="dot"></span>Built in, about 60 seconds per review</td><td class="them">Separate GRC tool or manual review</td></tr>
-            <tr><th scope="row">Who implements it</th><td class="us"><span class="dot"></span>Phillips Consulting, who have run these processes in the region for decades</td><td class="them">Reseller network, support across time zones</td></tr>
-            <tr><th scope="row">Microsoft sign-in</th><td class="us"><span class="dot tie"></span>Yes</td><td class="them">Yes</td></tr>
-            <tr><th scope="row">Mobile approvals</th><td class="us"><span class="dot tie"></span>Yes</td><td class="them">Yes</td></tr>
+            <tr><th scope="row"><span class="cat">Platform</span>Finance, HR, CRM and projects on one record</th><td class="us"><span class="cell"><span class="ic yes" aria-label="pclOne leads"><svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span>One database from day one</span></span></td><td class="them"><span class="cell"><span class="ic part" aria-label="Needs extra work">~</span><span>Separate apps joined by integrations you maintain</span></span></td></tr>
+            <tr><th scope="row"><span class="cat">Payroll</span>Statutory payroll for African jurisdictions</th><td class="us"><span class="cell"><span class="ic yes" aria-label="pclOne leads"><svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span>Configured per entity and country</span></span></td><td class="them"><span class="cell"><span class="ic part" aria-label="Needs extra work">~</span><span>Third-party add-on or local partner</span></span></td></tr>
+            <tr><th scope="row"><span class="cat">Margins</span>Project profitability including people cost</th><td class="us"><span class="cell"><span class="ic yes" aria-label="pclOne leads"><svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span>Live, from timesheets, payroll and procurement</span></span></td><td class="them"><span class="cell"><span class="ic part" aria-label="Needs extra work">~</span><span>Monthly export and a spreadsheet</span></span></td></tr>
+            <tr><th scope="row"><span class="cat">Compliance</span>Compliance document review</th><td class="us"><span class="cell"><span class="ic yes" aria-label="pclOne leads"><svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span>Built in, about 60 seconds per review</span></span></td><td class="them"><span class="cell"><span class="ic part" aria-label="Needs extra work">~</span><span>Separate GRC tool or manual review</span></span></td></tr>
+            <tr><th scope="row"><span class="cat">Delivery</span>Who implements it</th><td class="us"><span class="cell"><span class="ic yes" aria-label="pclOne leads"><svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span>Phillips Consulting, who have run these processes in the region for decades</span></span></td><td class="them"><span class="cell"><span class="ic part" aria-label="Needs extra work">~</span><span>Reseller network, support across time zones</span></span></td></tr>
+            <tr class="tie-row"><th scope="row"><span class="cat">Access</span>Microsoft sign-in</th><td class="us"><span class="cell"><span class="ic eq" aria-label="Same">=</span><span>Yes</span></span></td><td class="them"><span class="cell"><span class="ic eq" aria-label="Same">=</span><span>Yes</span></span></td></tr>
+            <tr class="tie-row"><th scope="row"><span class="cat">Access</span>Mobile approvals</th><td class="us"><span class="cell"><span class="ic eq" aria-label="Same">=</span><span>Yes</span></span></td><td class="them"><span class="cell"><span class="ic eq" aria-label="Same">=</span><span>Yes</span></span></td></tr>
           </tbody>
         </table>
       </div>
@@ -629,6 +658,16 @@ footer .lockup .one { font-size: 17px; }
   ];
   var byId = {}; MODS.forEach(function (m) { byId[m.id] = m; });
   var $ = function (id) { return document.getElementById(id); };
+  // Keep the last two words of a text run together, so no line ends on a lone word.
+  var TIDY = "p, li, td, th, h1, h2, h3, h4, .why, .sv, .ev, .what, .score b, .score span";
+  function noOrphan(el) {
+    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), last = null, n;
+    while ((n = w.nextNode())) if (/\S/.test(n.nodeValue)) last = n;
+    if (!last) return;
+    var v = last.nodeValue.replace(/\s+$/, ""), i = v.lastIndexOf(" ");
+    if (i > 0 && v.length - i <= 16) last.nodeValue = v.slice(0, i) + "\u00a0" + v.slice(i + 1) + last.nodeValue.slice(v.length);
+  }
+  function tidy(root) { (root || document).querySelectorAll(TIDY).forEach(noOrphan); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   // ---------- Opener ----------
@@ -651,6 +690,7 @@ footer .lockup .one { font-size: 17px; }
     else items.push("<strong>At " + n.toLocaleString("en-GB") + " people, control matters most.</strong> Microsoft sign-in, role-based access and isolated environments keep each team in its lane.");
     items.push("<strong>Every approval leaves a trail.</strong> Who signed off, when, and on what figure. Your next " + (org === "development programme" ? "donor audit" : org === "financial services firm" ? "regulatory examination" : "audit") + " starts from evidence.");
     answer.innerHTML = items.map(function (h) { return "<li><span>" + h + "</span></li>"; }).join("");
+    tidy(answer);
     answer.classList.remove("flash"); void answer.offsetWidth; answer.classList.add("flash");
   }
   ["ml-org", "ml-country", "ml-pain", "ml-where"].forEach(function (id) { $(id).addEventListener("change", renderAnswer); });
@@ -710,6 +750,7 @@ footer .lockup .one { font-size: 17px; }
       '</div><div class="wires"><h4 class="overline">Connected to</h4><ul>' +
       m.wires.map(function (w) { return '<li><b>' + esc(w[0]) + '</b><span>' + esc(w[1]) + '</span></li>'; }).join("") +
       '</ul><p class="ships"><b>Retires:</b> ' + esc(m.ships) + '</p></div></div>';
+    tidy(panel);
     panel.classList.remove("swap"); void panel.offsetWidth; panel.classList.add("swap");
     requestAnimationFrame(function () { requestAnimationFrame(function () {
       panel.querySelectorAll(".meter i").forEach(function (el) { el.style.width = el.dataset.w + "%"; });
@@ -762,6 +803,7 @@ footer .lockup .one { font-size: 17px; }
     var s = SLIPS[k];
     tabs.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.k === k); });
     slip.setAttribute("aria-labelledby", "cty-" + k);
+    tidy(slip);
     slip.classList.remove("swap"); void slip.offsetWidth; slip.classList.add("swap");
     slip.innerHTML = '<div class="slip-head"><b>' + s.name + '.</b><span class="overline">Statutory lines, ' + s.cur + '</span></div><table><tbody>' +
       s.rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '<span class="who">' + esc(r[2]) + '</span></td><td>' + esc(r[1]) + '</td></tr>'; }).join("") +
@@ -800,6 +842,21 @@ footer .lockup .one { font-size: 17px; }
     }, { rootMargin: "-40% 0px -55% 0px" });
     ["modules", "here", "compare", "security"].forEach(function (id) { io.observe($(id)); });
   }
+
+  tidy(document);
+
+  // ---------- Comparison filter ----------
+  var cmpRows = document.querySelectorAll("#cmp tbody tr");
+  document.querySelectorAll(".seg button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".seg button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+      var diff = b.dataset.f === "diff";
+      cmpRows.forEach(function (tr, i) {
+        tr.classList.toggle("dim", diff && tr.classList.contains("tie-row"));
+        if (diff && !tr.classList.contains("tie-row")) { tr.classList.remove("pop"); void tr.offsetWidth; setTimeout(function () { tr.classList.add("pop"); }, i * 70); }
+      });
+    });
+  });
 
   // ---------- Walkthrough form ----------
   $("f-mods").innerHTML = MODS.map(function (m) { return '<label><input type="checkbox" name="modules" value="' + m.id + '"' + (m.id === "finance" ? " checked" : "") + '> pcl' + m.n + '</label>'; }).join("");
